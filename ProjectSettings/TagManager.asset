@@ -1,0 +1,70 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - TrackingObject
+  - Creature
+  - Spacecraft
+  - Ground
+  - MyPlanet
+  - OpponentPlanet
+  - RespawnLeft
+  - RespawnRight
+  - RespawnForward
+  - RespawnBackward
+  - contentGroup
+  - AddedInven
+  - RemainingInven
+  - Home
+  - Nexus
+  - EnemyNexus
+  - Enemy
+  - Ally
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Planet
+  - Grid
+  - GridIndicator
+  - MiniMapIcon_Space
+  - MiniMapIcon_Planet
+  - 
+  - 
+  - Creature
+  - Spacecraft
+  - Home
+  - Obstacle
+  - InPlanet
+  - OutPlanet
+  - ClickCollider
+  - NexusSphere
+  - Rock
+  - NexusTop
+  - RespawnBoxes
+  - Lamp
+  - Ground
+  - Stairs
+  - Nexus
+  - Enemy
+  - Notice
+  - FollwingCursor
+  - BackGround
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Notice
+    uniqueID: 2622066053
+    locked: 0
+  - name: CreatureHP
+    uniqueID: 1860264975
+    locked: 0
+  - name: FollwingDefendCursor
+    uniqueID: 2584444659
+    locked: 0

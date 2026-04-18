@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cba6b58334f2644c8e81831dd2ef72b, type: 3}
+  m_Name: Spacecraft Prefab Database
+  m_EditorClassIdentifier: 
+  _prefabType: 1
+  prefabs:
+  - {fileID: 3617553919292111933, guid: c036c2bac4c93944ebf01e89986c7663, type: 3}
+  - {fileID: 2446690839366054276, guid: 45cd620671fa19349890e4f35e91ca44, type: 3}
+  - {fileID: 6464206576591567170, guid: f51f583c26c3a384495a2f412386273d, type: 3}
+  - {fileID: 5258289083879301757, guid: 46ffd3bce370c50468cfb6245a432c3c, type: 3}
+  - {fileID: 5037266475905862818, guid: ef295adb0cd237c45b5b7b41221e477b, type: 3}
