@@ -129,7 +129,9 @@ public class GridIndicatorController : MonoBehaviour
 
     public void ChangeGridIndicator(int horizontal, int vertical)
     {
-        _meshRenderer.material.SetVector("_Tiling", new Vector2(vertical, horizontal));
+        Debug.Log("asdasd");
+        transform.localScale = new Vector3(horizontal, 1f, vertical);
+        //_meshRenderer.material.SetVector("_Tiling", new Vector2(vertical, horizontal));
     }
     private void OnTriggerStay(Collider other)
     {

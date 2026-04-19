@@ -37,7 +37,6 @@ public class PlanetButtonContrloller : MonoBehaviour
             {
                 if (toggleButton.isOn == false)
                 {
-                    ChangePlanetText(toggleButton);
                     toggleButton.isOn = true;
                     break;
                 }
@@ -61,6 +60,7 @@ public class PlanetButtonContrloller : MonoBehaviour
         if(currentToggle != toggleButton)
         {
             currentToggle.interactable = true;
+            currentToggle.isOn = false;
         }
         if (toggleButton.isOn)
         {
@@ -69,8 +69,6 @@ public class PlanetButtonContrloller : MonoBehaviour
             ChangePlanetText(toggleButton);
             _subCameraController.CameraMoveToOtherPlanet();
         }
-
-        
     }
 
     private void ChangePlanetText(Toggle toggle)

@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CreateCountController : Singleton<CreateCountController>
+public class CreateCountController : MonoBehaviour
 {
     private static TextMeshProUGUI _guideText;
     private static TextMeshProUGUI _createCountText;
@@ -38,7 +38,7 @@ public class CreateCountController : Singleton<CreateCountController>
             time -= Time.deltaTime;
         }
     }
-    public static void RefreshCreateCount(MPData unitMPData, MPData? subUnitMPData = null)
+    public void RefreshCreateCount(MPData unitMPData, MPData? subUnitMPData = null)
     {
         if (GetCurCreateCount() <= 0)
         {
@@ -55,7 +55,7 @@ public class CreateCountController : Singleton<CreateCountController>
         ChangeCreateCountText();
     }
 
-    public static void InitCreateCount(MPData unitMPData, string guideText, MPData? subUnitMPData = null)
+    public void InitCreateCount(MPData unitMPData, string guideText, MPData? subUnitMPData = null)
     {
         if(subUnitMPData.HasValue)
         {
@@ -67,50 +67,50 @@ public class CreateCountController : Singleton<CreateCountController>
         }
         ChangeGuideText(guideText);
     }
-    public static void ConsumeCurCreateCount(int consumeCount)
+    public void ConsumeCurCreateCount(int consumeCount)
     {
         int createCount = _curCreateCount;
         createCount -= consumeCount;
         SetCurCreateCount(createCount);
     }
 
-    public static void SetMaxCreateCount(MPData unitMPData)
+    public void SetMaxCreateCount(MPData unitMPData)
     {
         float maxCreateCount = MPController.Instance.MP_StatusSlider.value / unitMPData.MP_ConsValue;
         _maxCreateCount = Mathf.FloorToInt(maxCreateCount);
     }
-    public static void SetMaxCreateCount(MPData unitMPData, MPData subUnitMPData)
+    public void SetMaxCreateCount(MPData unitMPData, MPData subUnitMPData)
     {
         float maxCreateCount = (MPController.Instance.MP_StatusSlider.value - unitMPData.MP_ConsValue) /  subUnitMPData.MP_ConsValue;
         maxCreateCount = Mathf.Abs(maxCreateCount);
         _maxCreateCount = Mathf.FloorToInt(maxCreateCount);
     }
 
-    public static int GetMaxCreateCount()
+    public int GetMaxCreateCount()
     {
         return _maxCreateCount;
     }
-    public static void SetCurCreateCount(int createCount)
+    public void SetCurCreateCount(int createCount)
     {
          _curCreateCount = createCount;
     }
     
-    public static int GetCurCreateCount()
+    public int GetCurCreateCount()
     {
         return _curCreateCount;
     }
 
-    public static void ChangeGuideText(string text)
+    public void ChangeGuideText(string text)
     {
         _guideText.text = text;
     }
-    public static void ChangeCreateCountText()
+    public void ChangeCreateCountText()
     {
 
         _createCountText.text = $"{_curCreateCount} / {_maxCreateCount}";
     }
     private static bool _isActive = false;
-    public static void SetActiveCount(bool active)
+    public void SetActiveCount(bool active)
     {
         _createCountText.gameObject.SetActive(active);
         _createCountImage_L.gameObject.SetActive(active);

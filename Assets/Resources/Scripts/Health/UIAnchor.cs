@@ -6,7 +6,6 @@ public class UIAnchor : MonoBehaviour
     public bool drawDebugAxis;
 #endif
 
-    public Camera _subCamera;
 
     // Cache a reference to our parent canvas, so we don't repeatedly search for it.
     public Canvas canvas;
@@ -39,7 +38,7 @@ public class UIAnchor : MonoBehaviour
     {
         // Translate our anchored position into world space.
         Vector3 worldPoint = objectToFollow.TransformPoint(localOffset);
-        Vector3 sizeVector = _subCamera.transform.up;
+        Vector3 sizeVector = Camera.main.transform.up;
 
 #if UNITY_EDITOR
         if (drawDebugAxis)
@@ -49,8 +48,8 @@ public class UIAnchor : MonoBehaviour
 #endif
 
         // Translate the world position into viewport space.
-        Vector3 viewportPoint = _subCamera.WorldToViewportPoint(worldPoint);
-        Vector3 viewportSizePoint = _subCamera.WorldToViewportPoint(worldPoint + sizeVector);
+        Vector3 viewportPoint = Camera.main.WorldToViewportPoint(worldPoint);
+        Vector3 viewportSizePoint = Camera.main.WorldToViewportPoint(worldPoint + sizeVector);
 
         float diff = (viewportSizePoint - viewportPoint).magnitude * 100f;
 

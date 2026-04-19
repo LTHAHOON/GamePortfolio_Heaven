@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class PlacementSystem : MonoBehaviour
 {
@@ -14,14 +16,14 @@ public class PlacementSystem : MonoBehaviour
 
     [SerializeField]
     private Grid _grid;
+    private Vector3 _gridBasePosition;
 
     private List<BoxCollider> placeUnitBoxColliderList = new List<BoxCollider>();
 
     private void Awake()
     {
-        _cellInitalScale = cellIndicator.transform.parent.localScale;
+        _gridBasePosition = _grid.transform.position;
     }
-
     private void Update()
     {
         FollowIndicatorByMouse(cellIndicator.gameObject, 0);
@@ -62,13 +64,16 @@ public class PlacementSystem : MonoBehaviour
 
     public void FollowIndicatorByMouse(GameObject indicator, float heightOffset)
     {
-        Camera camera = UIManager.Instance.CurrentUICamera;
+        Camera camera = Camera.main;
         Vector3? worldMousePos = InputManager.Instance.GetWolrdMousePosByRaycast(camera, _gridLayerMask, offset:_gridOffset);
-        indicator.SetActive(worldMousePos.HasValue);
-        Vector3Int gridPosition = _grid.WorldToCell(worldMousePos.Value);
-        Vector3 indicatorPos  = _grid.CellToWorld(gridPosition);
-        indicatorPos.y += heightOffset;
-        indicator.transform.position = indicatorPos;
+        if(worldMousePos.HasValue)
+        {
+            indicator.SetActive(worldMousePos.HasValue);
+            Vector3Int gridPosition = _grid.WorldToCell(worldMousePos.Value);
+            Vector3 indicatorPos = _grid.CellToWorld(gridPosition);
+            indicatorPos.y += heightOffset;
+            indicator.transform.position = indicatorPos;
+        }
     }
 
     private GameObject _curUnitIndicator;
@@ -80,108 +85,38 @@ public class PlacementSystem : MonoBehaviour
     {
         if(_isCellCalculate == false)
         {
+            _grid.transform.localPosition = _gridBasePosition;
             CalculateCellIndicator(unitIndicator);
         }
-        CalculateUnitIndicator(unitIndicator);
-    }
-
-    private Vector3 _cellInitalScale;
-    private void InitalCellIndicator()
-    {
-        countX = 1;
-        countZ = 1;
-        compareValueX = _initalCompareValue;
-        compareValueZ = _initalCompareValue;
-        cellIndicator.transform.parent.localScale = _cellInitalScale;
-    }
-
-    private float GetVectorPosAverage(Vector3 vector)
-    {
-        if (vector == Vector3.zero) return 0;
-
-        int posCount = 3;
-        float sum = (vector.x + vector.y + vector.z);
-
-        float result = sum / posCount;
-        return result;
     }
 
 
-    private int countX = 1;
-    private int countZ = 1;
-    private float compareValueX = 8f;
-    private float compareValueZ = 8f;
-    private float boxColliderSizeOffset;
+    [Header("Grid Settings")]
+    [SerializeField] private float cellSizeUnit = 10f; // 한 칸을 추가할 기준 단위 크기
     private void CalculateCellIndicator(GameObject unitIndicator)
     {
-        InitalCellIndicator();
-
+        int countX = 1;
+        int countZ = 1;
         if (unitIndicator.TryGetComponent(out BoxCollider unitBoxCollider))
         {
-            boxColliderSizeOffset = 0.6f / GetVectorPosAverage(unitIndicator.transform.localScale);
+            // 2. 월드 공간에서의 실제 크기 계산 (LossyScale 사용이 더 정확함)
+            Vector3 worldSize = Vector3.Scale(unitBoxCollider.size, unitIndicator.transform.lossyScale);
 
-            //TODO: Grid Indicator 세로 칸 계산하기
-            for (int i = 0; i < 15; i++)
+             countX += Mathf.CeilToInt(worldSize.x / cellSizeUnit);
+
+             countZ += Mathf.CeilToInt(worldSize.z / cellSizeUnit);
+            Vector3 gridPosition = _grid.transform.localPosition;
+            if (countX % 2 == 0)
             {
-                if ((unitBoxCollider.size.x  / boxColliderSizeOffset) <= compareValueX )
-                {
-                    float scaleX = cellIndicator.transform.parent.localScale.x + (0.45f* (countX - 1));
-                    cellIndicator.transform.parent.localScale = new Vector3(scaleX, 1, cellIndicator.transform.parent.localScale.z);
-                    if (countX % 2 == 0)
-                    {
-                        _grid.transform.localPosition = new Vector3(2.5f, _grid.transform.localPosition.y, _grid.transform.localPosition.z);
-                    }
-                    else
-                    {
-                        _grid.transform.localPosition = new Vector3(0f, _grid.transform.localPosition.y, _grid.transform.localPosition.z);
-                    }
-                    break;
-                }
-                else
-                {
-                    compareValueX += 8.7f;
-                    countX++;
-                }
-
+                gridPosition.x = 0;
             }
-
-            //TODO: Grid Indicator 가로 칸 계산하기
-            for (int i = 0; i < 15; i++)    
+            if(countZ % 2 == 0)
             {
-                if ((unitBoxCollider.size.z / boxColliderSizeOffset) <= compareValueZ)
-                {
-                    float scaleZ = cellIndicator.transform.parent.localScale.z + (0.45f * (countZ - 1));
-                    cellIndicator.transform.parent.localScale = new Vector3(cellIndicator.transform.parent.localScale.x, 1, scaleZ);
-                    if (countZ % 2 == 0)
-                    {
-                        _grid.transform.localPosition = new Vector3(_grid.transform.localPosition.x, _grid.transform.localPosition.y, 2.5f);
-                    }
-                    else
-                    {
-                        _grid.gameObject.transform.localPosition = new Vector3(_grid.transform.localPosition.x, _grid.transform.localPosition.y, 0f);
-                    }
-                    break;
-                }
-                else
-                {
-                    compareValueZ += 8.7f;
-                    countZ++;
-                }
+                gridPosition.z = 0;
             }
-
-            //TODO: Grid Indicator 가로 세로 설정하기
-            cellIndicator.ChangeGridIndicator(countZ, countX);
-
+            _grid.transform.localPosition = gridPosition;
+            cellIndicator.ChangeGridIndicator(countX, countZ);
             _isCellCalculate = true;
-        }
-    }
-
-    private const float _initalCompareValue = 8f;
-    private void CalculateUnitIndicator(GameObject unitIndicator)
-    {
-        if (unitIndicator.TryGetComponent(out BoxCollider unitBoxCollider))
-        {
-            unitBoxCollider.size = new Vector3(_initalCompareValue * boxColliderSizeOffset * countX, unitBoxCollider.size.y, _initalCompareValue * boxColliderSizeOffset * countZ);
         }
     }
 

@@ -52,8 +52,6 @@ public struct CursorData
 public class CursorManager : Singleton<CursorManager>
 {
     [SerializeField]
-    private Camera _subCamera;
-    [SerializeField]
     private SpriteContraintPos _spriteContraintPos = SpriteContraintPos.Default();
     [SerializeField]
     private CursorData[] _cursorDatas;
@@ -121,6 +119,6 @@ public class CursorManager : Singleton<CursorManager>
 
     public void SpriteFollowMouse(SpriteRenderer spriteRenderer)
     {
-        _mouseCursorController.SpriteFollowMouse(_spriteContraintPos, spriteRenderer, _subCamera);
+        _mouseCursorController.SpriteFollowMouse(_spriteContraintPos, spriteRenderer, Camera.main);
     }
 }

@@ -1,3 +1,4 @@
+using Cinemachine;
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -6,14 +7,16 @@ using UnityEngine.UI;
 
 public class PlanetInternalPopController : MonoBehaviour
 {
-
-    private bool _isDoorOpened;
     [SerializeField]
-    private Image _planetHpSituationImage;
-
+    private CinemachineVirtualCamera _mainVcam;
+    [SerializeField]
+    private CinemachineVirtualCamera _subVcam;
+    private bool _isDoorOpened;
     [SerializeField]
     private GameObject _miniMap_Space;
 
+    [SerializeField]
+    private RectMask2D _spaceHUDMask;
     [SerializeField]
     private GameObject _planetPopUpCanvas;
     private Transform _planetCloseButton;
@@ -79,6 +82,8 @@ public class PlanetInternalPopController : MonoBehaviour
     public void OnClickPlanetOpenButton(ModeType mode) // mode는 수비표시 또는 공격표시 모드이다.
     {
         _mode = mode;
+        _spaceHUDMask.enabled = true;
+        CullingMaskExtension.ChangeVirtualCamera(_mainVcam, _subVcam);
         _isDoorOpened = true;
         _miniMap_Space.SetActive(false);
         _planetCloseButton.gameObject.SetActive(true);
@@ -96,6 +101,8 @@ public class PlanetInternalPopController : MonoBehaviour
             CloseMode(mode);
             return;
         }
+        _spaceHUDMask.enabled = false;
+        CullingMaskExtension.ChangeVirtualCamera(_subVcam, _mainVcam);
         _isDoorOpened = false;
         _miniMap_Space.SetActive(true);
         _planetCloseButton.gameObject.SetActive(false);

@@ -14,7 +14,6 @@ public enum ModeType
 }
 public abstract class ModeButton : MonoBehaviour
 {
-
     [Space(10f)]
     [Header("GuideText")]
     [Multiline]
@@ -32,6 +31,8 @@ public abstract class ModeButton : MonoBehaviour
     [Header("planetButtonScript")]
     [SerializeField]
     protected PlanetButtonContrloller _planetButtonController;
+    [SerializeField]
+    protected CreateCountController _createCountController;
     [Space(10f)]
     [SerializeField]
     private ModeType _modeType;
@@ -81,11 +82,11 @@ public abstract class ModeButton : MonoBehaviour
 
     protected void InitCreateCount(MPData unitMPData)
     {
-        CreateCountController.InitCreateCount(unitMPData, _guideText);
+        _createCountController.InitCreateCount(unitMPData, _guideText);
     }
     protected void InitCreateCount(MPData unitMPData,MPData subUnitMPData)
     {
-        CreateCountController.InitCreateCount(unitMPData, _guideText, subUnitMPData);
+        _createCountController.InitCreateCount(unitMPData, _guideText, subUnitMPData);
     }
     protected void InitUnitWithMPData()
     {
@@ -109,7 +110,7 @@ public abstract class ModeButton : MonoBehaviour
     }
     protected virtual void OpenData()
     {
-        UIManager.Instance.SetActiveAllChild(CreateCountController.Instance.gameObject, true);
+        UIManager.Instance.SetActiveAllChild(_createCountController.gameObject, true);
         InitCreateCount(_unitMPData.Value); //MPData로 생성 카운트 세팅(MPData 필요)
     }
     protected bool _bReadyPrefab = false;
@@ -117,6 +118,6 @@ public abstract class ModeButton : MonoBehaviour
     {
         _bReadyPrefab = false;
         CursorManager.Instance.SetCursor(CursorType.Origin);
-        UIManager.Instance.SetActiveAllChild(CreateCountController.Instance.gameObject, false);
+        UIManager.Instance.SetActiveAllChild(_createCountController.gameObject, false);
     }
 }

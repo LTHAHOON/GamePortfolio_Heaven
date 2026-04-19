@@ -10,9 +10,9 @@ public class CameraController : MonoBehaviour
     [Serializable]
     public struct ScrollBlockPos
     {
-        [Range(0, 200)]
+        [Range(0, 500)]
         public float _minDistance;
-        [Range(0, 200)]
+        [Range(0, 500)]
         public float _maxDistance;
     }
     [SerializeField]
@@ -64,7 +64,7 @@ public class CameraController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        BlockMoveByClamp();
+     //   BlockMoveByClamp();
 
         float inputScrollWheel = Input.GetAxis("Mouse ScrollWheel");
         if(inputScrollWheel != 0)

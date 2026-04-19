@@ -67,14 +67,14 @@ public class InputManager : Singleton<InputManager>
         {
             bOnDrag = true;
             _dragStartPosition = Input.mousePosition;
-            _subDragStartPosition = UIManager.Instance.GetMousePositionInSubCamera();
+            _subDragStartPosition = Input.mousePosition;
             _isDragging = true;
             return 0;
         }
         else if (Input.GetMouseButtonUp(0) && _isDragging)
         {
             bOnDrag = true;
-            Vector3 dragEndPosition = GetCurrentMousePos();
+            Vector3 dragEndPosition = Input.mousePosition;
             Rect selectionRect = GetDragSelectionRect(_subDragStartPosition, dragEndPosition);
             _subDragStartPosition = Vector3.zero;
             _isDragging = false; 
@@ -121,7 +121,7 @@ public class InputManager : Singleton<InputManager>
         {
             offset = Vector3.zero;
         }
-        Ray ray = camera.ScreenPointToRay(GetCurrentMousePos());
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         if(Physics.Raycast(ray, out RaycastHit hit, maxDistance, targetLayerMask))
         {
             return hit.point + offset.Value;
@@ -131,7 +131,7 @@ public class InputManager : Singleton<InputManager>
 
     public GameObject SelectBySphereCast(Camera camera, LayerMask targetLayerMask)
     {
-        Ray ray = camera.ScreenPointToRay(GetCurrentMousePos());
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         Debug.DrawRay(ray.origin, ray.direction * camera.farClipPlane, Color.red);
         if (Physics.SphereCast(ray, 1.2f, out RaycastHit hit, camera.farClipPlane, targetLayerMask))
         {
@@ -197,14 +197,5 @@ public class InputManager : Singleton<InputManager>
             return true;
         }
         return false;
-    }
-
-    public Vector3 GetCurrentMousePos()
-    {
-        if (UIManager.Instance.IsSubCameraActive)
-        {
-            return UIManager.Instance.GetMousePositionInSubCamera();
-        }
-        return Input.mousePosition;
     }
 }

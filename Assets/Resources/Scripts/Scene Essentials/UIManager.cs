@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : Singleton<UIManager>
 {
@@ -59,11 +60,8 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private Color _buttonBaseColor = Color.white;
     [SerializeField]
-    private RectTransform _subCameraRTImageRect;
-    [SerializeField]
-    private Camera _subCamera;
-    public Camera CurrentUICamera => _subCamera.transform.parent.gameObject.activeSelf ? _subCamera : Camera.main;
-    public bool IsSubCameraActive => _subCamera.transform.parent.gameObject.activeSelf;
+    private RectMask2D _spaceHUDMask;
+    public bool IsSubCameraActive => _spaceHUDMask.enabled;
     void Awake()
     {
         LoadButtonColor();
@@ -161,19 +159,23 @@ public class UIManager : Singleton<UIManager>
         SetColorOfFaction();
     }
 
+    /*
     public Vector3 GetMousePositionInSubCamera()
     {
         //Image Rect는 (Screen.width - r.width) / 2만큼 공백이 존재하기 때문에 Image Rect좌표가 실제 위치보다 작으므로 실제 위치에 그 델타값을 빼줘서 값을 맞춰줍니다.
         //예를 들어 Image Rect의 width가 1700이라면 실질적으로는 위치가 1810이기 때문에 이에 대한 델타값을 사용하여 1700 == 1700이 되도록 보정해주는 것입니다.
         //SubCamera는 RenderTexture라서 subCamera를 이용해 월드나 다른 좌표를 변환하면 해당 RenderTexture Image Rect 크기에 맞춰서 변환이 되기 때문에
         //Input.mousePosition을 넣어 변환하면 1700이어야 하는 width가 1810이 되어 버립니다. 따라서 보정을 해야합니다.
+        
         float widthDelta = (Screen.width - _subCameraRTImageRect.rect.width) / 2;
         float heightDelta = (Screen.height - _subCameraRTImageRect.rect.height) / 2;
         float x = (Input.mousePosition.x - widthDelta);
         float y = (Input.mousePosition.y - heightDelta);
 
         return new Vector3(x, y, 0f);
+        
     }
+        */
     public void SetActiveAllChild(GameObject obj, bool active)
     {
         for (int i = 0; i < obj.transform.childCount; i++)

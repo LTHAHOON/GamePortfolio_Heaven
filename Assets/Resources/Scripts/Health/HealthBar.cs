@@ -107,7 +107,7 @@ public class HealthBar : MonoBehaviour
     {
         if (_health != null)
         {
-            _uiFollowObject.FollowObject(UIManager.Instance.CurrentUICamera, _health.gameObject, gameObject);
+            _uiFollowObject.FollowObject(Camera.main, _health.gameObject, gameObject);
         }
     }
 

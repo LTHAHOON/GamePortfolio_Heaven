@@ -23,9 +23,9 @@ public class HomeDecriptionMng : MonoBehaviour
             string decription = unitChipState.GetFunctionDecription();
             _functionDescription.text = $"기능: {decription}";
         }
-        if(selectedUnitButton.TryGetComponent(out MPData mpData))
+        if(selectedUnitButton.TryGetComponent(out MPComponent mpComponent))
         {
-            _mpResumeAmountText.text = $"MP 소모량: {mpData.MP_ConsValue}";
+            _mpResumeAmountText.text = $"MP 소모량: {mpComponent.GetMPData().MP_ConsValue}";
         }
     }
 }

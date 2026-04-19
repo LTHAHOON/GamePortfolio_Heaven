@@ -54,7 +54,7 @@ public class CreateButtonController : ModeButton
 
         if (_bReadyPrefab && _unitPrefab)
         {
-            CreateCountController.RefreshCreateCount(_unitMPData.Value);
+            _createCountController.RefreshCreateCount(_unitMPData.Value);
             UnitPrefabFollowMouse();
             CreatePrefab();
         }
@@ -115,8 +115,8 @@ public class CreateButtonController : ModeButton
             _bReadyPrefab = false;
 
             //TODO: 현재 생성할 갯수 하나 소모하기
-            CreateCountController.ConsumeCurCreateCount(1);
-            if (CreateCountController.GetCurCreateCount() >= 1)
+            _createCountController.ConsumeCurCreateCount(1);
+            if (_createCountController.GetCurCreateCount() >= 1)
             {
                 ReadyPrefab();
             }

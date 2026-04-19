@@ -22,7 +22,7 @@ public class CreateLoadComponent : LoadingTextComponent
     public void LateUpdate()
     {
         if (!_uiFollowObject) return;
-        _uiFollowObject.FollowObject(UIManager.Instance.CurrentUICamera, _createLoad.gameObject, gameObject, _createLoad._screenOffset, _createLoad._localOffset);
+        _uiFollowObject.FollowObject(Camera.main, _createLoad.gameObject, gameObject, _createLoad._screenOffset, _createLoad._localOffset);
     }
     public override void StartLoadingText<T>(T target, float loadingTime, float delayTime)
     {

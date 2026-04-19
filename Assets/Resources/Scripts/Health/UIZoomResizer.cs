@@ -24,13 +24,13 @@ public class UIZoomResizer : MonoBehaviour
         float diff;
         if (UIManager.Instance.IsSubCameraActive)
         {
-            dist = Mathf.Abs(UIManager.Instance.CurrentUICamera.transform.position.y);
+            dist = Mathf.Abs(Camera.main.transform.position.y);
             diff = dist * size;
             diff = Mathf.Clamp(diff, _minDiff, _maxDiff);
         }
         else
         {
-            dist = Vector3.Distance(UIManager.Instance.CurrentUICamera.transform.position, transform.position);
+            dist = Vector3.Distance(Camera.main.transform.position, transform.position);
             diff = (500f / dist) * size;
         }
         rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, diff);

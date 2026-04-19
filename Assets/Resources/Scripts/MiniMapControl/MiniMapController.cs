@@ -30,6 +30,8 @@ public class MiniMapController : MonoBehaviour, IPointerEnterHandler, IPointerEx
     }
     public void ChangeMiniMapCameraRectTransform(Vector3 position, Vector3 otherPosition)
     {
+        position.x = _miniMapCameraRectTransform.localPosition.x;
+        otherPosition.x = _miniMapCameraRectTransform.localPosition.x;
         position.y = 0;
         otherPosition.y = 0;
         if(_miniMapCameraRectTransform.localPosition == position)

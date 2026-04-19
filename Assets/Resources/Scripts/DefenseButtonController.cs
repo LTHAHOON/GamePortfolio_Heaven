@@ -9,11 +9,6 @@ public class DefenseButtonController : ModeButton
     [SerializeField]
     private GameObject _myUnitPrefab;
 
-    [Space(10f)]
-    [Header("Camera")]
-    [SerializeField]
-    private Camera _subCamera;
-
     public override void OnEnable()
     {
         base.OnEnable();
@@ -38,7 +33,7 @@ public class DefenseButtonController : ModeButton
 
         if (_bReadyPrefab && _unitPrefab)
         {
-            CreateCountController.RefreshCreateCount(_unitMPData.Value);
+            _createCountController.RefreshCreateCount(_unitMPData.Value);
             if(_cursorData == null)
             {
                 CursorManager.Instance.SetCursor(CursorType.Defend);
@@ -82,8 +77,8 @@ public class DefenseButtonController : ModeButton
             MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, 1); //MP�Ҹ�
             _curUnitPrefab = null;
 
-            CreateCountController.ConsumeCurCreateCount(1);
-            if (CreateCountController.GetCurCreateCount() >= 1)
+            _createCountController.ConsumeCurCreateCount(1);
+            if (_createCountController.GetCurCreateCount() >= 1)
             {
                 ReadyPrefab();
             }

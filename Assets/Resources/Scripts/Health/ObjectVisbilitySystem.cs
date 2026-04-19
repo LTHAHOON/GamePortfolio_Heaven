@@ -13,8 +13,6 @@ public class ObjectVisbilitySystem : MonoBehaviour
     [SerializeField]
     private LayerMask _outPlanetLayerMask;
     [SerializeField]
-    private Camera _subCamra;
-    [SerializeField]
     private float _maxCheckTime = 0.5f;
 
     private int _outPlanetLayer;
@@ -57,7 +55,7 @@ public class ObjectVisbilitySystem : MonoBehaviour
 
     public static void RemoveToList(HealthBar healthBar)
     {
-        if (_healthBarList.Contains(healthBar) == true)
+        if (_healthBarList.Contains(healthBar))
         {
             _healthBarList.Remove(healthBar);
             _dicTargetObj.Remove(healthBar);
@@ -65,7 +63,7 @@ public class ObjectVisbilitySystem : MonoBehaviour
     }
     public static void RemoveToList(CreateLoadComponent loadingText)
     {
-        if (_createLoadingTextList.Contains(loadingText) == true)
+        if (_createLoadingTextList.Contains(loadingText))
         {
             _createLoadingTextList.Remove(loadingText);
             _dicTargetObj.Remove(loadingText);
@@ -75,15 +73,16 @@ public class ObjectVisbilitySystem : MonoBehaviour
     private void ObjectVisibleProcess<T>(List<T> objList) where T : Component
     {
         bool isSubCameraActive = UIManager.Instance.IsSubCameraActive;
-        Camera camera = UIManager.Instance.CurrentUICamera;
+        Camera camera = Camera.main;
 
         _ScreenUICanvas.sortingOrder = isSubCameraActive ? 2 : 0;
         for (int i = 0; i < objList.Count; i++)
         {
             T obj = objList[i];
-
-            if (_dicTargetObj.TryGetValue(obj, out Collider collider) == false || collider == null)
+            if(!obj || !_dicTargetObj.TryGetValue(obj, out Collider collider))
+            {
                 continue;
+            }
 
             bool shouldActive;
 

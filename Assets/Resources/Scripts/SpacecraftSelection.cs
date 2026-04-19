@@ -10,10 +10,10 @@ public class SpacecraftSelection : MonoBehaviour
     {
         if (CreatureControl._isSelect && !MiniMapController.IsPointerOverMiniMap && !CreateCountController.IsActive())
         {
-            Vector3? worldMousePos = InputManager.Instance.GetWolrdMousePosByRaycast(UIManager.Instance.CurrentUICamera, _targetLayerMask);
+            Vector3? worldMousePos = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _targetLayerMask);
             if (worldMousePos.HasValue)
             {
-                if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, UIManager.Instance.CurrentUICamera, 
+                if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main, 
                                                                             _targetLayerMask,UnitType.Spacecraft ,out GameObject target, true))
                 {
                     Debug.Log(target);

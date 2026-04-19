@@ -68,7 +68,7 @@ public class AttackButtonController : ModeButton
 
         if (_bReadyPrefab && _unitPrefab)
         {
-            CreateCountController.RefreshCreateCount(_originSpacecraftMpData, _unitMPData);
+            _createCountController.RefreshCreateCount(_originSpacecraftMpData, _unitMPData);
             if (_cursorData == null)
             {
                 CursorManager.Instance.SetCursor(CursorType.Attack);
@@ -96,8 +96,8 @@ public class AttackButtonController : ModeButton
     public void SetGoalProcess(Vector3 spacecraftGoalPosition, RespawnPositionType respawnPositionType)
     {
         UIManager.Instance.SetActiveAllChild(AttackSpawnTargetController.Instance.gameObject, false);
-        CreateCountController.SetActiveCount(true);
-        CreateCountController.ChangeGuideText(_guideText_Next);
+        _createCountController.SetActiveCount(true);
+        _createCountController.ChangeGuideText(_guideText_Next);
         _goalData = new()
         {
             _spacecraftGoalPos = spacecraftGoalPosition,
@@ -118,7 +118,7 @@ public class AttackButtonController : ModeButton
             spacecraftPrefab.layer = _outPlanetLayer;
             spacecraftPrefab.transform.position = _startPos;
             //TODO: _unitMPData의 소모량만큼 MP 소모하기
-            MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, CreateCountController.GetCurCreateCount());
+            MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, _createCountController.GetCurCreateCount());
             MPController.Instance.UseUpMP(_originSpacecraftMpData.MP_ConsValue, 1);
 
             if (spacecraftPrefab.TryGetComponent(out SpacecraftController spacecraftController) &&
@@ -127,7 +127,7 @@ public class AttackButtonController : ModeButton
                 MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType.Spacecraft, spacecraftController);
                 spacecraftController.GetCreateLoad().SetLoadReady(false);
                 Transform creatureParent = GetSelectedUnitParentTransform(_selectedUnitType);
-                spacecraftController.SetPassenger(fsm, CreateCountController.GetCurCreateCount(), creatureParent);
+                spacecraftController.SetPassenger(fsm, _createCountController.GetCurCreateCount(), creatureParent);
                 spacecraftController.SetReturnAttackMark(attackMark, ReturnAttackMark);
                 Debug.Log(spacecraftController.GetPassengerCount(fsm.GetID()) + "탑승");
             }
@@ -195,9 +195,9 @@ public class AttackButtonController : ModeButton
     protected override void OpenData()
     {
         _planetButtonController.SetToggleIsOn(1, true);
-        UIManager.Instance.SetActiveAllChild(CreateCountController.Instance.gameObject, true);
+        UIManager.Instance.SetActiveAllChild(_createCountController.gameObject, true);
         InitCreateCount(_originSpacecraftMpData, _unitMPData.Value); //MPData로 생성 카운트 세팅(MPData 필요)
-        CreateCountController.SetActiveCount(false);
+        _createCountController.SetActiveCount(false);
         UIManager.Instance.SetActiveAllChild(AttackSpawnTargetController.Instance.gameObject, true);
     }
     protected override void CloseData()

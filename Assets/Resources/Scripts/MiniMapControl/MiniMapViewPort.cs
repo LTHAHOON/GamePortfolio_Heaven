@@ -9,8 +9,6 @@ public class MiniMapViewPort : MonoBehaviour
 {
     [SerializeField]
     private SubCameraController _subCameraController;
-    [SerializeField]
-    private Camera _subCamera;
     void Awake()
     {
         _viewPortMeshFilter = GetComponent<MeshFilter>();
@@ -29,7 +27,7 @@ public class MiniMapViewPort : MonoBehaviour
     private void CreateViewPortPlaneMesh()
     {
         if (_subCameraController == null) { return; }
-        if (_subCamera == null) { return; }
+        if (Camera.main == null) { return; }
         if (_viewPortMeshFilter == null) { return; }
 
         //현재 해상도
@@ -37,14 +35,13 @@ public class MiniMapViewPort : MonoBehaviour
 
         //resolution.ToScale(Vector3 scale)은 scale이 해상도에 맞는 screenPoint로 변환
         Vector3 hitPoint;
-        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale(_subCamera.rect.position), out hitPoint);
+        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale(Camera.main.rect.position), out hitPoint);
         Vector3 bottomLeft = hitPoint;
-        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale(_subCamera.rect.position + _subCamera.rect.width * Vector2.right), out hitPoint);
+        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale(Camera.main.rect.position + Camera.main.rect.width * Vector2.right), out hitPoint);
         Vector3 bottomRight = hitPoint;
-        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale(_subCamera.rect.position + _subCamera.rect.height * Vector2.up), out hitPoint);
+        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale((Camera.main.rect.position + Camera.main.rect.height * Vector2.up)), out hitPoint);
         Vector3 topLeft = hitPoint;
-        //_subCameraController.GetCameraScreenPointOnGround(resolution.ToScale((_subCamera.rect.position + _subCamera.rect.height * Vector2.up) + _subCamera.rect.width * Vector2.right), out hitPoint);
-        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale(_subCamera.rect.position + _subCamera.rect.size), out hitPoint);
+        _subCameraController.GetCameraScreenPointOnGround(resolution.ToScale((Camera.main.rect.position + Camera.main.rect.height * Vector2.up) + Camera.main.rect.width * Vector2.right), out hitPoint);
         Vector3 topRight = hitPoint;
 
         //꼭짓점을 통해 모서리의 중심점 구하기 (방향벡터를 정규화한후 2로 나누면 됨)
@@ -90,7 +87,7 @@ public class MiniMapViewPort : MonoBehaviour
         //LocalPosition
         for (int i = 0; i < vertexArray.Count; i++)
         {
-            vertexArray[i] = _subCamera.transform.InverseTransformPoint(vertexArray[i]);
+            vertexArray[i] = Camera.main.transform.InverseTransformPoint(vertexArray[i]);
         }
 
         if(_viewPortMeshFilter.sharedMesh == null) 

@@ -31,6 +31,6 @@ public class UIFollowObject : MonoBehaviour
     }
     public void FollowObject(Camera camera, GameObject target, GameObject ui)
     {
-        FollowObject(camera, target, ui, _screenOffset, _localOffset);
+        FollowObject(Camera.main, target, ui, _screenOffset, _localOffset);
     }
 }

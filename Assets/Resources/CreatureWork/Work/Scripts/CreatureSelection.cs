@@ -13,9 +13,6 @@ public class CreatureSelection : MonoBehaviour
 {
     private static List<CreatureFSM> _selectedCharacters = new();
     private GameObject[] _creatureHPs;
-
-    [SerializeField]
-    private Camera _subCamera;
     [SerializeField]
     private LayerMask _clickColliderLayer;
     [SerializeField]
@@ -34,7 +31,7 @@ public class CreatureSelection : MonoBehaviour
         _planetInternalActive = UIManager.Instance.IsSubCameraActive;
         if (_planetInternalActive == true && !MiniMapController.IsPointerOverMiniMap && !CreateCountController.IsActive())
         {
-            int selectedCount = InputManager.Instance.TrySelectionByUnitType(out bool bOnClick, _subCamera, 
+            int selectedCount = InputManager.Instance.TrySelectionByUnitType(out bool bOnClick, Camera.main, 
                                                 _clickColliderLayer, UnitType.Creature, true, AddToSelectedCharacters);
             if(bOnClick)
             {
@@ -42,7 +39,7 @@ public class CreatureSelection : MonoBehaviour
             }
             else
             {
-                selectedCount = InputManager.Instance.TryDragSelectionByUnitType(out bool bOnDrag, _subCamera,
+                selectedCount = InputManager.Instance.TryDragSelectionByUnitType(out bool bOnDrag, Camera.main,
                                                                             UnitType.Creature, AddToSelectedCharacters);
                 if(bOnDrag)
                 {

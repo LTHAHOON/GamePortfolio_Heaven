@@ -7,8 +7,6 @@ using UnityEngine.AI;
 public class CreatureControl : MonoBehaviour
 {
     [SerializeField]
-    private Camera _subCamera;
-    [SerializeField]
     private CreatureSelection _creatureSelection;
     [SerializeField]
     private LayerMask _groundLayerMask;
@@ -56,7 +54,7 @@ public class CreatureControl : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1) && CreatureSelection.GetSelectionCharactersCount() > 0)
         {
-            _targetPosition = InputManager.Instance.GetWolrdMousePosByRaycast(_subCamera, _groundLayerMask).Value;
+            _targetPosition = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _groundLayerMask).Value;
             if (_targetPosition.HasValue)
             {
                 GameObject poolPrefab = _pcMoveMark.PopPoolObject();
