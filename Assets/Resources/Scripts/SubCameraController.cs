@@ -35,10 +35,15 @@ public class SubCameraController : MonoBehaviour
         _beforeSubCameraPosition = _opponentMapSubCameraPosition + _subCameraPositionDelta;
         transform.position = _curSubCameraPosition;
     }
-    void Update()
+    private void LateUpdate()
     {
+        if (!UIManager.Instance.IsSubCameraActive)
+        {
+            return;
+        }
         _curSubCameraPosition = transform.position;
         CameraMove();
+        CameraScroll();
     }
 
     public void CameraMoveToOtherPlanet()
@@ -64,15 +69,12 @@ public class SubCameraController : MonoBehaviour
             transform.position += new Vector3(mouseY, 0, mouseX);
 
         }
-        else
-        {
-            CameraScroll();
-        }
     }
 
     public float _curCameraZoomSpeed;
     private void CameraScroll()
     {
+        
         float scroll = Input.GetAxisRaw("Mouse ScrollWheel") * -_cameraZoomSize * Time.deltaTime;
         _curCameraZoomSpeed = Mathf.Lerp(_curCameraZoomSpeed, scroll, Time.deltaTime * _cameraZoomSpeed);
         if (Mathf.Approximately(_curCameraZoomSpeed, scroll))
@@ -85,6 +87,7 @@ public class SubCameraController : MonoBehaviour
                 transform.transform.position.x,
                 localPosY,
                 transform.transform.position.z);
+
     }
 
     //Plane Raycast이용

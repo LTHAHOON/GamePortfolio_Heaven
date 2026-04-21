@@ -12,7 +12,7 @@ public class InputManager : Singleton<InputManager>
     private Bounds dragBounds;
     private void OnGUI()
     {
-        if (_isDragging)
+        if (_isDragging && UIManager.Instance.IsSubCameraActive)
         {
             Vector3 dragEndPosition = Input.mousePosition;
             var rect = Utils.GetScreenRect(_dragStartPosition, dragEndPosition);

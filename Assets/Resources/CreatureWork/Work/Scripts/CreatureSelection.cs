@@ -12,7 +12,6 @@ using static UnityEngine.GraphicsBuffer;
 public class CreatureSelection : MonoBehaviour
 {
     private static List<CreatureFSM> _selectedCharacters = new();
-    private GameObject[] _creatureHPs;
     [SerializeField]
     private LayerMask _clickColliderLayer;
     [SerializeField]
@@ -20,7 +19,6 @@ public class CreatureSelection : MonoBehaviour
     [SerializeField]
     private string _allyTag = Fraction.Ally.ToString();
 
-    private bool _planetInternalActive;
     private void Update()
     {
         SelectionProcess();
@@ -28,8 +26,7 @@ public class CreatureSelection : MonoBehaviour
 
     private void SelectionProcess()
     {
-        _planetInternalActive = UIManager.Instance.IsSubCameraActive;
-        if (_planetInternalActive == true && !MiniMapController.IsPointerOverMiniMap && !CreateCountController.IsActive())
+        if (UIManager.Instance.IsSubCameraActive && !MiniMapController.IsPointerOverMiniMap && !CreateCountController.IsActive())
         {
             int selectedCount = InputManager.Instance.TrySelectionByUnitType(out bool bOnClick, Camera.main, 
                                                 _clickColliderLayer, UnitType.Creature, true, AddToSelectedCharacters);
@@ -51,6 +48,7 @@ public class CreatureSelection : MonoBehaviour
         {
             if (CreatureControl._isSelect)
             {
+
                 ClearSelectedCreatures();
             }
         }
@@ -72,7 +70,7 @@ public class CreatureSelection : MonoBehaviour
     }
 
 
-    private void ClearSelectedCreatures()
+    public static void ClearSelectedCreatures()
     {
         for (int i = 0; i < _selectedCharacters.Count; i++)
         {

@@ -115,7 +115,6 @@ public class AttackButtonController : ModeButton
             attackMark.transform.position = _goalData._passengerGoalPos;
             Transform instantiateParent = GetSelectedUnitParentTransform(UnitType.Spacecraft);
             GameObject spacecraftPrefab = Instantiate(_OriginSpacecraftPrefab, instantiateParent);
-            spacecraftPrefab.layer = _outPlanetLayer;
             spacecraftPrefab.transform.position = _startPos;
             //TODO: _unitMPData의 소모량만큼 MP 소모하기
             MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, _createCountController.GetCurCreateCount());
@@ -124,6 +123,7 @@ public class AttackButtonController : ModeButton
             if (spacecraftPrefab.TryGetComponent(out SpacecraftController spacecraftController) &&
                 _unitPrefab.TryGetComponent(out CreatureFSM fsm))
             {
+                spacecraftController.GetLayerList().SetLayerList(spacecraftPrefab, true , _outPlanetLayer);
                 MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType.Spacecraft, spacecraftController);
                 spacecraftController.GetCreateLoad().SetLoadReady(false);
                 Transform creatureParent = GetSelectedUnitParentTransform(_selectedUnitType);

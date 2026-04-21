@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22670468d5797bf48967a1363ce3ab8c, type: 3}
   m_Name: CameraTransformData
   m_EditorClassIdentifier: 
-  max_x: 240
-  min_x: -240
-  max_y: 240
-  min_y: -240
-  max_z: 350
-  min_z: -350
+  max_x: 700
+  min_x: -700
+  max_y: 500
+  min_y: -500
+  max_z: 700
+  min_z: -700

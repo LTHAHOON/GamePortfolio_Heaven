@@ -47,33 +47,46 @@ public class CameraController : MonoBehaviour
     {
         CinemachineCore.GetInputAxis = (axis) =>
         {
-            if (Input.GetMouseButton(1) && !UIManager.Instance.IsSubCameraActive)
+            if (UIManager.Instance.IsSubCameraActive)
+            {
+                return 0;
+            }
+            if (Input.GetMouseButton(1))
             {
                 _mouseCursorController.ShowCursor(false);
                 Cursor.lockState = CursorLockMode.Locked;
                 CameraMove();
                 return Input.GetAxis(axis);
             }
-            else if (!UIManager.Instance.IsSubCameraActive)
+            else
             {
                 _mouseCursorController.ShowCursor(true);
+                return 0;
             }
-            return 0;
         };
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
-     //   BlockMoveByClamp();
+        BlockMoveByClamp();
+        if (UIManager.Instance.IsSubCameraActive)
+        {
+            return;
+        }
+        ScrollMoveUpdate();
+    }
 
+    private void ScrollMoveUpdate()
+    {
         float inputScrollWheel = Input.GetAxis("Mouse ScrollWheel");
-        if(inputScrollWheel != 0)
+        if (inputScrollWheel != 0)
         {
             float offset = inputScrollWheel * _cameraScrollSpeed * Time.fixedTime;
             _vcFramingTransposer.m_CameraDistance = Mathf.Clamp(_vcFramingTransposer.m_CameraDistance + offset,
-                _scrollBockPos._minDistance, _scrollBockPos._maxDistance); ;
+                _scrollBockPos._minDistance, _scrollBockPos._maxDistance);
         }
     }
+
     private void BlockMoveByClamp()
     {
         pos = transform.position;

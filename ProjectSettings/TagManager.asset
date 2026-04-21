@@ -22,6 +22,7 @@ TagManager:
   - EnemyNexus
   - Enemy
   - Ally
+  - ObstacleUI
   layers:
   - Default
   - TransparentFX

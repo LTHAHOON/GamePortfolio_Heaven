@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class MiniMapController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+[RequireComponent(typeof(PointerObstacleControl))]
+public class MiniMapController : MonoBehaviour
 {
     [SerializeField]
     private RectTransform _miniMapCameraRectTransform;
@@ -11,14 +12,19 @@ public class MiniMapController : MonoBehaviour, IPointerEnterHandler, IPointerEx
     [SerializeField]
     private Camera _renderCamera;
     [SerializeField]
+    private GameObject _miniMapBackGround;
+    [SerializeField]
     private RectTransform _zoomTargetMiniMap;
     [SerializeField]
     private Scrollbar _zoomScrollBar;
 
+    private PointerObstacleControl _pointerObstacleControl;
     private float _curZoomScrollValue;
     private Vector3 baseLocalScale;
     void Awake()
     {
+        _pointerObstacleControl = GetComponent<PointerObstacleControl>();
+        _pointerObstacleControl.SetPointerObstacle(OnObstaclePointerEnter, OnObstaclePointerExit);
         _curZoomScrollValue = _zoomScrollBar.value;
         baseLocalScale = _zoomTargetMiniMap.transform.localScale;
     }
@@ -92,12 +98,12 @@ public class MiniMapController : MonoBehaviour, IPointerEnterHandler, IPointerEx
     }
 
     public static bool IsPointerOverMiniMap;
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnObstaclePointerEnter()
     {
         IsPointerOverMiniMap = true;
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnObstaclePointerExit()
     {
         IsPointerOverMiniMap = false;
     }

@@ -11,12 +11,12 @@ using UnityEngine.AI;
 [RequireComponent(typeof(StatusComponent))]
 public class CreatureFSM : Unit, ISelectable, IDragSelectable
 {
-    private enum CreatureState
+    public enum CreatureState
     {
         Idle,
         Trace,
         Attack,
-        Evacuation,
+        Boarding,
         Die,
     }
     private enum AnimParameter
@@ -161,6 +161,12 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
     {
         _hpMaterialInstance.GetCreatureHP().SetActive(false);
     }
+
+    public void SetCreatureState(CreatureState state)
+    {
+        _creatureState = state;
+    }
+
     private void GravityMove()
     {
         Vector3 _gravityDirection = Vector3.up;
@@ -214,7 +220,7 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
             else if (TryGetAroundEnemy(out _enemy, _traceRaidus))
             {
                 _navMeshAgent.stoppingDistance = 2f;
-                _creatureState = CreatureState.Trace;
+                SetCreatureState(CreatureState.Trace);
             }
             else
             {
@@ -226,7 +232,7 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
                     {
                         TargetPosition = assigendPos;
                     }
-                    _creatureState = CreatureState.Trace;
+                    SetCreatureState(CreatureState.Trace);
                 }
             }
 
@@ -288,7 +294,7 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
             if (!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
             {
                 TargetPosition = null;
-                _creatureState = CreatureState.Idle;
+                SetCreatureState(CreatureState.Idle);
             }
         }
 
@@ -298,7 +304,7 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
         if (_enemy.collider != null || SurroundPosManager.IsContainTargetPos(gameObject)) //사용자가 지정한 위치가 아닐경우
         {
             _animator.SetBool(_dicAnimParameterHash[AnimParameter.IsWalk], false);
-            _creatureState = CreatureState.Attack;
+            SetCreatureState(CreatureState.Attack);
         }
         else if (TryGetAroundEnemy(out _enemy, _traceRaidus)) //사용자가 지정한 위치에 도달 했을 때 적 추적
         {
@@ -364,7 +370,7 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
             float attackDistance = GetAttackDistance();
             if (GetDistanceFromThisToTarget() > (attackDistance * attackDistance))
             {
-                _creatureState = CreatureState.Trace;
+                SetCreatureState(CreatureState.Trace);
             }
             Quaternion newRotation;
             if (SurroundPosManager.IsContainTargetPos(gameObject))
@@ -386,7 +392,7 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
         catch (Exception e)
         {
             Debug.LogError(e);
-            _creatureState = CreatureState.Trace;
+            SetCreatureState(CreatureState.Trace);
         }
 
     }
@@ -446,6 +452,18 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
         return _characterController.isGrounded;
     }
 
+    private void Boarding()
+    {
+        Debug.Log("우주선 탑승함수 실행");
+        if(!TargetPosition.HasValue)
+        {
+            SetCreatureState(CreatureState.Idle);
+            return;
+        }
+
+    }
+
+
     void UpdateFSM()
     {
         if (TargetPosition == null)
@@ -472,6 +490,9 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
                     break;
                 case CreatureState.Attack:
                     Attack();
+                    break;
+                case CreatureState.Boarding:
+                    Boarding();
                     break;
             }
         }

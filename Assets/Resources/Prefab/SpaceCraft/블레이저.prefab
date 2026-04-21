@@ -251,6 +251,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaddbd28d6812784a8e1671ed1af2a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _layerList:
+    _layerList:
+    - {fileID: 8777580208163690496}
   _health: {fileID: 4639246461895064197}
   _createLoad: {fileID: 1186304992142041858}
   gravity: -9.81
@@ -268,7 +271,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa29e930415c7054197677c28eff0595, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MP_ConsValue: 1000
+  _mpData:
+    MP_ConsValue: 0
 --- !u!114 &5107849445524456116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,7 +341,7 @@ GameObject:
   - component: {fileID: 4430298297893176840}
   m_Layer: 19
   m_Name: ClickCollider
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -393,7 +397,7 @@ GameObject:
   - component: {fileID: 2690649165264658641}
   m_Layer: 14
   m_Name: GameObject
-  m_TagString: Untagged
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

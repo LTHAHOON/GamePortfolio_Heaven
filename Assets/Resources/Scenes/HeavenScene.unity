@@ -1419,7 +1419,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: 0}
+  m_AnchoredPosition: {x: -400, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &58669142
@@ -3642,7 +3642,7 @@ GameObject:
   - component: {fileID: 167291071}
   m_Layer: 5
   m_Name: Plus_RawImage
-  m_TagString: Untagged
+  m_TagString: ObstacleUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6906,7 +6906,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1800
+  far clip plane: 2000
   field of view: 60.000004
   orthographic: 0
   orthographic size: 5
@@ -10501,7 +10501,7 @@ MonoBehaviour:
     FieldOfView: 60.000004
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 300
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
@@ -11377,7 +11377,7 @@ GameObject:
   m_Component:
   - component: {fileID: 565073371}
   - component: {fileID: 565073372}
-  m_Layer: 26
+  m_Layer: 0
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14361,7 +14361,7 @@ GameObject:
   - component: {fileID: 724408022}
   m_Layer: 5
   m_Name: Handle
-  m_TagString: Untagged
+  m_TagString: ObstacleUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16112,7 +16112,7 @@ GameObject:
   - component: {fileID: 850195463}
   m_Layer: 5
   m_Name: ZoomOutButton
-  m_TagString: Untagged
+  m_TagString: ObstacleUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17176,7 +17176,7 @@ GameObject:
   - component: {fileID: 885126617}
   m_Layer: 5
   m_Name: Sliding Area
-  m_TagString: Untagged
+  m_TagString: ObstacleUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -27611,6 +27611,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1382473178}
+  - component: {fileID: 1382473180}
   - component: {fileID: 1382473179}
   m_Layer: 5
   m_Name: MiniMap_Planet
@@ -27658,6 +27659,7 @@ MonoBehaviour:
   _miniMapCameraRectTransform: {fileID: 384510381}
   _miniMapViewPort: {fileID: 598731983}
   _renderCamera: {fileID: 384510384}
+  _miniMapBackGround: {fileID: 1562883848}
   _zoomTargetMiniMap: {fileID: 1324119162}
   _zoomScrollBar: {fileID: 1902293756}
   _epsilonZoomValue: 0.01
@@ -27666,6 +27668,18 @@ MonoBehaviour:
   _zoomSpeed: 10
   _zoomPivotSpeed: 10
   _zoomValue: 0.1
+--- !u!114 &1382473180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1382473177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ca120962fba89840ab19fe6f762c7e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1383320412
 GameObject:
   m_ObjectHideFlags: 0
@@ -29066,7 +29080,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 550
+      value: 750
       mode: 0
       spread: 0
       speed:
@@ -41835,7 +41849,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1810286121}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -172.5}
+  m_LocalPosition: {x: 0, y: 0, z: -400}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -42130,6 +42144,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf5c7a750361e5e489b76c839e581184, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _groundLayer:
+    serializedVersion: 2
+    m_Bits: 100663296
 --- !u!4 &1830127805
 Transform:
   m_ObjectHideFlags: 0
@@ -42507,7 +42524,7 @@ GameObject:
   - component: {fileID: 1844002332}
   m_Layer: 5
   m_Name: ZoomInButton
-  m_TagString: Untagged
+  m_TagString: ObstacleUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44110,7 +44127,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1891059812}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 174.5}
+  m_LocalPosition: {x: 0, y: 0, z: 400}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -44365,7 +44382,7 @@ GameObject:
   - component: {fileID: 1902293756}
   m_Layer: 5
   m_Name: ZoomScrollbar
-  m_TagString: Untagged
+  m_TagString: ObstacleUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46041,7 +46058,7 @@ GameObject:
   - component: {fileID: 1978681179}
   m_Layer: 5
   m_Name: Minus_RawImage
-  m_TagString: Untagged
+  m_TagString: ObstacleUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46158,7 +46175,7 @@ MonoBehaviour:
     FieldOfView: 60.000004
     OrthographicSize: 5
     NearClipPlane: 0.3
-    FarClipPlane: 1800
+    FarClipPlane: 2000
     Dutch: 0
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
@@ -50012,7 +50029,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 300, y: 0}
+  m_AnchoredPosition: {x: 400, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &2129607607

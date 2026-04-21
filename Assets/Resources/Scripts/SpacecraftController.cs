@@ -22,6 +22,8 @@ public struct Goal
 public class SpacecraftController : PassengerController
 {
     [SerializeField]
+    private LayerList _layerList = new();
+    [SerializeField]
     private Health _health;
     [SerializeField]
     private CreateLoad _createLoad;
@@ -92,7 +94,7 @@ public class SpacecraftController : PassengerController
     {
         transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
         transform.position = _goalData._spacecraftGoalPos;
-        gameObject.layer = _unitTypeLayer;
+        _layerList.SetLayerList(gameObject, true, _unitTypeLayer);
         _isGravity = true;
     }
 
@@ -232,6 +234,6 @@ public class SpacecraftController : PassengerController
     }
 
     public CreateLoad GetCreateLoad() => _createLoad;
-
+    public LayerList GetLayerList() => _layerList;
 
 }
