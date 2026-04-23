@@ -10,14 +10,27 @@ public class PassengerController : Unit
         return _passengerDatas.Values.ToList();
     }
 
-    protected void SetPassengerInData(CreatureFSM creature, int passengerCount)
+    protected void AddPassengerInData(CreatureFSM creature, int passengerCount)
     {
-        if(!_passengerDatas.ContainsKey(creature.GetID()))
+        if(_passengerDatas.ContainsKey(creature.GetID()))
+        {
+            _passengerDatas[creature.GetID()]._passengerCount += passengerCount;
+        }
+        else
         {
             _passengerDatas.Add(creature.GetID(), new PassengerData(creature, passengerCount));
         }
 
     }
+
+    protected void RemovePassengerInData(CreatureFSM creature)
+    {
+        if(_passengerDatas.ContainsKey(creature.GetID()))
+        {
+            _passengerDatas.Remove(creature.GetID());
+        }
+    }
+
     protected CreatureFSM[] GetPassengers()
     {
         return _passengerDatas.Values.Select(v => v._passenger).ToArray();

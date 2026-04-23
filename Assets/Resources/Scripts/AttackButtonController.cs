@@ -127,7 +127,7 @@ public class AttackButtonController : ModeButton
                 MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType.Spacecraft, spacecraftController);
                 spacecraftController.GetCreateLoad().SetLoadReady(false);
                 Transform creatureParent = GetSelectedUnitParentTransform(_selectedUnitType);
-                spacecraftController.SetPassenger(fsm, _createCountController.GetCurCreateCount(), creatureParent);
+                spacecraftController.AddPassenger(fsm, _createCountController.GetCurCreateCount(), creatureParent);
                 spacecraftController.SetReturnAttackMark(attackMark, ReturnAttackMark);
                 Debug.Log(spacecraftController.GetPassengerCount(fsm.GetID()) + "탑승");
             }

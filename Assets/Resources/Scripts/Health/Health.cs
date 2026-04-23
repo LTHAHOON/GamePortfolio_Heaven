@@ -103,6 +103,8 @@ public class Health : MonoBehaviour
             _isStatusAdded = true;
         }
     }
+
+
     private void SetHealthPct(float currentHealth)
     {
         float currentHealthPct = currentHealth / _maxHealth;
@@ -153,6 +155,9 @@ public class Health : MonoBehaviour
         ObjectVisbilitySystem.RemoveToList(_healthBar);
         OnHealthRemoved?.Invoke(this);
     }
+
+    public HealthBar GetHealthBar() => _healthBar;
+    public void SetActiveHealthBar(bool isActive) => _healthBar.gameObject.SetActive(isActive); 
     public float MaxHealth => _maxHealth;
     public float CurrentHealth => _currentHealth;
 }

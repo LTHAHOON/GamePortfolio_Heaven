@@ -1,106 +1,65 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(StatusComponent))]
-public class CreatureFSM : Unit, ISelectable, IDragSelectable
+public enum CreatureState
 {
-    public enum CreatureState
-    {
-        Idle,
-        Trace,
-        Attack,
-        Boarding,
-        Die,
-    }
-    private enum AnimParameter
-    {
-        IsWalk,
-        WalkSpeed,
-        NormalAttack,
-        GetHit,
-        Die,
-    }
-    [Header("스킬 데이터 저장공간")]
+    Selection,
+    DeSelection,
+    Idle,
+    Trace,
+    Attack,
+    Boarding,
+    Die,
+}
+
+[RequireComponent(typeof(StatusComponent))]
+public class CreatureFSM : Unit, ISelectableOwner
+{
+    #region 상태 데이터 및 상태머신
+    [Header("NavMesh 데이터")]
     [SerializeField]
-    private SkillData[] _skillDatas;
-    [Header("이동 가능한 거리")]
+    private NavMeshStatData _navMeshStatData;
+    [Header("애니메이터 데이터")]
     [SerializeField]
-    private float _traceDistance;
-    [Header("적 추적 가능한 사이즈")]
+    private AnimatorStatData _animatorStatData;
+    [Header("SurroundPos에 필요한 데이터")]
     [SerializeField]
-    private float _traceRaidus;
-    [Header("적 넥서스 공격 가능한 거리")]
+    private SurroundPosStatData _surroundPosData;
+    [Header("공격 발동 확률 데이터")]
     [SerializeField]
-    private float _nexusAttackDistance;
-    [Header("기본 공격 발동 확률")]
+    private AttackActivationStatData _attackActivationStatData;
+    [Header("레이어 데이터")]
     [SerializeField]
-    private float _normalAttackActivationRate = 80;
-    [Header("사망 후 오브젝트 제거 딜레이 시간")]
-    [SerializeField]
-    private float _dieDelayTime = 4f;
-    [SerializeField]
-    private CharacterController _characterController;
-    [SerializeField]
-    private NavMeshObstacle _navMeshObstacle;
-    [SerializeField]
-    private NavMeshAgent _navMeshAgent;
-    [SerializeField]
-    private Animator _animator;
+    private LayerStatData _layerStatData;
+    private StateMachine<CreatureState, CreatureFSM> _stateMachine;
+    public StateMachine<CreatureState, CreatureFSM> StateMachine => _stateMachine;
+    #endregion
+    #region Physics 데이터
     [SerializeField]
     private Collider _clickCollider;
-    [SerializeField]
-    private HPMaterialInstance _hpMaterialInstance;
-
-    [Header("상대 레이어")]
-    [SerializeField]
-    private LayerMask _enemyTargetLayer;
-    [Header("애니메이션 속도 보완값")]
-    [SerializeField]
-    private float animatorSpeedMultiplier = 0.2f;
-    [Header("생물체 속성")]
-    [SerializeField]
-    private LayerMask _property;
     [Header("중력 세기")]
     [SerializeField]
     private float _gravity = -12f;
+    private bool _isMoveGravity = true;
+    #endregion
+    #region 체력 컴포넌트
     [SerializeField]
     private Health _health;
     [SerializeField]
+    private HPMaterialInstance _hpMaterialInstance;
+    #endregion
+    #region 스테이터스 컴포넌트
+    [SerializeField]
     private StatusComponent _statusComponent;
-    [Header("선택 여부")]
-    public bool _isSelected = false;
-
-    //AttackMark 반환 함수
-    public event Action<GameObject> OnReturnAttackMark;
-    [HideInInspector]
-    public GameObject _attackMark;
-    private Vector3 _enemyNexusPos;
-    private RaycastHit _enemy = default;
-    private bool _isMoveGravity = true;
-    private bool _isAttackMode = false;
-    private bool _isAttackTarget = false;
     private RuntimeUnitStatus _status;
-    private CreatureState _creatureState = CreatureState.Idle;
-    private RandomProb _attackRandomProb = new();
-    bool _isChoice = true;
-
-    private static Dictionary<int, float> _dicAttackActivationRate = new();
-    private static readonly Dictionary<AnimParameter, int> _dicAnimParameterHash = new()
-    {
-        { AnimParameter.IsWalk, Animator.StringToHash(AnimParameter.IsWalk.ToString())},
-        { AnimParameter.NormalAttack, Animator.StringToHash(AnimParameter.NormalAttack.ToString())},
-        { AnimParameter.WalkSpeed, Animator.StringToHash(AnimParameter.WalkSpeed.ToString())},
-        { AnimParameter.GetHit, Animator.StringToHash(AnimParameter.GetHit.ToString())},
-        { AnimParameter.Die, Animator.StringToHash(AnimParameter.Die.ToString())}
-    };
-
+    #endregion
+    #region TargetPos 데이터
+    [HideInInspector]
+    public RaycastHit _enemy = default;
+    [HideInInspector]
+    public Vector3 _enemyNexusPos;
     private Vector3? _targetPosition;
     public Vector3? TargetPosition
     {
@@ -114,29 +73,67 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
         }
         set { _targetPosition = value; }
     }
+    #endregion
+    #region 스킬 데이터
+    [Header("스킬 데이터 저장공간")]
+    [SerializeField]
+    private SkillData[] _skillDatas;
+    #endregion
+    #region 공격마크 데이터
+    public event Action<GameObject> OnReturnAttackMark;
+    [HideInInspector]
+    public GameObject _attackMark;
+    #endregion
+    [SerializeField]
+    private CharacterController _characterController;
+    [HideInInspector]
+    public bool _isAttackMode = false;
+    [HideInInspector]
+    public bool _isAttackTarget = false;
+    [HideInInspector]
+    public bool _isChoice = true;
 
+    #region 유니티 이벤트 함수
     private void Awake()
     {
-        Debug.Log(GetInstanceID());
+        #region StateMachine 초기화
+        _stateMachine = new(this, new IStateData[] 
+        {
+            _navMeshStatData,
+            _animatorStatData,
+            _surroundPosData,
+            _attackActivationStatData,
+            _layerStatData,
+        });
+        #endregion
+        #region State 추가
+        _stateMachine.AddState(new CreatureIdleState());
+        _stateMachine.AddState(new CreatureTraceState());
+        _stateMachine.AddState(new CreatureAttackState());
+        _stateMachine.AddState(new CreatureBoardingState());
+        _stateMachine.AddState(new CreatureDieState());
+        _stateMachine.AddState(new CreatureSelectionState());
+        _stateMachine.AddState(new CreatureDeSelectionState());
+        _stateMachine.ChangeState(CreatureState.Idle);
+        #endregion
+        #region 공격 발동 확률 데이터 초기화
+        _attackActivationStatData._dicAttackActivationRate.TryAdd(_animatorStatData._dicAnimParameterHash[AnimParameter.NormalAttack],
+                                                                                    _attackActivationStatData._normalAttackActivationRate);
+        for (int i = 0; i < _skillDatas.Length; ++i)
+        {
+            _attackActivationStatData._dicAttackActivationRate.TryAdd(_skillDatas[i].GetSkillKeyToHash(), _skillDatas[i].ActivationRate);
+        }
+        #endregion
         _health.OnHealHit += HealHit;
         _health.OnDamageHit += DamageHit;
         _health.OnDie += Die;
-        _dicAttackActivationRate.TryAdd(_dicAnimParameterHash[AnimParameter.NormalAttack], _normalAttackActivationRate);
-        for (int i = 0; i < _skillDatas.Length; ++i)
-        {
-            _dicAttackActivationRate.TryAdd(_skillDatas[i].GetSkillKeyToHash(), _skillDatas[i].ActivationRate);
-        }
         _status = _statusComponent.GetStatus();
-        _navMeshAgent.enabled = true;
+        _navMeshStatData._navmeshAgentData._navMeshAgent.enabled = true;
     }
-
     private void Update()
     {
-        if (!CheckGround()) return;
-        if (_creatureState == CreatureState.Die) return;
         UpdateFSM();
     }
-
     private void FixedUpdate()
     {
         if (_isMoveGravity)
@@ -144,173 +141,87 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
             GravityMove();
         }
     }
+    #endregion
 
-    public void OnSelected()
+    //생물체 FSM
+    private void UpdateFSM()
     {
-        _hpMaterialInstance.GetCreatureHP().SetActive(true);
-    }
-    public void OnDeSelected()
-    {
-        _hpMaterialInstance.GetCreatureHP().SetActive(false);
-    }
-    public void OnDragSelected()
-    {
-        _hpMaterialInstance.GetCreatureHP().SetActive(true);
-    }
-    public void OnDragDeSelected()
-    {
-        _hpMaterialInstance.GetCreatureHP().SetActive(false);
+        if (!CheckGround()) return;
+        _stateMachine.UpdateCurrentState();
     }
 
-    public void SetCreatureState(CreatureState state)
+    #region 주변 적 구하는 함수
+    //가까운 적 구하는 함수
+    private RaycastHit MinDistanceEnemy(RaycastHit[] enemies, int enemyCount)
     {
-        _creatureState = state;
-    }
-
-    private void GravityMove()
-    {
-        Vector3 _gravityDirection = Vector3.up;
-        Vector3 _gravityMotion = _gravityDirection * _gravity * Time.fixedDeltaTime;
-        _characterController.Move(_gravityMotion);
-    }
-
-    public void SetEnemyNexusTargetPos(Vector3 nexusTargetPos)
-    {
-        _enemyNexusPos = nexusTargetPos;
-    }
-
-    private RaycastHit MinDistanceEnemy(RaycastHit[] enemys, int enemyCount)
-    {
-        Dictionary<Vector3, float> dicDistances = new();
-        if (enemys.Length < enemyCount)
-        {
-            return enemys[0];
-        }
+        int index = 0;
+        float minDistance = float.MaxValue;
+        Vector3 myPos = transform.position;
 
         for (int i = 0; i < enemyCount; ++i)
         {
-            dicDistances.Add(enemys[i].transform.position, Vector3.Distance(transform.position, enemys[i].transform.position));
-        }
-
-        float distance = dicDistances.Values.Min();
-        for (int i = 0; i < enemyCount; ++i)
-        {
-            if (dicDistances[enemys[i].transform.position] == distance)
+            float dist = Vector3.SqrMagnitude(enemies[i].transform.position - myPos);
+            if (dist < minDistance)
             {
-                return enemys[i];
+                minDistance = dist;
+                index = i;
             }
         }
-        return enemys[0];
-    }
-    public float _distanceFromUnit = 7f;
-    public float _radiusFromCenter = 8f;
-    public int _firstRingCount = 15;
-    private void Idle()
-    {
-        try
-        {
-            SetEnableNavMeshObstacle();
-            _animator.SetBool(_dicAnimParameterHash[AnimParameter.IsWalk], false);
-            Vector3 origin = transform.position;
-            origin.y += 30f;
-            if (TargetPosition != null)
-            {
-                _creatureState = CreatureState.Trace;//사용자가 지정한 위치로 이동
-            }
-            else if (TryGetAroundEnemy(out _enemy, _traceRaidus))
-            {
-                _navMeshAgent.stoppingDistance = 2f;
-                SetCreatureState(CreatureState.Trace);
-            }
-            else
-            {
-                if (!SurroundPosManager.IsContainTargetPos(gameObject))
-                {
-                    _navMeshAgent.stoppingDistance = 0.5f;
-                    SurroundPosManager.AssignTargetPosition(gameObject, _enemyNexusPos, _radiusFromCenter, _distanceFromUnit, _firstRingCount);
-                    if (SurroundPosManager.TryGetAssignedTargetPositionAround(gameObject, out Vector3 assigendPos))
-                    {
-                        TargetPosition = assigendPos;
-                    }
-                    SetCreatureState(CreatureState.Trace);
-                }
-            }
-
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-            return;
-        }
-
+        return enemies[index];
     }
 
-    private RaycastHit[] _enemys = new RaycastHit[25];
-    private bool TryGetAroundEnemy(out RaycastHit enemy, float radius)
+    //SphereCast에 의한 가까운 적 구하는 함수
+    private readonly RaycastHit[] _enemies = new RaycastHit[25];
+    public bool TryGetAroundEnemy(out RaycastHit enemy, float radius, LayerStatData layerStatData)
     {
-        int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemys, 0, _enemyTargetLayer);
+        int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemies, 0, layerStatData._enemyTargetLayer);
         if (enemyCount > 0)
         {
-            enemy = MinDistanceEnemy(_enemys, enemyCount);
+            enemy = MinDistanceEnemy(_enemies, enemyCount);
             return true;
         }
         enemy = default;
         return false;
     }
+    #endregion
 
-
-    private void Trace()
+    #region 목적지에 이동 및 멈추는 함수
+    public void MoveToDestination(out float currentWalkSpeed ,NavMeshAgent navMeshAgent, Animator animator, Vector3? targetPosition)
     {
-        SetEnableNavMeshAgent();
-        if (!_navMeshAgent.enabled)
+        if(TargetPosition != targetPosition)
         {
-            return;
+            TargetPosition = targetPosition;
         }
-        float distanceToTarget = GetDistanceFromThisToTarget();
-        float attackDistance = GetAttackDistance();
-        if (distanceToTarget <= (attackDistance * attackDistance) && !_navMeshAgent.pathPending
-            && _navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
-        {
-            _navMeshAgent.ResetPath();
-            _isAttackTarget = false;
-            HandleAttacktarget();
-            return;
-        }
-        else if (distanceToTarget <= (_traceDistance * _traceDistance) || _isAttackTarget)
-        {
-            _navMeshAgent.destination = TargetPosition.Value;
-            _navMeshAgent.speed = _status.DEX * 1.5f;
-            float currentWalkSpeed = _navMeshAgent.desiredVelocity.magnitude;
-            _animator.SetFloat(_dicAnimParameterHash[AnimParameter.WalkSpeed], currentWalkSpeed * animatorSpeedMultiplier);
-            _animator.SetBool(_dicAnimParameterHash[AnimParameter.IsWalk], true);
-        }
-        if (SurroundPosManager.IsContainTargetPos(gameObject))
-        {
-            _navMeshAgent.destination = TargetPosition.Value;
-            _navMeshAgent.speed = _status.DEX * 1.5f;
-            float currentWalkSpeed = _navMeshAgent.desiredVelocity.magnitude;
-            _animator.SetFloat(_dicAnimParameterHash[AnimParameter.WalkSpeed], currentWalkSpeed * animatorSpeedMultiplier);
-            _animator.SetBool(_dicAnimParameterHash[AnimParameter.IsWalk], true);
-            if (!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance <= _navMeshAgent.stoppingDistance)
-            {
-                TargetPosition = null;
-                SetCreatureState(CreatureState.Idle);
-            }
-        }
-
+        navMeshAgent.destination = TargetPosition.Value;
+        navMeshAgent.speed = _status.DEX * 1.5f;
+        currentWalkSpeed = navMeshAgent.desiredVelocity.magnitude;
+        animator.SetFloat(_animatorStatData._dicAnimParameterHash[AnimParameter.WalkSpeed], currentWalkSpeed * _animatorStatData.animatorSpeedMultiplier);
+        animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], true);
     }
-    private void HandleAttacktarget()
+    public void StopToMove(NavMeshAgent navMeshAgent, Animator animator)
+    {
+        TargetPosition = null;
+        animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
+        if(navMeshAgent.enabled)
+        {
+            navMeshAgent.ResetPath();
+        }
+    }
+    #endregion
+
+    #region Attack상태에 들아가기 전 추적하는 함수
+    public void HandleAttacktarget(NavMeshAgentStatData navMeshAgentData, AnimatorStatData animatorStatData, 
+                                                    SurroundPosStatData surroundPosData, LayerStatData layerStatData)
     {
         if (_enemy.collider != null || SurroundPosManager.IsContainTargetPos(gameObject)) //사용자가 지정한 위치가 아닐경우
         {
-            _animator.SetBool(_dicAnimParameterHash[AnimParameter.IsWalk], false);
-            SetCreatureState(CreatureState.Attack);
+            animatorStatData._animator.SetBool(animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
+            _stateMachine.ChangeState(CreatureState.Attack);
         }
-        else if (TryGetAroundEnemy(out _enemy, _traceRaidus)) //사용자가 지정한 위치에 도달 했을 때 적 추적
+        else if (TryGetAroundEnemy(out _enemy, navMeshAgentData._traceRaidus, layerStatData)) //사용자가 지정한 위치에 도달 했을 때 적 추적
         {
-
             _isAttackTarget = false;
-            _navMeshAgent.stoppingDistance = 2f;
+            navMeshAgentData._navMeshAgent.stoppingDistance = 2f;
         }
         else
         {
@@ -321,9 +232,10 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
             }
 
             _enemy = default;
-            _navMeshAgent.stoppingDistance = 0.5f;
+            navMeshAgentData._navMeshAgent.stoppingDistance = 0.5f;
             _isAttackTarget = false;
-            SurroundPosManager.AssignTargetPosition(gameObject, _enemyNexusPos, _radiusFromCenter, _distanceFromUnit, _firstRingCount);
+            SurroundPosManager.AssignTargetPosition(gameObject, _enemyNexusPos, surroundPosData._radiusFromCenter, 
+                surroundPosData._distanceFromUnit, surroundPosData._firstRingCount);
             if (SurroundPosManager.TryGetAssignedTargetPositionAround(gameObject, out Vector3 assigendPos))
             {
                 TargetPosition = assigendPos;
@@ -331,13 +243,15 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
             }
         }
     }
+    #endregion
 
+    #region 데미지 및 힐될 때 호출되는 함수
     public void DamageHit()
     {
         if (_hpMaterialInstance.isActiveAndEnabled && _health)
         {
             _hpMaterialInstance.ChangeHP(_health.CurrentHealth, _health.MaxHealth);
-            _animator.SetTrigger(_dicAnimParameterHash[AnimParameter.GetHit]);
+            _animatorStatData._animator.SetTrigger(_animatorStatData._dicAnimParameterHash[AnimParameter.GetHit]);
         }
     }
     public void HealHit()
@@ -347,102 +261,63 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
             _hpMaterialInstance.ChangeHP(_health.CurrentHealth, _health.MaxHealth);
         }
     }
+    #endregion
 
+    #region 죽을 때 호출되는 함수
     public void Die()
     {
-        MyUnitPrefabDataControl.Instance.RemoveUnitPrefabToList(UnitType.Creature, this);
-        CreatureSelection.RemoveToSelectedCharacters(this);
-        _animator.SetTrigger(_dicAnimParameterHash[AnimParameter.Die]);
-        _creatureState = CreatureState.Die;
-        _hpMaterialInstance.gameObject.SetActive(false);
-        _clickCollider.enabled = false;
-        _navMeshAgent.enabled = false;
-        _navMeshObstacle.enabled = false;
-        _characterController.enabled = false;
-        StartCoroutine(IEDie());
+        _stateMachine.ChangeState(CreatureState.Die);
     }
 
-    private void Attack()
+    public IEnumerator IEDie(float dieDelayTime)
     {
-        SetEnableNavMeshObstacle();
-        try
-        {
-            float attackDistance = GetAttackDistance();
-            if (GetDistanceFromThisToTarget() > (attackDistance * attackDistance))
-            {
-                SetCreatureState(CreatureState.Trace);
-            }
-            Quaternion newRotation;
-            if (SurroundPosManager.IsContainTargetPos(gameObject))
-            {
-                newRotation = Quaternion.LookRotation(GetEnemyNexusDirectgion());
-            }
-            else
-            {
-                newRotation = Quaternion.LookRotation(GetMoveDirection());
-            }
-            _navMeshAgent.transform.rotation = Quaternion.Slerp(_navMeshAgent.transform.rotation, newRotation, Time.deltaTime * 10f);
-            if (_isChoice)
-            {
-                _isChoice = false;
-                StartCoroutine(IEAttackChoose());
-            }
+        yield return new WaitForSeconds(dieDelayTime);
+        Destroy(gameObject);
+    }
+    #endregion
 
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-            SetCreatureState(CreatureState.Trace);
-        }
+    #region 확률에 의한 랜덤 공격 함수
+    public IEnumerator IEAttackChoose(AnimatorStatData animatorStatData, AttackActivationStatData attackActivationStatData)
+    {
+        _isChoice = false;
+        int animatorHash = attackActivationStatData._attackRandomProb.Choose<int>(attackActivationStatData._dicAttackActivationRate);
+        animatorStatData._animator.ResetTrigger(animatorHash); //연속 Trigger 보완
+        animatorStatData._animator.SetTrigger(animatorHash);
+        var state = animatorStatData._animator.GetCurrentAnimatorStateInfo(1);
+        yield return new WaitForSeconds(state.length);
+        _isChoice = true;
+    }
+    #endregion
 
+    private void GravityMove()
+    {
+        Vector3 _gravityDirection = Vector3.up;
+        Vector3 _gravityMotion = _gravityDirection * _gravity * Time.fixedDeltaTime;
+        _characterController.Move(_gravityMotion);
+    }
+    public void SetEnemyNexusTargetPos(Vector3 nexusTargetPos)
+    {
+        _enemyNexusPos = nexusTargetPos;
     }
 
-    private float GetDistanceFromThisToTarget()
+    //타겟과의 거리를 구하는 함수
+    public float GetDistanceFromThisToTarget()
     {
         Vector3 moveDirection;
         if (SurroundPosManager.IsContainTargetPos(gameObject))
         {
-            moveDirection = GetEnemyNexusDirectgion();
+            moveDirection = GetEnemyNexusDirection();
         }
         else
         {
             moveDirection = GetMoveDirection();
 
         }
-
-
         moveDirection.y = 0;
         return moveDirection.sqrMagnitude;
     }
 
-    private IEnumerator IEDie()
-    {
-        yield return new WaitForSeconds(_dieDelayTime);
-        Destroy(gameObject);
-    }
-
-    private IEnumerator IEAttackChoose()
-    {
-        int animatorHash = _attackRandomProb.Choose<int>(_dicAttackActivationRate);
-        _animator.ResetTrigger(animatorHash); //연속 Trigger 보완
-        _animator.SetTrigger(animatorHash);
-        var state = _animator.GetCurrentAnimatorStateInfo(1);
-        yield return new WaitForSeconds(state.length);
-        _isChoice = true;
-    }
-
-    private IEnumerator IEStopNavMeshAgent()
-    {
-        _navMeshObstacle.enabled = false;
-        _navMeshObstacle.carving = false;
-
-        //한 프레임 대기
-        yield return null;
-
-        _navMeshAgent.enabled = true;
-
-    }
-
+    //땅에 있는지 체크
     private bool CheckGround()
     {
         if (_characterController.isGrounded)
@@ -452,102 +327,82 @@ public class CreatureFSM : Unit, ISelectable, IDragSelectable
         return _characterController.isGrounded;
     }
 
-    private void Boarding()
-    {
-        Debug.Log("우주선 탑승함수 실행");
-        if(!TargetPosition.HasValue)
-        {
-            SetCreatureState(CreatureState.Idle);
-            return;
-        }
-
-    }
-
-
-    void UpdateFSM()
-    {
-        if (TargetPosition == null)
-        {
-            if (_isSelected)
-            {
-                SetEnableNavMeshAgent();
-            }
-            else
-            {
-                SetEnableNavMeshObstacle();
-            }
-        }
-        if ((_isSelected == false && _isAttackMode) || _isAttackTarget)
-        {
-
-            switch (_creatureState)
-            {
-                case CreatureState.Idle:
-                    Idle();
-                    break;
-                case CreatureState.Trace:
-                    Trace();
-                    break;
-                case CreatureState.Attack:
-                    Attack();
-                    break;
-                case CreatureState.Boarding:
-                    Boarding();
-                    break;
-            }
-        }
-        else
-        {
-            _navMeshAgent.stoppingDistance = 0.5f;
-            ResetTargetAndState();
-        }
-    }
-
-    private void ResetTargetAndState()
+    //타겟과 상태를 초기화(리셋)하는 함수
+    public void ResetTargetAndState()
     {
         _enemy = default;
         TargetPosition = null;
         _isChoice = true;
-        _creatureState = CreatureState.Idle;
-        SurroundPosManager.ReleaseTargetPosition(gameObject);
-        if (_hpMaterialInstance.GetCreatureHP().activeSelf == false && _navMeshAgent.desiredVelocity == Vector3.zero)
-        {
-            if (_isSelected)
-            {
-                _isSelected = false;
-                CreatureControl.RemoveOldCreature(this);
-            }
-
-        }
+        _stateMachine.ChangeState(CreatureState.Idle);
     }
 
-    private void SetEnableNavMeshAgent()
+    #region NavMeshAgent, NavMeshObstacle Enable 컨트롤
+    private IEnumerator IEStopNavMeshAgent(NavMeshStatData navMeshStatData)
     {
-        if (!_navMeshAgent.enabled)
-        {
-            StartCoroutine(IEStopNavMeshAgent());
-        }
+        navMeshStatData._navMeshObstacle.enabled = false;
+        navMeshStatData._navMeshObstacle.carving = false;
+        //한 프레임 대기
+        yield return null;
+        navMeshStatData._navmeshAgentData._navMeshAgent.enabled = true;
     }
-    private void SetEnableNavMeshObstacle()
+
+    public void SetEnableNavMeshAgent(NavMeshStatData navMeshStatData)
     {
-        if (!_navMeshObstacle.enabled)
+        if (!navMeshStatData._navmeshAgentData._navMeshAgent.enabled)
         {
-            _animator.SetBool(_dicAnimParameterHash[AnimParameter.IsWalk], false);
-            _navMeshAgent.enabled = false;
-            _navMeshObstacle.enabled = true;
-            _navMeshObstacle.carving = true;
+            StartCoroutine(IEStopNavMeshAgent(navMeshStatData));
         }
     }
 
-    private float GetAttackDistance() => (_enemy.collider != null) ? _enemy.collider.bounds.extents.magnitude : _nexusAttackDistance;
-    private Vector3 GetEnemyNexusDirectgion() => (_enemyNexusPos - transform.position);
-    private Vector3 GetMoveDirection() => (TargetPosition.Value - transform.position);
+    public void SetEnableNavMeshObstacle(NavMeshStatData navMeshStatData, AnimatorStatData animatorStatData)
+    {
+        if (!navMeshStatData._navMeshObstacle.enabled)
+        {
+            animatorStatData._animator.SetBool(animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
+            navMeshStatData._navmeshAgentData._navMeshAgent.enabled = false;
+            navMeshStatData._navMeshObstacle.enabled = true;
+            navMeshStatData._navMeshObstacle.carving = true;
+        }
+    }
+    #endregion
+
+    #region 선택 및 선택해제될 때 호출되는 함수
+    public void OnSelected()
+    {
+        _hpMaterialInstance.GetCreatureHP().SetActive(true);
+        TargetPosition = null;
+        _stateMachine.ChangeState(CreatureState.Selection);
+    }
+    public void OnDeSelected()
+    {
+        _hpMaterialInstance.GetCreatureHP().SetActive(false);
+        _stateMachine.ChangeState(CreatureState.DeSelection);
+    }
+    public void OnDragSelected()
+    {
+        OnSelected();
+    }
+    public void OnDragDeSelected()
+    {
+        OnDeSelected();
+    }
+    #endregion
+
+    #region 데이터 반환 함수
+    public int GetAnimParameterHash(AnimParameter animParameter) => _animatorStatData._dicAnimParameterHash[animParameter];
+    public Collider GetClickCollider() => _clickCollider;   
+    public float GetAttackDistance(NavMeshAgentStatData data) => (_enemy.collider != null) ? _enemy.collider.bounds.extents.magnitude : data._nexusAttackDistance;
+    public Vector3 GetEnemyNexusDirection() => (_enemyNexusPos - transform.position);
+    public Vector3 GetMoveDirection() => (TargetPosition.Value - transform.position);
+    public Health GetHealth() => _health;
     public GameObject GetCreatureHP() => _hpMaterialInstance.GetCreatureHP();
     public void SetIsAttackMode(bool isAttackMode) => _isAttackMode = isAttackMode;
     public void SetIsAttackTarget(bool isAttackTarget) => _isAttackTarget = isAttackTarget;
     public RuntimeUnitStatus GetStatus() => _status;
     public void SetStatus(RuntimeUnitStatus status) => _status = status;
     public long GetID() => _statusComponent.GetUnitData().ID;
-    public Animator GetAnimator() => _animator;
-    public NavMeshAgent GetNavMeshAgent() => _navMeshAgent;
+    public Animator GetAnimator() => _animatorStatData._animator;
+    public NavMeshAgent GetNavMeshAgent() => _navMeshStatData._navmeshAgentData._navMeshAgent;
+    #endregion
 }
+

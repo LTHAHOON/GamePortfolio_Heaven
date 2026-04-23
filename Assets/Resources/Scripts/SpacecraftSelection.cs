@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Analytics;
 
 public class SpacecraftSelection : MonoBehaviour
 {
@@ -40,14 +41,30 @@ public class SpacecraftSelection : MonoBehaviour
     }
     private void Boarding()
     {
+        bool bGetChild = MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject child, UnitType.Creature);
+        if (!_target.TryGetComponent(out SpacecraftController spacecraftController))
+            return;
+        if (!bGetChild)
+            return;
         List<CreatureFSM> creatureFSMList = CreatureSelection.GetSelectionCharacters<CreatureFSM>();
+        Transform creatureParent = child.transform;
+        NavMeshPath path = new();
         for (int i = 0; i < creatureFSMList.Count; i++)
         {
-            if(NavMesh.SamplePosition(_target.transform.position, out NavMeshHit hit, 50f, NavMesh.AllAreas))
+            if(NavMesh.SamplePosition(spacecraftController.transform.position, out NavMeshHit hit, 30f, NavMesh.AllAreas))
             {
+                NavMesh.CalculatePath(creatureFSMList[i].transform.position, hit.position, NavMesh.AllAreas, path);
+                if (path.status != NavMeshPathStatus.PathComplete)
+                {
+                    Debug.Log($"creatureFSMList[{i}] 길 막혔습니다");
+                    continue;
+                }
+                creatureFSMList[i].OnDeSelected();
                 creatureFSMList[i].TargetPosition = hit.position;
+                creatureFSMList[i].StateMachine.ChangeState(CreatureState.Boarding);
                 creatureFSMList[i].SetIsAttackMode(true);
-                creatureFSMList[i].SetCreatureState(CreatureFSM.CreatureState.Boarding);
+
+                spacecraftController.AddPassenger(creatureFSMList[i],1 , creatureParent);
             }
         }
         CreatureSelection.ClearSelectedCreatures();

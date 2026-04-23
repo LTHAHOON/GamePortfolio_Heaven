@@ -7148,9 +7148,9 @@ MonoBehaviour:
   _moveMarkPrefab: {fileID: 1195808797154278, guid: 47b105c1abea8c243b0d7d36e68f479a,
     type: 3}
   _mapMarkParent: {fileID: 1661604829}
-  _distanceFromUnit: 5
-  _radiusFromCenter: 6
-  _firstRingCount: 10
+  _distanceFromUnit: 6
+  _radiusFromCenter: 6.5
+  _firstRingCount: 9
 --- !u!1 &332958300
 GameObject:
   m_ObjectHideFlags: 0
@@ -8157,6 +8157,50 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!1 &388803114
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388803115}
+  - component: {fileID: 388803116}
+  m_Layer: 0
+  m_Name: SurroundPosManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &388803115
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388803114}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9195131527938548787}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &388803116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388803114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd3e2e6ce5168754aa8e3e9a74263553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &389447792
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14056,6 +14100,7 @@ MonoBehaviour:
   _targetLayerMask:
     serializedVersion: 2
     m_Bits: 524288
+  _elapsedTime: 3
 --- !u!1 &701173680
 GameObject:
   m_ObjectHideFlags: 0
@@ -20290,7 +20335,6 @@ MonoBehaviour:
   _planetButtonController: {fileID: 341509730}
   _createCountController: {fileID: 1310710399}
   _modeType: 0
-  _myUnitPrefabDataControl: {fileID: 1163580209}
   _outPlanetLayerMask:
     serializedVersion: 2
     m_Bits: 262144
@@ -26249,7 +26293,6 @@ MonoBehaviour:
   _planetButtonController: {fileID: 341509730}
   _createCountController: {fileID: 1310710399}
   _modeType: 1
-  _myUnitPrefabDataControl: {fileID: 1163580209}
   _myUnitPrefab: {fileID: 1163580207}
 --- !u!1 &1324119161
 GameObject:
@@ -43376,7 +43419,6 @@ MonoBehaviour:
   _planetButtonController: {fileID: 341509730}
   _createCountController: {fileID: 1310710399}
   _modeType: 2
-  _myUnitPrefabDataControl: {fileID: 1163580209}
   _myUnitPrefab: {fileID: 1163580207}
   _mouseCursorController: {fileID: 1830127804}
   _gridBuildingContainer: {fileID: 541217507}
@@ -51218,6 +51260,7 @@ Transform:
   - {fileID: 2145338502}
   - {fileID: 1020476520}
   - {fileID: 519409222}
+  - {fileID: 388803115}
   m_Father: {fileID: 1843437645195298259}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807

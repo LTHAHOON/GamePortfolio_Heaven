@@ -44,7 +44,7 @@ public class InputManager : Singleton<InputManager>
             {
                 target = target.transform.parent.gameObject;
             }
-            if (target.TryGetComponent(out Unit unit) && target.TryGetComponent(out ISelectable selectable))
+            if (target.TryGetComponent(out Unit unit) && target.TryGetComponent(out Selectable selectable))
             {
                 bool doGetCharacter = MyUnitPrefabDataControl.Instance.ContainsUnitPrefab(unit, unitType);
                 if (doGetCharacter)
@@ -86,7 +86,7 @@ public class InputManager : Singleton<InputManager>
                     Vector3 screenPos = camera.WorldToScreenPoint(unitList[i].transform.position);
                     if (selectionRect.Contains(screenPos))
                     {
-                        bool hasDragSelectable = unitList[i].TryGetComponent(out IDragSelectable dragSelectable);
+                        bool hasDragSelectable = unitList[i].TryGetComponent(out DragSelectable dragSelectable);
                         if (hasDragSelectable)
                         {
                             ++unitCount;

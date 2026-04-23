@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
@@ -28,6 +29,10 @@ public class CreatureControl : MonoBehaviour
     public static bool _isMoving = false;
     public static bool _isSelect = false;
 
+    private void OnDestroy()
+    {
+        _dicTargetPosition.Clear();
+    }
 
     private void Start()
     {
@@ -45,9 +50,9 @@ public class CreatureControl : MonoBehaviour
     }
 
 
-    public static void RemoveOldCreature(CreatureFSM oldCreatureFSM)
+    public static void RemoveTargetPos(CreatureFSM creatureFSM)
     {
-        _dicTargetPosition.Remove(oldCreatureFSM);
+        _dicTargetPosition.Remove(creatureFSM);
     }
 
     private void SetTarget()
@@ -77,7 +82,7 @@ public class CreatureControl : MonoBehaviour
                 {
                     NavMeshAgent navMeshAgent = selectedCreatures[i].GetNavMeshAgent();
                     Animator animator = selectedCreatures[i].GetAnimator();
-                    SelectedCreatureMoveStop(navMeshAgent, animator);
+                    SelectedCreatureMoveStop(selectedCreatures[i], navMeshAgent, animator);
                     _dicTargetPosition[selectedCreatures[i]] = targetPositions[i];
                 }
             }
@@ -91,8 +96,7 @@ public class CreatureControl : MonoBehaviour
 
 
 
-    private static Dictionary<CreatureFSM, Vector3> _dicTargetPosition = new();
-    private const float animatorSpeedMultiplier = 0.2f;
+    private static readonly Dictionary<CreatureFSM, Vector3> _dicTargetPosition = new();
     private void SelectedCreatureMoveTo()
     {
         List<CreatureFSM> selectedCreatures = CreatureSelection.GetSelectionCharacters<CreatureFSM>();
@@ -100,49 +104,28 @@ public class CreatureControl : MonoBehaviour
         for (int i = 0; i < selectedCreatures.Count; i++)
         {
             CreatureFSM selectedCreature = selectedCreatures[i];
+
             if (_dicTargetPosition.TryGetValue(selectedCreature, out Vector3 targetPosition))
             {
-                Vector3 moveDirection = targetPosition - selectedCreature.transform.position;
-                moveDirection = new Vector3(moveDirection.x, 0, moveDirection.z);
-                float distanceToTarget = moveDirection.sqrMagnitude;
                 NavMeshAgent selectedNavMeshAgent = selectedCreature.GetNavMeshAgent();
                 Animator selectedAnimator = selectedCreature.GetAnimator();
-
-                if (distanceToTarget > (selectedNavMeshAgent.stoppingDistance * selectedNavMeshAgent.stoppingDistance))
+                if (!selectedNavMeshAgent.enabled || !selectedAnimator || !selectedNavMeshAgent) continue;
+                selectedCreature.MoveToDestination(out float currentWalkSpeed, selectedNavMeshAgent, selectedAnimator, targetPosition);
+                if (selectedNavMeshAgent.pathPending) continue;
+                if (currentWalkSpeed < 0.3f && selectedNavMeshAgent.remainingDistance <= selectedNavMeshAgent.stoppingDistance)
                 {
-                    if (selectedNavMeshAgent.hasPath == false && selectedNavMeshAgent.enabled)
-                    {
-                        selectedNavMeshAgent.destination = _dicTargetPosition[selectedCreature];
-                    }
-
-                    selectedNavMeshAgent.speed = selectedCreature.GetStatus().DEX * 1.5f;
-
-                    float currentWalkSpeed = selectedNavMeshAgent.desiredVelocity.magnitude;
-                    if (currentWalkSpeed < selectedNavMeshAgent.speed)
-                    {
-                        selectedAnimator.SetFloat("WalkSpeed", currentWalkSpeed * animatorSpeedMultiplier);
-                    }
-                    selectedAnimator.SetBool("IsWalk", true);
+                    RemoveTargetPos(selectedCreature);
+                    SelectedCreatureMoveStop(selectedCreature, selectedNavMeshAgent, selectedAnimator);
+                    return;
                 }
-                else
-                {
-                    SelectedCreatureMoveStop(selectedNavMeshAgent, selectedAnimator);
 
-
-                }
             }
         }
     }
 
-    private void SelectedCreatureMoveStop(NavMeshAgent navMeshAgent, Animator animator)
+    private void SelectedCreatureMoveStop(CreatureFSM selectedCreature, NavMeshAgent navMeshAgent, Animator animator)
     {
-        animator.SetBool("IsWalk", false);
-        if (navMeshAgent.enabled)
-        {
-            navMeshAgent.avoidancePriority = 50;
-            navMeshAgent.stoppingDistance = 2f;
-            navMeshAgent.ResetPath();
-        }
+        selectedCreature.StopToMove(navMeshAgent, animator);
     }
 
     private float _rotateSpeed = 10f;

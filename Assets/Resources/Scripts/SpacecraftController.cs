@@ -196,11 +196,11 @@ public class SpacecraftController : PassengerController
     }
 
     private Transform _passengerParent;
-    public void SetPassenger(CreatureFSM creature, int passengerCount, Transform parent)
+    public void AddPassenger(CreatureFSM creature, int passengerCount, Transform parent)
     {
         _bIsDriving = true;
         _passengerParent = parent;
-        SetPassengerInData(creature, passengerCount);
+        AddPassengerInData(creature, passengerCount);
     }
 
     private GameObject _attackMark;

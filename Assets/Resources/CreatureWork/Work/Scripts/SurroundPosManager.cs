@@ -19,6 +19,11 @@ public class SurroundPosManager : MonoBehaviour
 
     private static Dictionary<int, SurrondPos> _dicAssignedPos = new();
     private static HashSet<int> _assignedPosIndices = new();
+    private void OnDestroy()
+    {
+        _dicAssignedPos.Clear();
+        _assignedPosIndices.Clear();
+    }
 
     public static float[] DistanceArrayByCharacterCount(int chracterCount, float distanceFromUnit = 5f, float radiusFromCenter = -1f, int firstRingCount = 10)
     {

@@ -42,8 +42,6 @@ public abstract class ModeButton : MonoBehaviour
         set { _modeType = value; }
         get { return _modeType; }
     }
-    [Header("유닛 하이러라키 위치 컨트롤")]
-    public MyUnitPrefabDataControl _myUnitPrefabDataControl;
     protected TextMeshProUGUI _buttonText;
     protected Image _buttonImage;
     protected GameObject _unitPrefab;
@@ -104,8 +102,7 @@ public abstract class ModeButton : MonoBehaviour
     }
     protected Transform GetSelectedUnitParentTransform(UnitType unitType)
     {
-        GameObject instantiateParentObj;
-        _myUnitPrefabDataControl.TryGetChild(out instantiateParentObj, unitType);
+        MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject instantiateParentObj, unitType);
         return instantiateParentObj.transform;
     }
     protected virtual void OpenData()

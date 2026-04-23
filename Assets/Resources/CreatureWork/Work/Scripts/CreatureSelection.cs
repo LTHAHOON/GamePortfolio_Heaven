@@ -48,7 +48,6 @@ public class CreatureSelection : MonoBehaviour
         {
             if (CreatureControl._isSelect)
             {
-
                 ClearSelectedCreatures();
             }
         }
@@ -90,7 +89,6 @@ public class CreatureSelection : MonoBehaviour
         {
             if(selectedCharacter is CreatureFSM selectedCretureFSM)
             {
-                selectedCretureFSM._isSelected = CreatureControl._isSelect;
                 _selectedCharacters.Add(selectedCretureFSM);
             }
         }
