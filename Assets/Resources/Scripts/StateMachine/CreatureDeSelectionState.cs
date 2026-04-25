@@ -35,7 +35,10 @@ public class CreatureDeSelectionState : State<CreatureState, CreatureFSM>
             creatureFSM.StopToMove(navMeshAgent, _animatorStatData._animator);
             CreatureControl.RemoveTargetPos(creatureFSM);
             SurroundPosManager.ReleaseTargetPosition(creatureFSM.gameObject);
-            creatureFSM.ResetTargetAndState();
+            if(!creatureFSM.IsAttackMode)
+            {
+                creatureFSM.ResetTargetAndState();
+            }
             creatureFSM.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
             stateMachine.ChangeState(CreatureState.Idle);
         }

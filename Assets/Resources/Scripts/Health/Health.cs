@@ -3,11 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Fraction
-{
-    Ally,
-    Enemy
-}
 
 
 [RequireComponent(typeof(StatusComponent))]
@@ -30,14 +25,13 @@ public class Health : MonoBehaviour
     public event Action OnDie;
 
     private RuntimeUnitStatus _status;
+    private float _curStatusCON;
     public Collider _collider;
     public float _currentHealth;
     public delegate void HealthPctChanged(float currentHealthPct, bool useLerp);
     public HealthPctChanged OnHealthPctChanged;
     private HealthBar _healthBar;
     private const float _baseHP = 1000f;
-    private bool _isStatusAdded = false;
-    private bool _bHit = false;
 
     private void Start()
     {
@@ -51,19 +45,17 @@ public class Health : MonoBehaviour
         _status = GetComponent<StatusComponent>().GetStatus();
         if (_status != null)
         {
-            float afterMaxHP = _baseHP + _status.CON * _fixedHP;
-            _maxHealth = afterMaxHP;
+            SetMaxHP();
             _currentHealth = _maxHealth;
         }
 
-        OnHealthAdded(this, fraction);
-        _healthBar = OnHealthFinder?.Invoke(this);
-        ObjectVisbilitySystem.AddToList(_healthBar);
+       OnHealthAdded(this, fraction);
+       _healthBar = OnHealthFinder?.Invoke(this);
+       ObjectVisbilitySystem.Instance.AddToList(_healthBar);
     }
     private void Update()
     {
-
-        if (_healthBar == null) return;
+        if (!_healthBar) return;
         if (_status == null) return;
         if ((_currentHealth) <= 0)
         {
@@ -74,36 +66,24 @@ public class Health : MonoBehaviour
             }
             enabled = false;
         }
+        UpdateMaxHP();
+    }
 
-        if (_healthBar.isActiveAndEnabled)
+    private void UpdateMaxHP()
+    {
+        if (_curStatusCON != _status.CON)
         {
-            if (_bHit)
-            {
-                SetHealthPct(_currentHealth);
-                _bHit = false;
-            }
-
-            if (_status != null)
-            {
-                if (_isStatusAdded)
-                {
-                    SetHealthPct(_currentHealth);
-                    _isStatusAdded = false;
-                }
-            }
-        }
-        else
-        {
-        }
-
-        if (_maxHealth != _baseHP + _status.CON * _fixedHP)
-        {
-            float afterMaxHP = _baseHP + _status.CON * _fixedHP;
-            _maxHealth = afterMaxHP;
-            _isStatusAdded = true;
+            SetMaxHP();
+            SetHealthPct(_currentHealth);
         }
     }
 
+    private void SetMaxHP()
+    {
+        _curStatusCON = _status.CON;
+        float afterMaxHP = _baseHP + _curStatusCON * _fixedHP;
+        _maxHealth = afterMaxHP;
+    }
 
     private void SetHealthPct(float currentHealth)
     {
@@ -118,9 +98,8 @@ public class Health : MonoBehaviour
     public void ModifyHealth(float amount)
     {
         if (!_healthBar) return;
-        _bHit = true;
         SetHealth(amount);
-        if (_healthBar.isActiveAndEnabled)
+        if (_healthBar && _healthBar.isActiveAndEnabled)
         {
             SetHealthPct(_currentHealth);
         }
@@ -152,7 +131,7 @@ public class Health : MonoBehaviour
 
     private void OnDestroy()
     {
-        ObjectVisbilitySystem.RemoveToList(_healthBar);
+        ObjectVisbilitySystem.Instance.RemoveToList(_healthBar);
         OnHealthRemoved?.Invoke(this);
     }
 

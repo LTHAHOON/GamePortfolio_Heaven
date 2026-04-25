@@ -14,12 +14,12 @@ public class CreateLoadController : MonoBehaviour
         CreateLoad.OnStartCreateLoad += StartCreateLoad;
     }
 
-    private void StartCreateLoad(CreateLoad createLoad, float createTime, float loadingDelayTime)
+    private LoadingTask StartCreateLoad(CreateLoad createLoad, float createTime, float loadingDelayTime)
     {
         CreateLoadComponent loadingTextComponent = Instantiate(loadingTextPrefab, parent);
         createLoad._loadingTextComponent = loadingTextComponent;
-        loadingTextComponent.StartLoadingText(createLoad, createTime, loadingDelayTime);
-        ObjectVisbilitySystem.AddToList(loadingTextComponent);
+        LoadingTask loadingTask = loadingTextComponent.StartLoadingText(createLoad, createTime, loadingDelayTime);
+        ObjectVisbilitySystem.Instance.AddToList(loadingTextComponent);
+        return loadingTask;
     }
-
 }

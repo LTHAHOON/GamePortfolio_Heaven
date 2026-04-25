@@ -3,37 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(UIFollowObject))]
-public class CreateLoadComponent : LoadingTextComponent
+public class CreateLoadComponent : LoadingTextComponent<CreateLoad>, ICullingUI
 {
     [SerializeField]
     private UIFollowObject _uiFollowObject;
-    [HideInInspector]
-    public CreateLoad _createLoad;
+
+    public bool ForceHideUI => false;
+    public GameObject Owner => gameObject;
+    public Collider ColliderForCulling => _load._collider;
+
+    public bool IsForceHideUI { get; set; }
 
     public void Awake()
     {
+        IsForceHideUI = false;
         _uiFollowObject = GetComponent<UIFollowObject>();
     }
-    public override void Update()
-    {
-        base.Update();
 
-    }
     public void LateUpdate()
     {
-        if (!_uiFollowObject) return;
-        _uiFollowObject.FollowObject(Camera.main, _createLoad.gameObject, gameObject, _createLoad._screenOffset, _createLoad._localOffset);
+        if (!_uiFollowObject || !_load) return;
+        _uiFollowObject.FollowObject(Camera.main, _load.gameObject, gameObject, _load._screenOffset, _load._localOffset);
     }
-    public override void StartLoadingText<T>(T target, float loadingTime, float delayTime)
+
+    public void SetForceHideUI(bool isForceHide)
     {
-        base.StartLoadingText(loadingTime, delayTime);
-        if(target is CreateLoad createLoad)
-        {
-            _createLoad = createLoad;
-        }
+        IsForceHideUI = isForceHide;
+        gameObject.SetActive(!isForceHide);
     }
+
     private void OnDestroy()
     {
-        ObjectVisbilitySystem.RemoveToList(this);
+        ObjectVisbilitySystem.Instance.RemoveToList(this);
     }
 }

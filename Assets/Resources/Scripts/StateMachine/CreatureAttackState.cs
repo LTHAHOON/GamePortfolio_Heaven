@@ -15,10 +15,13 @@ public class CreatureAttackState : State<CreatureState, CreatureFSM>
         stateMachine.TryGetStateData(out _navMeshStatData);
         stateMachine.TryGetStateData(out _animatorStatData);
         stateMachine.TryGetStateData(out _attackActivationStatData);
-
     }
 
-    public override void EnterState(StateMachine<CreatureState, CreatureFSM> stateMachine) { }
+    public override void EnterState(StateMachine<CreatureState, CreatureFSM> stateMachine) 
+    {
+        CreatureFSM creatureFSM = stateMachine.GetOwner();
+        creatureFSM.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
+    }
     public override void UpdateState(StateMachine<CreatureState, CreatureFSM> stateMachine)
     {
         try
@@ -26,11 +29,12 @@ public class CreatureAttackState : State<CreatureState, CreatureFSM>
             CreatureFSM creatureFSM = stateMachine.GetOwner();
             NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
             NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-            creatureFSM.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
             float attackDistance = creatureFSM.GetAttackDistance(navMeshAgentStatData);
+            //적과 해당거리만큼 멀어졌을 때 Trace전환
             if (creatureFSM.GetDistanceFromThisToTarget() > (attackDistance * attackDistance))
             {
                 stateMachine.ChangeState(CreatureState.Trace);
+                return;
             }
             Quaternion newRotation;
             if (SurroundPosManager.IsContainTargetPos(creatureFSM.gameObject))

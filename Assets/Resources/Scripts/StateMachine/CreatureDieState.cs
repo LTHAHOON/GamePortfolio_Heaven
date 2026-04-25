@@ -21,7 +21,7 @@ public class CreatureDieState : State<CreatureState, CreatureFSM>
     {
         CreatureFSM creatureFSM = stateMachine.GetOwner();
         MyUnitPrefabDataControl.Instance.RemoveUnitPrefabToList(UnitType.Creature, creatureFSM);
-        CreatureSelection.RemoveToSelectedCharacters(creatureFSM);
+        CreatureSelection.Instance.RemoveToSelectedCharacters(creatureFSM);
         _animatorStatData._animator.SetTrigger(_animatorStatData._dicAnimParameterHash[AnimParameter.Die]);
         Health health = creatureFSM.GetHealth();
         health.SetActiveHealthBar(false);

@@ -15,7 +15,11 @@ public class CreatureBoardingState : State<CreatureState, CreatureFSM>
         stateMachine.TryGetStateData(out _animatorStatData);
     }
 
-    public override void EnterState(StateMachine<CreatureState, CreatureFSM> stateMachine) { }
+    public override void EnterState(StateMachine<CreatureState, CreatureFSM> stateMachine) 
+    {
+        CreatureFSM creatureFSM = stateMachine.GetOwner();
+        creatureFSM.SetEnableNavMeshAgent(_navMeshStatData);
+    }
     public override void UpdateState(StateMachine<CreatureState, CreatureFSM> stateMachine)
     {
         CreatureFSM creatureFSM = stateMachine.GetOwner();
@@ -23,7 +27,7 @@ public class CreatureBoardingState : State<CreatureState, CreatureFSM>
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
         if (!creatureFSM.TargetPosition.HasValue)
         {
-            stateMachine.ChangeState(CreatureState.Idle);
+            stateMachine.ChangeState(CreatureState.DeSelection);
             return;
         }
         creatureFSM.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator, creatureFSM.TargetPosition);
@@ -31,10 +35,10 @@ public class CreatureBoardingState : State<CreatureState, CreatureFSM>
         if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance * 3)
         {
             Health health = creatureFSM.GetHealth();
-            ObjectVisbilitySystem.RemoveToList(health.GetHealthBar());
+            ObjectVisbilitySystem.Instance.RemoveToList(health.GetHealthBar());
             health.SetActiveHealthBar(false);
             creatureFSM.gameObject.SetActive(false);
-            stateMachine.ChangeState(CreatureState.Idle);
+            stateMachine.ChangeState(CreatureState.DeSelection);
         }
     }
     public override void ExitState(StateMachine<CreatureState, CreatureFSM> stateMachine) { }

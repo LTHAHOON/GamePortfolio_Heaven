@@ -189,11 +189,15 @@ public class UIManager : Singleton<UIManager>
     private Vector3 _buttonScaleUPDelta = new Vector3(0.5f, 0.5f , 0f);
     [SerializeField]
     private float _buttonScaleUPSpeed = 10f;
-    public void OnPointerEnterScaleUp(Transform buttonTransform, Vector3 baseScale)
+    public void OnPointerEnterScaleUp(Transform buttonTransform, Vector3 baseScale, Vector3 buttonScaleUPDelta = default)
     {
+        if(buttonScaleUPDelta == Vector3.zero)
+        {
+            buttonScaleUPDelta = _buttonScaleUPDelta;
+        }
         if (buttonTransform != null)
         {
-            buttonTransform.localScale = Vector3.Lerp(buttonTransform.localScale, baseScale + _buttonScaleUPDelta, Time.deltaTime * _buttonScaleUPSpeed);
+            buttonTransform.localScale = Vector3.Lerp(buttonTransform.localScale, baseScale + buttonScaleUPDelta, Time.deltaTime * _buttonScaleUPSpeed);
         }
     }
     public void OnPointerExitScaleDown(Transform buttonTransform, Vector3 baseScale)

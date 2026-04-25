@@ -150,6 +150,7 @@ GameObject:
   - component: {fileID: 5107849445524456116}
   - component: {fileID: 4639246461895064197}
   - component: {fileID: 1186304992142041858}
+  - component: {fileID: 1564050856521398453}
   m_Layer: 14
   m_Name: "\uBE14\uB808\uC774\uC800"
   m_TagString: Ally
@@ -251,11 +252,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaddbd28d6812784a8e1671ed1af2a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dragSelectable: {fileID: 0}
+  _selectable: {fileID: 0}
   _layerList:
     _layerList:
     - {fileID: 8777580208163690496}
   _health: {fileID: 4639246461895064197}
   _createLoad: {fileID: 1186304992142041858}
+  _clickCollider: {fileID: 4430298297893176840}
   gravity: -9.81
   colliderSizeData: {x: 0, y: 0, z: 0}
   _isGravity: 0
@@ -329,6 +333,18 @@ MonoBehaviour:
   _collider: {fileID: 2606695048307551015}
   _screenOffset: {x: 0, y: 45, z: 0}
   _localOffset: {x: 0, y: 0.2, z: 0}
+--- !u!114 &1564050856521398453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6464206576591567170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e89f3c0ee5bf79e4fbd2af08db831cd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7698860721232085870
 GameObject:
   m_ObjectHideFlags: 0

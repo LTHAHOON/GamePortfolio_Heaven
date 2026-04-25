@@ -9,121 +9,33 @@ using UnityEngine.AI;
 using UnityEngine.TextCore.Text;
 using static UnityEngine.GraphicsBuffer;
 
-public class CreatureSelection : MonoBehaviour
+public class CreatureSelection : Selection<CreatureFSM>
 {
-    private static List<CreatureFSM> _selectedCharacters = new();
-    [SerializeField]
-    private LayerMask _clickColliderLayer;
-    [SerializeField]
-    private MyUnitPrefabDataControl _myUnitPrefabDataControl;
-    [SerializeField]
-    private string _allyTag = Fraction.Ally.ToString();
-
-    private void Update()
+    private void OnDestroy()
     {
-        SelectionProcess();
+        _selectedList.Clear();
     }
 
-    private void SelectionProcess()
+    public override List<TComp> GetSelectionComponents<TComp>()
     {
-        if (UIManager.Instance.IsSubCameraActive && !MiniMapController.IsPointerOverMiniMap && !CreateCountController.IsActive())
+        if (_selectedList.Count <= 0) return null;
+        List<TComp> components = new(_selectedList.Count);
+        if (typeof(TComp) == typeof(CreatureFSM))
         {
-            int selectedCount = InputManager.Instance.TrySelectionByUnitType(out bool bOnClick, Camera.main, 
-                                                _clickColliderLayer, UnitType.Creature, true, AddToSelectedCharacters);
-            if(bOnClick)
-            {
-                OnSelectOrClearSelection(selectedCount);
-            }
-            else
-            {
-                selectedCount = InputManager.Instance.TryDragSelectionByUnitType(out bool bOnDrag, Camera.main,
-                                                                            UnitType.Creature, AddToSelectedCharacters);
-                if(bOnDrag)
-                {
-                    OnSelectOrClearSelection(selectedCount);
-                }
-            }
-        }
-        else
-        {
-            if (CreatureControl._isSelect)
-            {
-                ClearSelectedCreatures();
-            }
-        }
-    }
-
-    private void OnSelectOrClearSelection(int selectedCount)
-    {
-        if (selectedCount <= 0)
-        {
-            if(_selectedCharacters.Count > 0)
-            {
-                ClearSelectedCreatures();
-            }
-        }
-        else
-        {
-            CreatureControl._isSelect = true;
-        }
-    }
-
-
-    public static void ClearSelectedCreatures()
-    {
-        for (int i = 0; i < _selectedCharacters.Count; i++)
-        {
-            _selectedCharacters[i].OnDeSelected();
-        }
-        CreatureControl._isSelect = false;
-        _selectedCharacters.Clear();
-    }
-
-    public void AddToSelectedCharacters(Unit selectedCharacter)
-    {
-        if (!CreatureControl._isSelect)
-        {
-            CreatureControl._isSelect = true;
-        }
-        if(selectedCharacter.CompareTag(_allyTag))
-        {
-            if(selectedCharacter is CreatureFSM selectedCretureFSM)
-            {
-                _selectedCharacters.Add(selectedCretureFSM);
-            }
-        }
-    }
-    public static void RemoveToSelectedCharacters(CreatureFSM selectedCharacter)
-    {
-        _selectedCharacters.Remove(selectedCharacter);
-    }
- 
-
-    public static int GetSelectionCharactersCount()
-    {
-        return _selectedCharacters.Count;
-    }
-
-    public static List<T> GetSelectionCharacters<T>() where T : Component
-    {
-        if (_selectedCharacters.Count <= 0) return null;
-        List<T> components = new(_selectedCharacters.Count);
-        if (typeof(T) == typeof(CreatureFSM))
-        {
-            components = (List<T>)(object)_selectedCharacters;
+            components = (List<TComp>)(object)_selectedList;
             return components;
         }
-        for (int i = 0; i < _selectedCharacters.Count; i++)
+        for (int i = 0; i < _selectedList.Count; i++)
         {
-            if (typeof(T) == typeof(Animator))
+            if (typeof(TComp) == typeof(Animator))
             {
-                components.Add(_selectedCharacters[i].GetAnimator() as T);
+                components.Add(_selectedList[i].GetAnimator() as TComp);
             }
-            else if (typeof(T) == typeof(NavMeshAgent))
+            else if (typeof(TComp) == typeof(NavMeshAgent))
             {
-                components.Add(_selectedCharacters[i].GetNavMeshAgent() as T);
+                components.Add(_selectedList[i].GetNavMeshAgent() as TComp);
             }
-            else if (_selectedCharacters[i].TryGetComponent(out T component))
+            else if (_selectedList[i].TryGetComponent(out TComp component))
             {
                 components.Add(component);
             }

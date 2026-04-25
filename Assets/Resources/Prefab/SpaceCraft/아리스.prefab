@@ -211,7 +211,7 @@ CapsuleCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 33554688
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 1440572668170880658}
   - component: {fileID: 5757833755733116052}
   - component: {fileID: 7064785864678913901}
+  - component: {fileID: 2874405348502175088}
   m_Layer: 14
   m_Name: "\uC544\uB9AC\uC2A4"
   m_TagString: Ally
@@ -324,13 +325,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaddbd28d6812784a8e1671ed1af2a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dragSelectable: {fileID: 0}
+  _selectable: {fileID: 0}
   _layerList:
-    layerList:
-    - {fileID: 1676654017208779479}
-    - {fileID: 6946197837266421603}
-    - {fileID: 2043099408068058600}
+    _layerList: []
   _health: {fileID: 5757833755733116052}
   _createLoad: {fileID: 7064785864678913901}
+  _clickCollider: {fileID: 6844109932089764038}
   gravity: -9.81
   colliderSizeData: {x: 0, y: 0, z: 0}
   _isGravity: 0
@@ -404,6 +405,18 @@ MonoBehaviour:
   _collider: {fileID: 1082368230980686113}
   _screenOffset: {x: 0, y: 55, z: 0}
   _localOffset: {x: 0, y: 1, z: 1.5}
+--- !u!114 &2874405348502175088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5037266475905862818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e89f3c0ee5bf79e4fbd2af08db831cd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6946197837266421603
 GameObject:
   m_ObjectHideFlags: 0

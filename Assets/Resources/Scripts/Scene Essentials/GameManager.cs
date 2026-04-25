@@ -25,45 +25,4 @@ public class GameManager : Singleton<GameManager>
 #endif
 
     }
-
-    void Update()
-    {
-        
-    }
-
-
-    public bool TryGetSelectedUnitMPData(out MPData? unitMPData)
-    {
-        if (SelectedUnitPopController.Instance._selectedUnitButton.TryGetComponent(out MPComponent mPComponent))
-        {
-            unitMPData = mPComponent.GetMPData();
-            return true;
-        }
-        unitMPData = default;
-        return false;
-    }
-
-    public void UpdateButtonToMPData(MPData unitMPData, ref Button button, ref Image buttonImage, ref TextMeshProUGUI buttonText)
-    {
-        float mpValue = MPController.Instance.MP_StatusSlider.value;
-
-        if (mpValue >= unitMPData.MP_ConsValue && button.interactable == false)
-        {
-            button.interactable = true;
-            Color newButtonColor = UIManager.Instance.ChangeToInitialColor();
-            Color newButtontextColor = UIManager.Instance.ChangeToInitialColor();
-
-            buttonImage.color = newButtonColor;
-            buttonText.color = newButtontextColor;
-        }
-        if (mpValue < unitMPData.MP_ConsValue && button.interactable == true)
-        {
-            button.interactable = false;
-            Color newButtonColor = UIManager.Instance.ChangeToImageDisableColor();
-            Color newButtontextColor = UIManager.Instance.ChangeToImageDisableColor();
-
-            buttonImage.color = newButtonColor;
-            buttonText.color = newButtontextColor;
-        }
-    }
 }

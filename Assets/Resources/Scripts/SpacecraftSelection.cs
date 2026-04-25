@@ -4,69 +4,48 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Analytics;
 
-public class SpacecraftSelection : MonoBehaviour
+public class SpacecraftSelection : Selection<SpacecraftController>
 {
     [SerializeField]
-    private LayerMask _targetLayerMask;
+    private LayerMask _clickColliderLayer;
     [SerializeField]
     private float _elapsedTime = 3;
-    private GameObject _target;
-    private void Update()
+    private SpacecraftController _target;
+    private CreatureSelection _creatureSelection;
+    public void Start()
     {
-        if (CreatureControl._isSelect && !MiniMapController.IsPointerOverMiniMap && !CreateCountController.IsActive())
+        SelectionManager.Instance.TryGetSelection(out _creatureSelection);
+    }
+    public void Update()
+    {
+        if (_isSelected && _creatureSelection.IsSelected)
         {
-            Vector3? worldMousePos = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _targetLayerMask);
-            if (worldMousePos.HasValue)
-            {
-                if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main, 
-                                                                            _targetLayerMask,UnitType.Spacecraft ,out GameObject target, true))
-                {
-                    StartCoroutine(IEBoading(_elapsedTime));
-                    _target = target;
-                    Debug.Log(target);
-                }
-                else if(Input.GetKeyUp(KeyCode.F))
-                {
-                    StopCoroutine(IEBoading(_elapsedTime));
-                    Debug.Log("우주선 타겟 취소");
-                }
-            }
+            ProcessOnSelected();
         }
     }
+    private Coroutine _boadingCoroutine;
+    public void ProcessOnSelected()
+    {
 
-    private IEnumerator IEBoading(float elapsedTime)
-    {
-        yield return new WaitForSeconds(elapsedTime);
-        Boarding();
-    }
-    private void Boarding()
-    {
-        bool bGetChild = MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject child, UnitType.Creature);
-        if (!_target.TryGetComponent(out SpacecraftController spacecraftController))
-            return;
-        if (!bGetChild)
-            return;
-        List<CreatureFSM> creatureFSMList = CreatureSelection.GetSelectionCharacters<CreatureFSM>();
-        Transform creatureParent = child.transform;
-        NavMeshPath path = new();
-        for (int i = 0; i < creatureFSMList.Count; i++)
+        Vector3? worldMousePos = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _clickColliderLayer);
+        if (worldMousePos.HasValue)
         {
-            if(NavMesh.SamplePosition(spacecraftController.transform.position, out NavMeshHit hit, 30f, NavMesh.AllAreas))
+            if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main,
+                                                                        _clickColliderLayer, UnitType.Spacecraft, out GameObject target, true))
             {
-                NavMesh.CalculatePath(creatureFSMList[i].transform.position, hit.position, NavMesh.AllAreas, path);
-                if (path.status != NavMeshPathStatus.PathComplete)
-                {
-                    Debug.Log($"creatureFSMList[{i}] 길 막혔습니다");
-                    continue;
-                }
-                creatureFSMList[i].OnDeSelected();
-                creatureFSMList[i].TargetPosition = hit.position;
-                creatureFSMList[i].StateMachine.ChangeState(CreatureState.Boarding);
-                creatureFSMList[i].SetIsAttackMode(true);
-
-                spacecraftController.AddPassenger(creatureFSMList[i],1 , creatureParent);
+                if (!target.TryGetComponent(out SpacecraftController spacecraftController))
+                    return;
+                _target = spacecraftController;
+                _boadingCoroutine = StartCoroutine(_target.IEBoading(_elapsedTime));
+                Debug.Log(target);
+            }
+            if (Input.GetKeyUp(KeyCode.F))
+            {
+                StopCoroutine(_boadingCoroutine);
+                _target = null;
+                _isSelected = false;
+                Debug.Log("우주선 타겟 취소");
             }
         }
-        CreatureSelection.ClearSelectedCreatures();
     }
 }

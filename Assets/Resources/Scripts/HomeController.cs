@@ -28,8 +28,9 @@ public class HomeController : Unit
     private BoxCollider _collider;
     private Rigidbody _rigidbody;
     private UnitType _unitType;
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         hit = new RaycastHit[_hitMaxCount];
         _targetLayer = (int)Mathf.Log(_targetLayerMask, 2);
         _collider = GetComponent<BoxCollider>();
@@ -107,7 +108,7 @@ public class HomeController : Unit
 
     private void GravityMove()
     {
-        transform.position += transform.up * gravity * Time.fixedDeltaTime;
+        transform.position += gravity * Time.fixedDeltaTime * transform.up;
     }
 
 
@@ -115,7 +116,7 @@ public class HomeController : Unit
 
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag("Ground") && _isGravity)
+        if (other.gameObject.CompareTag(GameTags.Ground) && _isGravity)
         {
             _createLoad.StartCreateLoad();
             _collider.isTrigger = false;
@@ -124,7 +125,7 @@ public class HomeController : Unit
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Ground") && _isGravity)
+        if (other.gameObject.CompareTag(GameTags.Ground) && _isGravity)
         {
             //  _collider.isTrigger = false;
             // _isGravity = false;

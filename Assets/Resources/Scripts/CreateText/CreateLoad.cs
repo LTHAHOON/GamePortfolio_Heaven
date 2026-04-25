@@ -12,34 +12,39 @@ public class CreateLoad : MonoBehaviour
     private float _createTime = 10;
     [SerializeField]
     private float _loadingDelayTime = 0.5f;
-    public static event Action<CreateLoad, float, float> OnStartCreateLoad;
-    public LoadingTextComponent _loadingTextComponent;
+    public static event Func<CreateLoad, float, float, LoadingTask> OnStartCreateLoad;
+    public LoadingTextComponent<CreateLoad> _loadingTextComponent;
     private bool _isLoading = false;
     private bool _isLoadReady = true;
     public Collider _collider;
     public Vector3 _screenOffset;
     public Vector3 _localOffset;
+    private LoadingTask loadingTask;
     private void Awake()
     {
         if (_collider) return;
         _collider = GetComponent<Collider>();
     }
+    private void Update()
+    {
+        if (loadingTask == null) return;
+        if(loadingTask.IsDoneLoading)
+        {
+            loadingTask = null;
+            OnDoneLoading();
+        }
+    }
     public void StartCreateLoad()
     {
         _isLoading = true;
-        OnStartCreateLoad(this, _createTime, _loadingDelayTime);
+        loadingTask = OnStartCreateLoad(this, _createTime, _loadingDelayTime);
+        loadingTask.OnDoneLoadingTask = OnDoneLoading;
     }
     
-    private void Update()
+    public void OnDoneLoading()
     {
-        if(_isLoading)
-        {
-            if (_loadingTextComponent == null)
-            {
-                _isLoadReady = false;
-                _isLoading = false;
-            }
-        }
+        _isLoadReady = false;
+        _isLoading = false;
     }
 
     public bool IsLoading => _isLoading;

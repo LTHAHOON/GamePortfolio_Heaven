@@ -28,7 +28,7 @@ public class DefenseButtonController : ModeButton
     {
         if (_bGetUnitPrefab && _unitMPData != null)
         {
-            GameManager.Instance.UpdateButtonToMPData(_unitMPData.Value, ref _thisButton, ref _buttonImage, ref _buttonText);
+            StatusDataMng.Instance.UpdateButtonToMPData(_unitMPData.Value, ref _thisButton, ref _buttonImage, ref _buttonText);
         }
 
         if (_bReadyPrefab && _unitPrefab)

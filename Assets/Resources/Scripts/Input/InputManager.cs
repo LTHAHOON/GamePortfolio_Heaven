@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public class InputManager : Singleton<InputManager>
@@ -31,45 +32,61 @@ public class InputManager : Singleton<InputManager>
     {
         Debug.Log($"Selected {count}개 Unit");
     }
-    public int TrySelectionByUnitType(out bool bOnClick, Camera camera, 
-        LayerMask targetLayerMask, UnitType unitType, bool bFindUsingTargetParent = false, Action<Unit> OnSelected = null)
+
+    #region 원클릭으로 Selection 구하는 함수
+    public ISelection TrySelection(out bool bOnClick, Camera camera,
+    LayerMask targetLayerMask, bool bFindUsingTargetParent = false)
     {
-        if (TrySelectBySphereCast(0, camera, targetLayerMask, out GameObject target))
+        if (TrySelectBySphereCast(out bOnClick, 0, camera, targetLayerMask, out GameObject target))
         {
-            bOnClick = true;
             _subDragStartPosition = Vector3.zero;
             _dragStartPosition = Vector3.zero;
             _isDragging = false;
-            if(bFindUsingTargetParent)
+            if (bFindUsingTargetParent)
             {
                 target = target.transform.parent.gameObject;
             }
-            if (target.TryGetComponent(out Unit unit) && target.TryGetComponent(out Selectable selectable))
+            if (target.TryGetComponent(out Selectable selectable))
             {
-                bool doGetCharacter = MyUnitPrefabDataControl.Instance.ContainsUnitPrefab(unit, unitType);
-                if (doGetCharacter)
+                ISelection selection = SelectionManager.Instance.GetSelection(selectable);
+                if(selection != null)
                 {
                     selectable.OnSelected();
-                    OnSelected?.Invoke(unit);
+                    selection.AddToSelectedList(selectable.Owner);
                     OnDebugSelection(1);
-                    return 1;
+                    return selection;
                 }
             }
             OnDebugSelection(0);
+            return null;
         }
-        bOnClick = false;
-        return 0;
+        return null;
     }
+    #endregion
 
-    public int TryDragSelectionByUnitType(out bool bOnDrag, Camera camera, UnitType unitType, Action<Unit> OnSelected = null)
+    #region 드래그로 Selection 구하는 함수
+    //유닛 캐싱된 데이터로 Selection을 구하는 함수 
+    public List<ISelection> TryDragSelectionByUnitType(out bool bOnDrag, Camera camera, UnitType unitType)
+    {
+        if (MyUnitPrefabDataControl.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
+        {
+            List<ISelection> selection = TryDragSelection(out bOnDrag, unitList, camera);
+            return selection;
+        }
+        bOnDrag = false;
+        return null;
+    }
+    private readonly List<ISelection> _selectionList = new();
+    public List<ISelection> TryDragSelection<T>(out bool bOnDrag, List<T> selectableList, Camera camera) where T :MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && _isDragging == false)
         {
             bOnDrag = true;
+            _selectionList.Clear();
             _dragStartPosition = Input.mousePosition;
             _subDragStartPosition = Input.mousePosition;
             _isDragging = true;
-            return 0;
+            return null;
         }
         else if (Input.GetMouseButtonUp(0) && _isDragging)
         {
@@ -77,31 +94,38 @@ public class InputManager : Singleton<InputManager>
             Vector3 dragEndPosition = Input.mousePosition;
             Rect selectionRect = GetDragSelectionRect(_subDragStartPosition, dragEndPosition);
             _subDragStartPosition = Vector3.zero;
-            _isDragging = false; 
-            if (MyUnitPrefabDataControl.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
+            _isDragging = false;
+            int unitCount = 0;
+            ISelection dragSelection;
+            DragSelectable dragSelectable;
+            for (int i = 0; i < selectableList.Count; i++)
             {
-                int unitCount = 0;
-                for (int i = 0; i < unitList.Count; i++)
+                Vector3 screenPos = camera.WorldToScreenPoint(selectableList[i].transform.position);
+                if (selectionRect.Contains(screenPos))
                 {
-                    Vector3 screenPos = camera.WorldToScreenPoint(unitList[i].transform.position);
-                    if (selectionRect.Contains(screenPos))
+                    if (selectableList[i] is Unit unit)
                     {
-                        bool hasDragSelectable = unitList[i].TryGetComponent(out DragSelectable dragSelectable);
-                        if (hasDragSelectable)
-                        {
-                            ++unitCount;
-                            OnSelected?.Invoke(unitList[i]);
-                            dragSelectable.OnDragSelected();
-                        }
+                        dragSelectable = unit._dragSelectable;
+                    }
+                    else if (selectableList[i].TryGetComponent(out dragSelectable)) { }
+
+                    dragSelection = SelectionManager.Instance.GetSelection(dragSelectable);
+                    if (dragSelection != null)
+                    {
+                        ++unitCount;
+                        dragSelectable.OnDragSelected();
+                        dragSelection.AddToSelectedList(dragSelectable.Owner);
+                        _selectionList.Add(dragSelection);
                     }
                 }
-                OnDebugSelection(unitCount);
-                return unitCount;
             }
+            OnDebugSelection(unitCount);
+            return _selectionList;
         }
-        bOnDrag =  false;
-        return 0;
+        bOnDrag = false;
+        return null;
     }
+    #endregion
 
     private Rect GetDragSelectionRect(Vector3 dragStartPosition, Vector3 dragEndPosition)
     {
@@ -181,17 +205,19 @@ public class InputManager : Singleton<InputManager>
         return false;
     }
 
-    public GameObject SelectBySphereCast(int mouseButton, Camera camera, LayerMask targetLayerMask)
+    public GameObject SelectBySphereCast(out bool bOnClick, int mouseButton, Camera camera, LayerMask targetLayerMask)
     {
         if (Input.GetMouseButtonDown(mouseButton))
         {
+            bOnClick = true;
             return SelectBySphereCast(camera, targetLayerMask);
         }
+        bOnClick = false;
         return null;
     }
-    public bool TrySelectBySphereCast(int mouseButton, Camera camera, LayerMask targetLayerMask, out GameObject target)
+    public bool TrySelectBySphereCast(out bool bOnClick, int mouseButton, Camera camera, LayerMask targetLayerMask, out GameObject target)
     {
-        target = SelectBySphereCast(mouseButton, camera, targetLayerMask);
+        target = SelectBySphereCast(out bOnClick, mouseButton, camera, targetLayerMask);
         if (target != null)
         {
             return true;

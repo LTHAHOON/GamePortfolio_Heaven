@@ -6,7 +6,7 @@ using UnityEngine;
 public class Selectable : MonoBehaviour, ISelectable
 {
     protected ISelectableOwner _owner;
-
+    public ISelectableOwner Owner => _owner;
     private void Awake()
     {
         _owner = GetComponent<ISelectableOwner>();

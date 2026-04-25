@@ -94,7 +94,7 @@ public abstract class ModeButton : MonoBehaviour
         _unitPrefab = spawnComponent.GetSpawnPrefab(unitData.ID);
         if (_unitPrefab != null)
         {
-            if (!GameManager.Instance.TryGetSelectedUnitMPData(out _unitMPData))
+            if (!StatusDataMng.Instance.TryGetSelectedUnitMPData(out _unitMPData))
             {
                 Debug.Log("[Error] TryGetSelectedUnitMPData()]");
             }

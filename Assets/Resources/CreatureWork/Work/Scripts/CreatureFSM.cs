@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -86,16 +87,17 @@ public class CreatureFSM : Unit, ISelectableOwner
     #endregion
     [SerializeField]
     private CharacterController _characterController;
-    [HideInInspector]
-    public bool _isAttackMode = false;
-    [HideInInspector]
-    public bool _isAttackTarget = false;
+    private bool _isAttackMode = false;
+    public bool IsAttackMode => _isAttackMode;
+    private bool _isAttackTarget = false;
+    public bool IsAttackTarget => _isAttackTarget;
     [HideInInspector]
     public bool _isChoice = true;
-
+    public MonoBehaviour Owner => this;
     #region 유니티 이벤트 함수
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         #region StateMachine 초기화
         _stateMachine = new(this, new IStateData[] 
         {
@@ -128,7 +130,7 @@ public class CreatureFSM : Unit, ISelectableOwner
         _health.OnDamageHit += DamageHit;
         _health.OnDie += Die;
         _status = _statusComponent.GetStatus();
-        _navMeshStatData._navmeshAgentData._navMeshAgent.enabled = true;
+        //_navMeshStatData._navmeshAgentData._navMeshAgent.enabled = true;
     }
     private void Update()
     {
@@ -200,7 +202,7 @@ public class CreatureFSM : Unit, ISelectableOwner
     }
     public void StopToMove(NavMeshAgent navMeshAgent, Animator animator)
     {
-        TargetPosition = null;
+        //TargetPosition = null;
         animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
         if(navMeshAgent.enabled)
         {
@@ -209,21 +211,18 @@ public class CreatureFSM : Unit, ISelectableOwner
     }
     #endregion
 
-    #region Attack상태에 들아가기 전 추적하는 함수
-    public void HandleAttacktarget(NavMeshAgentStatData navMeshAgentData, AnimatorStatData animatorStatData, 
+    #region Attack상태에 들아가기 전 한번 더 추적하는 함수
+    public bool HandleAttacktarget(NavMeshAgentStatData navMeshAgentData, AnimatorStatData animatorStatData, 
                                                     SurroundPosStatData surroundPosData, LayerStatData layerStatData)
     {
-        if (_enemy.collider != null || SurroundPosManager.IsContainTargetPos(gameObject)) //사용자가 지정한 위치가 아닐경우
+        //둘러쌓은 위치를 가졌는데 적 타겟을 가지고 있을 경우
+        if (_enemy.collider != null || SurroundPosManager.IsContainTargetPos(gameObject))
         {
             animatorStatData._animator.SetBool(animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
-            _stateMachine.ChangeState(CreatureState.Attack);
+            return true;
         }
-        else if (TryGetAroundEnemy(out _enemy, navMeshAgentData._traceRaidus, layerStatData)) //사용자가 지정한 위치에 도달 했을 때 적 추적
-        {
-            _isAttackTarget = false;
-            navMeshAgentData._navMeshAgent.stoppingDistance = 2f;
-        }
-        else
+        //사용자가 지정한 위치에 도달했을 때 적 추적을 실패할 경우 적 넥서스 타겟 지정
+        else if (!TryGetAroundEnemy(out _enemy, navMeshAgentData._traceRaidus, layerStatData))
         {
             if (_isAttackMode && _attackMark)
             {
@@ -233,15 +232,16 @@ public class CreatureFSM : Unit, ISelectableOwner
 
             _enemy = default;
             navMeshAgentData._navMeshAgent.stoppingDistance = 0.5f;
-            _isAttackTarget = false;
-            SurroundPosManager.AssignTargetPosition(gameObject, _enemyNexusPos, surroundPosData._radiusFromCenter, 
+            SurroundPosManager.AssignTargetPosition(gameObject, _enemyNexusPos, surroundPosData._radiusFromCenter,
                 surroundPosData._distanceFromUnit, surroundPosData._firstRingCount);
             if (SurroundPosManager.TryGetAssignedTargetPositionAround(gameObject, out Vector3 assigendPos))
             {
                 TargetPosition = assigendPos;
                 Debug.Log(assigendPos);
             }
+
         }
+        return false;
     }
     #endregion
 
@@ -376,6 +376,8 @@ public class CreatureFSM : Unit, ISelectableOwner
     public void OnDeSelected()
     {
         _hpMaterialInstance.GetCreatureHP().SetActive(false);
+        if (_stateMachine.CurrentState.EState == CreatureState.Boarding)
+            return;
         _stateMachine.ChangeState(CreatureState.DeSelection);
     }
     public void OnDragSelected()

@@ -63,7 +63,7 @@ public class AttackButtonController : ModeButton
         if (_bGetUnitPrefab && _unitMPData != null)
         {
             _totalMPData.MP_ConsValue = _originSpacecraftMpData.MP_ConsValue + _unitMPData.Value.MP_ConsValue;
-            GameManager.Instance.UpdateButtonToMPData(_totalMPData, ref _thisButton, ref _buttonImage, ref _buttonText);
+            StatusDataMng.Instance.UpdateButtonToMPData(_totalMPData, ref _thisButton, ref _buttonImage, ref _buttonText);
         }
 
         if (_bReadyPrefab && _unitPrefab)
@@ -160,33 +160,22 @@ public class AttackButtonController : ModeButton
             {
                 case RespawnPositionType.RespawnForward:
                     {
-                        Vector3 euler = new Vector3(-90, -90, transform.rotation.z);
-                        spacecraftController.SaveRotation(euler);
                         spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData, _enemyNexusTarget.position);
                         break;
                     }
                 case RespawnPositionType.RespawnBackward:
                     {
-                        Vector3 euler = new Vector3(-90, 90, transform.rotation.z);
-                        spacecraftController.SaveRotation(euler);
                         spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData, _enemyNexusTarget.position);
-
                         break;
                     }
                 case RespawnPositionType.RespawnLeft:
                     {
-                        Vector3 euler = new Vector3(-90, 180, transform.rotation.z);
-                        spacecraftController.SaveRotation(euler);
                         spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _leftMiddlePoint.position, goalData, _enemyNexusTarget.position);
-
                         break;
                     }
                 case RespawnPositionType.RespawnRight:
                     {
-                        Vector3 euler = new Vector3(-90, 0, transform.rotation.z);
-                        spacecraftController.SaveRotation(euler);
                         spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _rightMiddlePoint.position, goalData, _enemyNexusTarget.position);
-
                         break;
                     }
             }

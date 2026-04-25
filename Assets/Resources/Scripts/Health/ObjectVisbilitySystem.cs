@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class ObjectVisbilitySystem : MonoBehaviour
+public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
 {
     [SerializeField]
     private Canvas _ScreenUICanvas;
@@ -17,9 +17,8 @@ public class ObjectVisbilitySystem : MonoBehaviour
 
     private int _outPlanetLayer;
     private float _curCheckTime = 0;
-    private static List<HealthBar> _healthBarList = new();
-    private static List<CreateLoadComponent> _createLoadingTextList = new();
-    private static Dictionary<object, Collider> _dicTargetObj = new();
+    private List<ICullingUI> _cullingUIList = new();
+    private Dictionary<ICullingUI, Collider> _dicTargetObj = new();
     private void Awake()
     {
         _outPlanetLayer = (int)Mathf.Log(_outPlanetLayerMask.value, 2);
@@ -30,60 +29,43 @@ public class ObjectVisbilitySystem : MonoBehaviour
         _curCheckTime += Time.deltaTime;
         if (_curCheckTime > _maxCheckTime)
         {
-            ObjectVisibleProcess(_healthBarList);
-            ObjectVisibleProcess(_createLoadingTextList);
+            ObjectVisibleProcess();
+            ObjectVisibleProcess();
             _curCheckTime = 0;
         }
     }
 
-    public static void AddToList(HealthBar healthBar)
+    public void AddToList(ICullingUI cullingUI)
     {
-        if (_healthBarList.Contains(healthBar) == false)
+        if (_cullingUIList.Contains(cullingUI) == false)
         {
-            _healthBarList.Add(healthBar);
-            _dicTargetObj.Add(healthBar, healthBar._health._collider);
+            _cullingUIList.Add(cullingUI);
+            _dicTargetObj.Add(cullingUI, cullingUI.ColliderForCulling);
         }
     }
-    public static void AddToList(CreateLoadComponent loadingText)
+    public void RemoveToList(ICullingUI loadingText)
     {
-        if (_createLoadingTextList.Contains(loadingText) == false)
+        if (_cullingUIList.Contains(loadingText))
         {
-            _createLoadingTextList.Add(loadingText);
-            _dicTargetObj.Add(loadingText, loadingText._createLoad._collider);
-        }
-    }
-
-    public static void RemoveToList(HealthBar healthBar)
-    {
-        if (_healthBarList.Contains(healthBar))
-        {
-            _healthBarList.Remove(healthBar);
-            _dicTargetObj.Remove(healthBar);
-        }
-    }
-    public static void RemoveToList(CreateLoadComponent loadingText)
-    {
-        if (_createLoadingTextList.Contains(loadingText))
-        {
-            _createLoadingTextList.Remove(loadingText);
+            _cullingUIList.Remove(loadingText);
             _dicTargetObj.Remove(loadingText);
         }
     }
 
-    private void ObjectVisibleProcess<T>(List<T> objList) where T : Component
+    private void ObjectVisibleProcess()
     {
         bool isSubCameraActive = UIManager.Instance.IsSubCameraActive;
         Camera camera = Camera.main;
 
         _ScreenUICanvas.sortingOrder = isSubCameraActive ? 2 : 0;
-        for (int i = 0; i < objList.Count; i++)
+        for (int i = 0; i < _cullingUIList.Count; i++)
         {
-            T obj = objList[i];
-            if(!obj || !_dicTargetObj.TryGetValue(obj, out Collider collider))
+            ICullingUI cullingUI = _cullingUIList[i];
+            if(cullingUI == null || !_dicTargetObj.TryGetValue(cullingUI, out Collider collider))
             {
                 continue;
             }
-
+            
             bool shouldActive;
 
             if (isSubCameraActive)
@@ -96,11 +78,11 @@ public class ObjectVisbilitySystem : MonoBehaviour
                                && CheckFrustrum(collider, camera)
                                && CheckObjectVisible(camera, collider);
             }
-            if(obj.gameObject)
+            if(cullingUI.Owner)
             {
-                if (obj.gameObject.activeSelf != shouldActive)
+                if (cullingUI.Owner.activeSelf != shouldActive && !cullingUI.IsForceHideUI)
                 {
-                    obj.gameObject.SetActive(shouldActive);
+                    cullingUI.Owner.SetActive(shouldActive);
                 }
 
             }
@@ -118,18 +100,19 @@ public class ObjectVisbilitySystem : MonoBehaviour
 
         return false;
     }
+    private readonly Plane[] _planes = new Plane[6];
     private bool CheckFrustrum(Collider collider, Camera camera)
     {
         //오브젝트가 카메라 시야에 있는 지 확인하는 방법
 
         // TODO: 카메라 시야를 나타내는 6개의 평면 구하기
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(camera);
+        GeometryUtility.CalculateFrustumPlanes(camera, _planes);
 
         // TODO: 콜라이더 경계 상자 가져오기 
         Bounds bounds = collider.bounds;
 
         // TODO: 6개의 평면과 콜라이더 경계 상자 간의 교차 확인하기
-        bool isVisible = GeometryUtility.TestPlanesAABB(planes, bounds);
+        bool isVisible = GeometryUtility.TestPlanesAABB(_planes, bounds);
         return isVisible;
     }
 }

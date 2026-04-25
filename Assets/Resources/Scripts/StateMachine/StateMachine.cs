@@ -7,8 +7,9 @@ using UnityEngine;
 
 public class StateMachine<TEnumState, TOwner>
 {
-    private Dictionary<TEnumState, State<TEnumState, TOwner>> _dicState = new();
+    private readonly Dictionary<TEnumState, State<TEnumState, TOwner>> _dicState = new();
     private State<TEnumState, TOwner> _currentState;
+    public State<TEnumState, TOwner> CurrentState => _currentState;
     public StateMachineOwner<TOwner> _stateMachineOwner = new();
 
     public StateMachine(TOwner owner, IStateData[] stateData)

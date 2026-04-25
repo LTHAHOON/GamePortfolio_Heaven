@@ -27,7 +27,6 @@ public class CreatureControl : MonoBehaviour
     public float _radiusFromCenter = 5f;
     public int _firstRingCount = 10;
     public static bool _isMoving = false;
-    public static bool _isSelect = false;
 
     private void OnDestroy()
     {
@@ -57,7 +56,7 @@ public class CreatureControl : MonoBehaviour
 
     private void SetTarget()
     {
-        if (Input.GetMouseButtonDown(1) && CreatureSelection.GetSelectionCharactersCount() > 0)
+        if (Input.GetMouseButtonDown(1) && CreatureSelection.Instance.GetSelectionCharactersCount() > 0)
         {
             _targetPosition = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _groundLayerMask).Value;
             if (_targetPosition.HasValue)
@@ -71,7 +70,7 @@ public class CreatureControl : MonoBehaviour
             {
                 _isMoving = false;
             }
-            List<CreatureFSM> selectedCreatures = CreatureSelection.GetSelectionCharacters<CreatureFSM>();
+            List<CreatureFSM> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<CreatureFSM>();
             float[] distancesArray = SurroundPosManager.DistanceArrayByCharacterCount(selectedCreatures.Count, _distanceFromUnit, _radiusFromCenter, _firstRingCount);
             int[] positionCountArray = SurroundPosManager.GetPositionCountArray(selectedCreatures.Count, _firstRingCount);
             Vector3[] targetPositions = SurroundPosManager.GetTargetPositionsAround(_targetPosition.Value, distancesArray, positionCountArray);
@@ -99,7 +98,7 @@ public class CreatureControl : MonoBehaviour
     private static readonly Dictionary<CreatureFSM, Vector3> _dicTargetPosition = new();
     private void SelectedCreatureMoveTo()
     {
-        List<CreatureFSM> selectedCreatures = CreatureSelection.GetSelectionCharacters<CreatureFSM>();
+        List<CreatureFSM> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<CreatureFSM>();
         if (selectedCreatures == null) return;
         for (int i = 0; i < selectedCreatures.Count; i++)
         {
@@ -131,7 +130,7 @@ public class CreatureControl : MonoBehaviour
     private float _rotateSpeed = 10f;
     private void SelectedCreatureLookAt()
     {
-        List<NavMeshAgent> navMeshAgents = CreatureSelection.GetSelectionCharacters<NavMeshAgent>();
+        List<NavMeshAgent> navMeshAgents = CreatureSelection.Instance.GetSelectionComponents<NavMeshAgent>();
         if (navMeshAgents == null) return;
         for (int i = 0; i < navMeshAgents.Count; ++i)
         {

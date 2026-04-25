@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Color = UnityEngine.Color;
 
-public class HealthBar : MonoBehaviour
+public class HealthBar : MonoBehaviour, ICullingUI
 {
     [SerializeField]
     UIFollowObject _uiFollowObject;
@@ -30,6 +30,15 @@ public class HealthBar : MonoBehaviour
     private float _curPct = 1;
     public Health _health;
 
+    public bool IsForceHideUI { get; set; }
+
+    public GameObject Owner => gameObject;
+
+    public Collider ColliderForCulling => _health._collider;
+    private void Awake()
+    {
+        SetForceHideUI(true);
+    }
     private void Update()
     {
         UpdateHealthBarPosition();
@@ -73,7 +82,7 @@ public class HealthBar : MonoBehaviour
             _hpChipBarSlider.value = pct;
             if (CheckDead(pct))
             {
-                ObjectVisbilitySystem.RemoveToList(this);
+                ObjectVisbilitySystem.Instance.RemoveToList(this);
                 Destroy(gameObject);
             }
         }
@@ -115,5 +124,11 @@ public class HealthBar : MonoBehaviour
     private void OnDestroy()
     {
         _health.OnHealthPctChanged -= HandleHealthPctChanged;
+    }
+
+    public void SetForceHideUI(bool isForceHide)
+    {
+        IsForceHideUI = isForceHide;
+        gameObject.SetActive(!isForceHide);
     }
 }

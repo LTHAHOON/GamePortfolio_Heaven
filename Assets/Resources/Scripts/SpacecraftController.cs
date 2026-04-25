@@ -19,7 +19,7 @@ public struct Goal
 [RequireComponent(typeof(StatusComponent))]
 [RequireComponent(typeof(BoxCollider))]
 [RequireComponent(typeof(Rigidbody))]
-public class SpacecraftController : PassengerController
+public class SpacecraftController : PassengerController, ISelectableOwner
 {
     [SerializeField]
     private LayerList _layerList = new();
@@ -27,15 +27,16 @@ public class SpacecraftController : PassengerController
     private Health _health;
     [SerializeField]
     private CreateLoad _createLoad;
-    private UnitType _unitType;
-    private RuntimeUnitStatus _status;
-
+    [SerializeField]
+    private Collider _clickCollider;
     [SerializeField]
     private float gravity = -9.81f;
-
-    private BoxCollider _collider;
+    
     private Rigidbody _rigidbody;
-
+    private UnitType _unitType;
+    private RuntimeUnitStatus _status;
+    private BoxCollider _collider;
+    public MonoBehaviour Owner => this;
     [HideInInspector]
     public Vector3 colliderSizeData;
     private event Action<GameObject> OnReturnAttackMark;
@@ -44,8 +45,10 @@ public class SpacecraftController : PassengerController
     {
         _status = status;
     }
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        _clickCollider.enabled = false;
         _unitTypeLayer = LayerMask.NameToLayer(UnitType.Spacecraft.ToString());
         _status = GetComponent<StatusComponent>().GetStatus();
         _unitType = GetComponent<StatusComponent>().GetUnitData().Type;
@@ -73,8 +76,10 @@ public class SpacecraftController : PassengerController
         {
             return;
         }
+        //초기화는 한번만, 그 이후로는 클릭 콜라이더 활성화
         else if (_bOnceInit)
         {
+            _clickCollider.enabled = true;
             MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(_unitType, this);
             _health.InitHealth();
             TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, _unitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
@@ -129,16 +134,42 @@ public class SpacecraftController : PassengerController
 
     }
 
+    public IEnumerator IEBoading(float elapsedTime)
+    {
+        yield return new WaitForSeconds(elapsedTime);
+        Boarding();
+    }
+    private void Boarding()
+    {
+        bool bGetChild = MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject child, UnitType.Creature);
+
+        if (!bGetChild)
+            return;
+        List<CreatureFSM> creatureFSMList = CreatureSelection.Instance.GetSelectionComponents<CreatureFSM>();
+        Transform creatureParent = child.transform;
+        NavMeshPath path = new();
+        for (int i = 0; i < creatureFSMList.Count; i++)
+        {
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 30f, NavMesh.AllAreas))
+            {
+                NavMesh.CalculatePath(creatureFSMList[i].transform.position, hit.position, NavMesh.AllAreas, path);
+                if (path.status == NavMeshPathStatus.PathInvalid)
+                {
+                    Debug.Log($"creatureFSMList[{i}] 길 막혔습니다");
+                    continue;
+                }
+                creatureFSMList[i].TargetPosition = hit.position;
+                creatureFSMList[i].StateMachine.ChangeState(CreatureState.Boarding);
+
+                AddPassenger(creatureFSMList[i], 1, creatureParent);
+            }
+        }
+        CreatureSelection.Instance.ClearSelectedList();
+    }
 
     private void GravityMove()
     {
         _rigidbody.velocity += gravity * Time.fixedDeltaTime * Vector3.up;
-    }
-
-    private Quaternion _rotationForGoal;
-    public void SaveRotation(Vector3 euler)
-    {
-        _rotationForGoal = Quaternion.Euler(euler);
     }
 
     private float t = 0;
@@ -217,9 +248,11 @@ public class SpacecraftController : PassengerController
     }
 
     public bool _isGravity = false;
+
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Ground") && _isGravity)
+        if (other.CompareTag(GameTags.Ground) && _isGravity)
         {
             if (!_bIsDriving)
             {

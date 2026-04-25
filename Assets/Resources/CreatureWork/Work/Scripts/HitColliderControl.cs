@@ -12,10 +12,6 @@ public abstract class HitColliderControl : MonoBehaviour
     private int _hitTriggerCount = 1;
     [SerializeField]
     protected float _fixedHitValue = 10;
-    [SerializeField]
-    private string _hitTag = Fraction.Enemy.ToString(); //일반 타겟 태그
-    [SerializeField]
-    private string _hitTagNexus = "EnemyNexus";  //넥서스 타겟 태그
     private int _curHitTriggerCount = 0;
     private List<int> _hitTargetList = new();
 
@@ -26,7 +22,7 @@ public abstract class HitColliderControl : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log(other.name);
-        if (other.CompareTag(_hitTag) || other.CompareTag(_hitTagNexus))
+        if (other.CompareTag(GameTags.Enemy) || other.CompareTag(GameTags.EnemyNexus))
         {
             CheckHit(other.gameObject);
         }

@@ -19,10 +19,20 @@ public class MPController : Singleton<MPController>
     private Button MP_AddButton;
 
     public Slider MP_StatusSlider;
+    public float CurrentMPValue { get; private set; }
     private float _mpMaxValue = 5000f;
-    private void FixedUpdate()
+    private void Awake()
     {
-        if(MP_StatusSlider.value != _mpMaxValue)
+        MP_StatusSlider.maxValue = _mpMaxValue;
+        MP_StatusSlider.value = _mpMaxValue;
+        CurrentMPValue = _mpMaxValue;
+        MP_AmountText.text = $"MP {CurrentMPValue}";
+
+    }
+    private void Update()
+    {
+        MP_StatusSlider.value = CurrentMPValue;
+        if (MP_StatusSlider.value != _mpMaxValue)
         {
             AutoFillInMP();
         }
@@ -43,11 +53,12 @@ public class MPController : Singleton<MPController>
     private float _autoFillInMPValue = 200f;
     private void AutoFillInMP()
     {
-        _curTime += Time.fixedDeltaTime;
+        _curTime += Time.deltaTime;
         if (_curTime >= _delayOfTime)
         {
-            MP_StatusSlider.value += _autoFillInMPValue;
-            MP_AmountText.text = $"MP {MP_StatusSlider.value}";
+            CurrentMPValue += _autoFillInMPValue;
+            CurrentMPValue = Mathf.Clamp(CurrentMPValue, 0, _mpMaxValue);
+            MP_AmountText.text = $"MP {CurrentMPValue}";
             _curTime = 0;
             StatusDataMng.Instance.RefreshStatusAddButtons();
         }
@@ -55,14 +66,7 @@ public class MPController : Singleton<MPController>
 
     public bool CheckToUseUpMP(float consumptionMPValue)
     {
-        if (MP_StatusSlider.value >= consumptionMPValue)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return MP_StatusSlider.value >= consumptionMPValue;
     }
     
     public bool UseUpMP(float consumptionMPValue, int count)
@@ -72,8 +76,9 @@ public class MPController : Singleton<MPController>
         {
             if(canUseUpMP)
             {
-                MP_StatusSlider.value -= consumptionMPValue;
-                MP_AmountText.text = $"MP {MP_StatusSlider.value}";
+                CurrentMPValue -= consumptionMPValue;
+                MP_StatusSlider.value = CurrentMPValue;
+                MP_AmountText.text = $"MP {CurrentMPValue}";
             }
         }
         StatusDataMng.Instance.RefreshStatusAddButtons();
@@ -83,15 +88,15 @@ public class MPController : Singleton<MPController>
 
     public void OnClickMPAddButton()
     {
-        Task task = Task.Factory.StartNew(()=> MPTask());
-        task.Wait();
+        UpdateMPStats();
         UseUpMP(_consumptionMPValue, 1);
         MP_StatusSlider.maxValue = _mpMaxValue;
     }
+
     private int _mpAddButtonCount = 0;
     private float _delayOfInitialTime = 5f;
     private float _consumptionMPValue;
-    private void MPTask()
+    private void UpdateMPStats()
     {
         ++_mpAddButtonCount; 
         _delayOfTime = _delayOfInitialTime - _mpAddButtonCount;
