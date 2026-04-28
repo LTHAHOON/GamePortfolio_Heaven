@@ -3,17 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
+using static UnityEngine.UI.GridLayoutGroup;
 using Random = UnityEngine.Random;
 public struct Goal
 {
     public Vector3 _spacecraftGoalPos;
     public Vector3 _passengerGoalPos;
+    public Vector3 _enemytNexusPos;
     public RespawnPositionType _respawnPositionType;
+}
+public enum SpacecraftState
+{
+    Idle,
+    Landing,
+    Drive,
+    GetOff,
+    Boarding,
 }
 
 [RequireComponent(typeof(StatusComponent))]
@@ -21,44 +32,82 @@ public struct Goal
 [RequireComponent(typeof(Rigidbody))]
 public class SpacecraftController : PassengerController, ISelectableOwner
 {
+    #region 상태 데이터 및 상태머신
+    private BezierCurveStatData _curveStatData = new();
+    [Header("유닛 탑승에 필요한 데이터")]
     [SerializeField]
-    private LayerList _layerList = new();
+    private BoardingStatData _boardingStatData;
+    [Header("SurroundPos에 필요한 데이터")]
     [SerializeField]
-    private Health _health;
+    private SurroundPosStatData _surroundPosStatData;
+    [Header("레이어 타겟 데이터")]
     [SerializeField]
-    private CreateLoad _createLoad;
+    private LayerTargetStatData _layerTargetStatData;
+    [Header("Die 스탯 데이터")]
     [SerializeField]
-    private Collider _clickCollider;
+    private DieStatData _dieStatData;
+    private StateMachine<SpacecraftState, SpacecraftController> _stateMachine;
+    public StateMachine<SpacecraftState, SpacecraftController> StateMachine => _stateMachine;
+    #endregion
+    #region Physics 데이터
     [SerializeField]
     private float gravity = -9.81f;
-    
-    private Rigidbody _rigidbody;
-    private UnitType _unitType;
-    private RuntimeUnitStatus _status;
-    private BoxCollider _collider;
-    public MonoBehaviour Owner => this;
+    [HideInInspector]
+    public bool _isGravity = false;
     [HideInInspector]
     public Vector3 colliderSizeData;
-    private event Action<GameObject> OnReturnAttackMark;
+    private Rigidbody _rigidbody;
+    private BoxCollider _collider;
+    #endregion
+    #region AttackMark 데이터
+    public event Action<GameObject> OnReturnAttackMark;
+    private GameObject _attackMark;
+    #endregion
+
+    [SerializeField]
+    private CreateLoad _createLoad;
+    private Goal _goalData;
     private int _unitTypeLayer;
-    public void SetStatus(RuntimeUnitStatus status)
-    {
-        _status = status;
-    }
+    private Transform _passengerParent;
+    public MonoBehaviour Owner => this;
+    private RuntimeUnitStatus _status;
+
+    #region 이벤트 함수
     protected override void Awake()
     {
         base.Awake();
+        #region StateMachine 초기화
+        _stateMachine = new(this, new IStateData[]
+        {
+            _surroundPosStatData,
+            _boardingStatData,
+            _layerTargetStatData,
+            _dieStatData,
+            _curveStatData,
+        });
+        _stateMachine.AddState(new SpacecraftIdleState());
+        _stateMachine.AddState(new SpacecraftBoardingState());
+        _stateMachine.AddState(new SpacecraftDriveState());
+        _stateMachine.AddState(new SpacecraftLandingState());
+        _stateMachine.AddState(new SpacecraftGetOffState());
+
+        #endregion
         _clickCollider.enabled = false;
         _unitTypeLayer = LayerMask.NameToLayer(UnitType.Spacecraft.ToString());
-        _status = GetComponent<StatusComponent>().GetStatus();
-        _unitType = GetComponent<StatusComponent>().GetUnitData().Type;
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<BoxCollider>();
         colliderSizeData = _collider.size;
         _collider.isTrigger = true;
     }
+    private void Update()
+    {
+        if (_stateMachine.CurrentState != null)
+        {
+            _stateMachine.UpdateCurrentState();
+        }
+    }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (_isGravity && !_rigidbody.isKinematic)
         {
@@ -66,105 +115,25 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         }
 
     }
+    #endregion
 
-    private float _distanceFromCent = 1f;
-    private bool _bIsDriving = false;
-    private bool _bOnceInit = true;
-    private void Update()
+    public void Initialize()
     {
-        if (_createLoad.IsLoadReady)
-        {
-            return;
-        }
-        //초기화는 한번만, 그 이후로는 클릭 콜라이더 활성화
-        else if (_bOnceInit)
-        {
-            _clickCollider.enabled = true;
-            MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(_unitType, this);
-            _health.InitHealth();
-            TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, _unitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
-            _bOnceInit = false;
-        }
-
-        if (_move)
-        {
-            _move = MoveToGoal();
-            if (_move == false)
-            {
-                Landing();
-            }
-        }
-    }
-    private void Landing()
-    {
-        transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-        transform.position = _goalData._spacecraftGoalPos;
-        _layerList.SetLayerList(gameObject, true, _unitTypeLayer);
-        _isGravity = true;
+        SetStatus();
+        _clickCollider.enabled = true;
+        MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType, this);
+        _health.InitHealth(_status);
     }
 
-    private void GetOff()
+    private void SetStatus()
     {
-        List<PassengerData> passengerList = GetPassengerDatas();
-        for (int i = 0; i < passengerList.Count; i++)
-        {
-            int[] positionCountArray = SurroundPosManager.GetPositionCountArray(passengerList[i]._passengerCount, 10);
-            float[] distancesArray = SurroundPosManager.DistanceArrayByCharacterCount(passengerList[i]._passengerCount, 5, 7, 10);
-            Vector3[] arrGoalPos = SurroundPosManager.GetTargetPositionsAround(_goalData._passengerGoalPos, distancesArray, positionCountArray);
-            for (int j = 0; j < passengerList[i]._passengerCount; j++)
-            {
-                if (NavMesh.SamplePosition(_goalData._spacecraftGoalPos + Random.onUnitSphere * _distanceFromCent, out NavMeshHit hit, 5f, NavMesh.AllAreas))
-                {
-                    passengerList[i]._passenger.transform.position = hit.position;
-                }
-                CreatureFSM fsm = Instantiate(passengerList[i]._passenger, _passengerParent);
-                MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType.Creature, fsm);
-                fsm.SetStatus(StatusSliderController._status);
-                fsm.TargetPosition = arrGoalPos[j];
-                if (j == 0)
-                {
-                    fsm._attackMark = _attackMark;
-                    fsm.OnReturnAttackMark += OnReturnAttackMark;
-                }
-                fsm.SetEnemyNexusTargetPos(_enemytNexusPos);
-                fsm.SetIsAttackTarget(true);
-                fsm.SetIsAttackMode(true);
-            }
-        }
-
+        _status = GetComponent<StatusComponent>().GetStatus();
     }
 
     public IEnumerator IEBoading(float elapsedTime)
     {
         yield return new WaitForSeconds(elapsedTime);
-        Boarding();
-    }
-    private void Boarding()
-    {
-        bool bGetChild = MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject child, UnitType.Creature);
-
-        if (!bGetChild)
-            return;
-        List<CreatureFSM> creatureFSMList = CreatureSelection.Instance.GetSelectionComponents<CreatureFSM>();
-        Transform creatureParent = child.transform;
-        NavMeshPath path = new();
-        for (int i = 0; i < creatureFSMList.Count; i++)
-        {
-            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 30f, NavMesh.AllAreas))
-            {
-                NavMesh.CalculatePath(creatureFSMList[i].transform.position, hit.position, NavMesh.AllAreas, path);
-                if (path.status == NavMeshPathStatus.PathInvalid)
-                {
-                    Debug.Log($"creatureFSMList[{i}] 길 막혔습니다");
-                    continue;
-                }
-                creatureFSMList[i].TargetPosition = hit.position;
-                creatureFSMList[i].StateMachine.ChangeState(CreatureState.Boarding);
-
-                AddPassenger(creatureFSMList[i], 1, creatureParent);
-            }
-        }
-        CreatureSelection.Instance.ClearSelectedList();
+        _stateMachine.ChangeState(SpacecraftState.Boarding);
     }
 
     private void GravityMove()
@@ -172,101 +141,66 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         _rigidbody.velocity += gravity * Time.fixedDeltaTime * Vector3.up;
     }
 
-    private float t = 0;
-    private bool _move = false;
-    private Vector3 _startPoint;
-    private Vector3 _middlePoint;
-    private Vector3 _endPoint;
-    private const float _maxTime = 15f;
-    private bool MoveToGoal()
-    {
-        if (_middlePoint == Vector3.zero)
-        {
-            Vector3 p = ((1 - t / _maxTime) * _startPoint) + (t / _maxTime * _endPoint);
-            t += Time.deltaTime;
-            transform.position = p;
-        }
-        else
-        {
-            Vector3 e = ((1 - t / _maxTime) * _startPoint) + (t / _maxTime * _middlePoint);
-            Vector3 f = ((1 - t / _maxTime) * _middlePoint) + (t / _maxTime * _endPoint);
-            Vector3 p = ((1 - t / _maxTime) * e) + (t / _maxTime * f);
-            if (_status != null)
-            {
-                t += Time.deltaTime * (_status.DEX / 1.2f);
-            }
-            else
-            {
-                t += Time.deltaTime;
-            }
-
-            Vector3 dir = p - transform.position;
-            Quaternion rot = Quaternion.LookRotation(dir.normalized);
-            Vector3 changedEulerAngle = rot.eulerAngles;
-            Vector3 curEulerAngle = transform.rotation.eulerAngles;
-            changedEulerAngle.x = curEulerAngle.x;
-            rot = Quaternion.Euler(changedEulerAngle);
-
-            transform.rotation = rot;
-            transform.position = p;
-        }
-        return t < _maxTime;
-    }
-
-    private Goal _goalData;
-    private Vector3 _enemytNexusPos;
     public void SetGoal(Vector3 startPoint, Vector3 endPoint, Vector3 middlePoint, Goal goalData, Vector3 enemyNexusPos)
     {
-        _startPoint = startPoint;
-        _endPoint = endPoint;
+        Initialize();
+        _curveStatData._startPoint = startPoint;
+        _curveStatData._endPoint = endPoint;
         _goalData = goalData;
         _goalData._spacecraftGoalPos.y = 5f;
-        _enemytNexusPos = enemyNexusPos;
-        _middlePoint = middlePoint;
-        _move = true;
+        _goalData._enemytNexusPos = enemyNexusPos;
+        _curveStatData._middlePoint = middlePoint;
+        _layerTargetStatData._layerTargetList.SetLayerList(gameObject, true, GameLayer.OutPlanetLayer);
+        _stateMachine.ChangeState(SpacecraftState.Drive);
     }
 
-    private Transform _passengerParent;
-    public void AddPassenger(CreatureFSM creature, int passengerCount, Transform parent)
+    public void AddPassenger(Creature creature, int passengerCount, Transform parent)
     {
-        _bIsDriving = true;
         _passengerParent = parent;
         AddPassengerInData(creature, passengerCount);
     }
 
-    private GameObject _attackMark;
-    public void SetReturnAttackMark(GameObject attckMark, Action<GameObject> returnAttackmark)
+    #region AttackMark 설정
+    public void SetAttackMark(GameObject attckMark, Action<GameObject> returnAttackmark)
     {
         _attackMark = attckMark;
         OnReturnAttackMark += returnAttackmark;
     }
-
+    public void SetAttackMarkToCreature(Creature creature)
+    {
+        creature._attackMark = _attackMark;
+        creature.OnReturnAttackMark += OnReturnAttackMark;
+    }
+    #endregion
 
     public int GetPassengerCount(long id)
     {
         return GetPassengerCountInData(id);
     }
 
-    public bool _isGravity = false;
-
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(GameTags.Ground) && _isGravity)
         {
-            if (!_bIsDriving)
+            if (!HasPassenger)
             {
-                _createLoad.StartCreateLoad();
+                _createLoad.StartCreateLoad(() =>
+                { 
+                    Initialize();
+                    _stateMachine.ChangeState(SpacecraftState.Idle);
+                });
             }
             _collider.isTrigger = false;
             _rigidbody.isKinematic = true;
-            _bIsDriving = false;
-            GetOff();
+            _isGravity = false;
+            _stateMachine.ChangeState(SpacecraftState.GetOff);
             ClearPassengerDatas();
         }
     }
 
+    public RuntimeUnitStatus Status => _status;
+    public Transform PassengerParent => _passengerParent;
+    public int UnitTypeLayer => _unitTypeLayer;
+    public Goal GoalData => _goalData;
     public CreateLoad GetCreateLoad() => _createLoad;
-    public LayerList GetLayerList() => _layerList;
-
 }

@@ -26,18 +26,20 @@ public class SpacecraftSelection : Selection<SpacecraftController>
     private Coroutine _boadingCoroutine;
     public void ProcessOnSelected()
     {
-
         Vector3? worldMousePos = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _clickColliderLayer);
         if (worldMousePos.HasValue)
         {
-            if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main,
-                                                                        _clickColliderLayer, UnitType.Spacecraft, out GameObject target, true))
+            if(!_target)
             {
-                if (!target.TryGetComponent(out SpacecraftController spacecraftController))
-                    return;
-                _target = spacecraftController;
-                _boadingCoroutine = StartCoroutine(_target.IEBoading(_elapsedTime));
-                Debug.Log(target);
+                if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main,
+                                                                            _clickColliderLayer, UnitType.Spacecraft, out GameObject target, true))
+                {
+                    if (!target.TryGetComponent(out SpacecraftController spacecraftController))
+                        return;
+                    _target = spacecraftController;
+                    _boadingCoroutine = StartCoroutine(_target.IEBoading(_elapsedTime));
+                    Debug.Log(target);
+                }
             }
             if (Input.GetKeyUp(KeyCode.F))
             {

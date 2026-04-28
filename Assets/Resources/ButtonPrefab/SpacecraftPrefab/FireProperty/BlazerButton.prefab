@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a50be66dbf343c459a1d9f053d3cf65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isAddedUnitChip: 0
+  _isAddedUnitChip: 1
   _statusComponent: {fileID: 6025241993315389979}
   _horizontalLength: 0
   _verticalLength: 0
@@ -460,4 +460,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7fbc192880846c45a3b2302961080a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spawnHeight: 5
   _prefabDatabase: {fileID: 11400000, guid: e781d2e347c65934db7099569dd73661, type: 2}

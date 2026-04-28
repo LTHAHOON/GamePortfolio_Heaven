@@ -60,7 +60,9 @@ MonoBehaviour:
   _hpChipBarSlider: {fileID: 267858217653549724}
   _healthTimeSpeed: 1
   _chipTimeSpeed: 1
-  _chipTimeDelay: 0.5
+  _chipTimeDelay: 0.3
+  _isForceHideUI: 0
+  _showDuration: 0
   _health: {fileID: 0}
 --- !u!114 &422167563921503432
 MonoBehaviour:
@@ -88,8 +90,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _cameraUpOffset: 0
-  _screenOffset: {x: 0, y: 165, z: 0}
-  _localOffset: {x: 0, y: 0.01, z: 0}
+  _screenOffset: {x: 0, y: 30, z: 0}
+  _localOffset: {x: 0, y: 0.07, z: 0}
 --- !u!114 &228394065031557256
 MonoBehaviour:
   m_ObjectHideFlags: 0

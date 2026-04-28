@@ -11,19 +11,12 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
     [SerializeField]
     private LayerMask _checkObjectLayerMask;
     [SerializeField]
-    private LayerMask _outPlanetLayerMask;
-    [SerializeField]
     private float _maxCheckTime = 0.5f;
 
-    private int _outPlanetLayer;
     private float _curCheckTime = 0;
     private List<ICullingUI> _cullingUIList = new();
     private Dictionary<ICullingUI, Collider> _dicTargetObj = new();
-    private void Awake()
-    {
-        _outPlanetLayer = (int)Mathf.Log(_outPlanetLayerMask.value, 2);
-        Debug.Log(_outPlanetLayer);
-    }
+    
     private void Update()
     {
         _curCheckTime += Time.deltaTime;
@@ -48,6 +41,7 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
         if (_cullingUIList.Contains(loadingText))
         {
             _cullingUIList.Remove(loadingText);
+            Destroy(loadingText.ThisGameObject);
             _dicTargetObj.Remove(loadingText);
         }
     }
@@ -74,15 +68,15 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
             }
             else
             {
-                shouldActive = (collider.gameObject.layer == _outPlanetLayer)
+                shouldActive = (collider.gameObject.layer == GameLayer.OutPlanetLayer)
                                && CheckFrustrum(collider, camera)
                                && CheckObjectVisible(camera, collider);
             }
-            if(cullingUI.Owner)
+            if(cullingUI != null && cullingUI.ThisGameObject)
             {
-                if (cullingUI.Owner.activeSelf != shouldActive && !cullingUI.IsForceHideUI)
+                if (cullingUI.ThisGameObject.activeSelf != shouldActive && !cullingUI.IsForceHideUI)
                 {
-                    cullingUI.Owner.SetActive(shouldActive);
+                    cullingUI.ThisGameObject.SetActive(shouldActive);
                 }
 
             }

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class PassengerData 
 {
-    public CreatureFSM _passenger;
+    public Creature _passenger;
     public int _passengerCount = 0;
 
-    public PassengerData(CreatureFSM passenger, int passengerCount)
+    public PassengerData(Creature passenger, int passengerCount)
     {
         _passenger = passenger;
         _passengerCount = passengerCount;

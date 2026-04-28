@@ -47,15 +47,15 @@ public class DefenseButtonController : ModeButton
         }
     }
 
-    private GameObject _curUnitPrefab;
-    public void ReadyPrefab()
+    private Unit _curUnitPrefab;
+    public override void ReadyPrefab()
     {
         if (_selectedUnitType == UnitType.Creature)
         {
             Transform instantiateParent = GetSelectedUnitParentTransform(_selectedUnitType);
-            _curUnitPrefab = Instantiate<GameObject>(_unitPrefab, instantiateParent);
-
-            _curUnitPrefab.SetActive(false);
+            _curUnitPrefab = Instantiate(_unitPrefab, instantiateParent);
+            _curUnitPrefab.transform.position = new Vector3(instantiateParent.position.x, _spawnComponent.SpawnHeight, instantiateParent.position.z);
+            _curUnitPrefab.gameObject.SetActive(false);
         }
 
         _bReadyPrefab = true;
@@ -65,16 +65,16 @@ public class DefenseButtonController : ModeButton
     {
         if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
         {
-            if (_curUnitPrefab.TryGetComponent(out CreatureFSM fsm))
+            if (_curUnitPrefab.TryGetComponent(out Creature creature))
             {
-                fsm.SetStatus(StatusSliderController._status);
-                fsm.SetIsAttackMode(false);
-                MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(_selectedUnitType, fsm);
+                creature.SetStatus(StatusSliderController._status);
+                creature.SetIsAttackMode(false);
+                MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(_selectedUnitType, creature);
             }
             MouseCursorData data = CursorManager.GetCursorData(CursorType.Defend);
             _curUnitPrefab.transform.position = data.GetFollwingSpriteRenderer().transform.position;
-            _curUnitPrefab.SetActive(true);
-            MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, 1); //MP�Ҹ�
+            _curUnitPrefab.gameObject.SetActive(true);
+            MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, 1); //MPҸ
             _curUnitPrefab = null;
 
             _createCountController.ConsumeCurCreateCount(1);

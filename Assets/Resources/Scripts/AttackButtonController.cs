@@ -5,8 +5,7 @@ using UnityEngine.UI;
 
 public class AttackButtonController : ModeButton
 {
-    [SerializeField]
-    private LayerMask _outPlanetLayerMask;
+
     [Header("EnemyNexusTarget")]
     [SerializeField]
     private Transform _enemyNexusTarget;
@@ -26,14 +25,13 @@ public class AttackButtonController : ModeButton
     [SerializeField]
     private Transform _mapMarkParent;
     private PoolComponent _pcAttackMark;
-    private int _outPlanetLayer;
 
     public override void Awake()
     {
         base.Awake();
         PoolManager.Instance.AddPool(_attackMark, 3, 5, _mapMarkParent);
         _pcAttackMark = PoolManager.Instance.GetPool(_attackMark);
-        _outPlanetLayer = (int)Mathf.Log(_outPlanetLayerMask.value, 2);
+
         bool hasOriginSpacecraftPrefab = _OriginSpacecraftPrefab.TryGetComponent(out MPComponent spacecraftMPC);
         if (hasOriginSpacecraftPrefab)
         {
@@ -88,7 +86,7 @@ public class AttackButtonController : ModeButton
     private Goal _goalData;
     [SerializeField]
     private GameObject _OriginSpacecraftPrefab;
-    public void ReadyPrefab()
+    public override void ReadyPrefab()
     {
         _bReadyPrefab = true;
     }
@@ -116,23 +114,21 @@ public class AttackButtonController : ModeButton
             Transform instantiateParent = GetSelectedUnitParentTransform(UnitType.Spacecraft);
             GameObject spacecraftPrefab = Instantiate(_OriginSpacecraftPrefab, instantiateParent);
             spacecraftPrefab.transform.position = _startPos;
-            //TODO: _unitMPData의 소모량만큼 MP 소모하기
+            //_unitMPData의 소모량만큼 MP 소모하기
             MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, _createCountController.GetCurCreateCount());
             MPController.Instance.UseUpMP(_originSpacecraftMpData.MP_ConsValue, 1);
 
             if (spacecraftPrefab.TryGetComponent(out SpacecraftController spacecraftController) &&
-                _unitPrefab.TryGetComponent(out CreatureFSM fsm))
+                _unitPrefab.TryGetComponent(out Creature creature))
             {
-                spacecraftController.GetLayerList().SetLayerList(spacecraftPrefab, true , _outPlanetLayer);
-                MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType.Spacecraft, spacecraftController);
                 spacecraftController.GetCreateLoad().SetLoadReady(false);
                 Transform creatureParent = GetSelectedUnitParentTransform(_selectedUnitType);
-                spacecraftController.AddPassenger(fsm, _createCountController.GetCurCreateCount(), creatureParent);
-                spacecraftController.SetReturnAttackMark(attackMark, ReturnAttackMark);
-                Debug.Log(spacecraftController.GetPassengerCount(fsm.GetID()) + "탑승");
+                spacecraftController.AddPassenger(creature, _createCountController.GetCurCreateCount(), creatureParent);
+                spacecraftController.SetAttackMark(attackMark, ReturnAttackMark);
+                Debug.Log(spacecraftController.GetPassengerCount(creature.GetID()) + "탑승");
             }
             _bSetGoalProcess = false;
-            //TODO: 목표 설정하기
+            //목표 설정하기
             SetGoal(spacecraftPrefab, _goalData);
             PlanetInternalPopController.CloseMode(ModeType);
         }

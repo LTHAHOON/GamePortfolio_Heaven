@@ -13,6 +13,7 @@ public class CreateLoad : MonoBehaviour
     [SerializeField]
     private float _loadingDelayTime = 0.5f;
     public static event Func<CreateLoad, float, float, LoadingTask> OnStartCreateLoad;
+    public event Action OnDoneCreateLoad; 
     public LoadingTextComponent<CreateLoad> _loadingTextComponent;
     private bool _isLoading = false;
     private bool _isLoadReady = true;
@@ -34,17 +35,19 @@ public class CreateLoad : MonoBehaviour
             OnDoneLoading();
         }
     }
-    public void StartCreateLoad()
+    public void StartCreateLoad(Action endAction)
     {
         _isLoading = true;
         loadingTask = OnStartCreateLoad(this, _createTime, _loadingDelayTime);
         loadingTask.OnDoneLoadingTask = OnDoneLoading;
+        OnDoneCreateLoad = endAction;
     }
     
     public void OnDoneLoading()
     {
         _isLoadReady = false;
         _isLoading = false;
+        OnDoneCreateLoad?.Invoke();
     }
 
     public bool IsLoading => _isLoading;

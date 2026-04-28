@@ -42,7 +42,6 @@ public abstract class Selection<T> : Singleton<Selection<T>>, ISelection where T
             }
         }
     }
-
     public void AddToSelectedList(ISelectableOwner selectedTarget)
     {
         if (selectedTarget.Owner.CompareTag(GameTags.Ally))
@@ -140,8 +139,6 @@ public class SelectionManager : Singleton<SelectionManager>
         }
         return null;
     }
-
-
 
     public void ClearAllSelection()
     {

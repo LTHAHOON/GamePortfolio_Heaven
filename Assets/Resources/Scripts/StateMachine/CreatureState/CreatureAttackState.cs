@@ -4,51 +4,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CreatureAttackState : State<CreatureState, CreatureFSM>
+public class CreatureAttackState : State<CreatureState, Creature>
 {
     private NavMeshStatData _navMeshStatData;
     private AnimatorStatData _animatorStatData;
     private AttackActivationStatData _attackActivationStatData;
     public override CreatureState EState => CreatureState.Attack;
-    public override void InitState(StateMachine<CreatureState, CreatureFSM> stateMachine)
+    public override void InitState(StateMachine<CreatureState, Creature> stateMachine)
     {
         stateMachine.TryGetStateData(out _navMeshStatData);
         stateMachine.TryGetStateData(out _animatorStatData);
         stateMachine.TryGetStateData(out _attackActivationStatData);
     }
 
-    public override void EnterState(StateMachine<CreatureState, CreatureFSM> stateMachine) 
+    public override void EnterState(StateMachine<CreatureState, Creature> stateMachine) 
     {
-        CreatureFSM creatureFSM = stateMachine.GetOwner();
-        creatureFSM.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
+        Creature creature = stateMachine.GetOwner();
+        creature.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
     }
-    public override void UpdateState(StateMachine<CreatureState, CreatureFSM> stateMachine)
+    public override void UpdateState(StateMachine<CreatureState, Creature> stateMachine)
     {
         try
         {
-            CreatureFSM creatureFSM = stateMachine.GetOwner();
+            Creature creature = stateMachine.GetOwner();
             NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
             NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-            float attackDistance = creatureFSM.GetAttackDistance(navMeshAgentStatData);
+            float attackDistance = creature.GetAttackDistance(navMeshAgentStatData);
             //적과 해당거리만큼 멀어졌을 때 Trace전환
-            if (creatureFSM.GetDistanceFromThisToTarget() > (attackDistance * attackDistance))
+            if (creature.GetDistanceFromThisToTarget() > (attackDistance * attackDistance))
             {
                 stateMachine.ChangeState(CreatureState.Trace);
                 return;
             }
             Quaternion newRotation;
-            if (SurroundPosManager.IsContainTargetPos(creatureFSM.gameObject))
+            if (SurroundPosManager.IsContainTargetPos(creature.gameObject))
             {
-                newRotation = Quaternion.LookRotation(creatureFSM.GetEnemyNexusDirection());
+                newRotation = Quaternion.LookRotation(creature.GetEnemyNexusDirection());
             }
             else
             {
-                newRotation = Quaternion.LookRotation(creatureFSM.GetMoveDirection());
+                newRotation = Quaternion.LookRotation(creature.GetMoveDirection());
             }
             navMeshAgent.transform.rotation = Quaternion.Slerp(navMeshAgent.transform.rotation, newRotation, Time.deltaTime * 10f);
-            if (creatureFSM._isChoice)
+            if (creature._isChoice)
             {
-                creatureFSM.StartCoroutine(creatureFSM.IEAttackChoose(_animatorStatData, _attackActivationStatData));
+                creature.StartCoroutine(creature.IEAttackChoose(_animatorStatData, _attackActivationStatData));
             }
 
         }
@@ -58,5 +58,5 @@ public class CreatureAttackState : State<CreatureState, CreatureFSM>
             stateMachine.ChangeState(CreatureState.Trace);
         }
     }
-    public override void ExitState(StateMachine<CreatureState, CreatureFSM> stateMachine) { }
+    public override void ExitState(StateMachine<CreatureState, Creature> stateMachine) { }
 }

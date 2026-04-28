@@ -19,7 +19,7 @@ public class MyUnitPrefabDataControl : Singleton<MyUnitPrefabDataControl>
     [SerializeField]
     private StorageChild<Unit>[] _arrStorageUnit;
 
-    private Dictionary<UnitType, StorageChild<Unit>> _dicUnitStorage = new();
+    private readonly Dictionary<UnitType, StorageChild<Unit>> _dicUnitStorage = new();
     private void Awake()
     {
         for (int i = 0; i < _arrStorageUnit.Length; i++)
@@ -35,14 +35,22 @@ public class MyUnitPrefabDataControl : Singleton<MyUnitPrefabDataControl>
             unitList.Add(unitprefab);
         }
     }
-    public void RemoveUnitPrefabToList(UnitType unitType, Unit unitprefab)
+    public void RemoveUnitPrefabToList(UnitType unitType, Unit unitprefab, float dieDelayTime = 0f, AnimatorStatData animatorStatData = null)
     {
         if (ContainsUnitPrefab(unitprefab, unitType))
         {
             _dicUnitStorage[unitType]._unitList.Remove(unitprefab);
+            unitprefab.GetClickCollider().enabled = false;
+            animatorStatData?._animator.SetTrigger(animatorStatData._dicAnimParameterHash[AnimParameter.Die]);
+            StartCoroutine(IEDie(unitprefab, dieDelayTime));
         }
-    }
 
+    }
+    public IEnumerator IEDie(Unit unitPrefab, float dieDelayTime)
+    {
+        yield return new WaitForSeconds(dieDelayTime);
+        Destroy(unitPrefab.gameObject);
+    }
 
     public bool TryGetUnitList(out List<Unit> unitList, UnitType unitType)
     {

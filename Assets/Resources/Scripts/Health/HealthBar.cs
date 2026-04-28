@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using Color = UnityEngine.Color;
@@ -25,20 +26,22 @@ public class HealthBar : MonoBehaviour, ICullingUI
     [Header("ChipBar Delay")]
     [SerializeField]
     private float _chipTimeDelay = 0.2f;
+    [SerializeField]
+    private bool _isForceHideUI = false;
+    [SerializeField]
+    private float _showDuration = 0f;
     private float _curChipTime = 0;
     private bool _bLerpHealthBar = false;
     private float _curPct = 1;
     public Health _health;
-
-    public bool IsForceHideUI { get; set; }
-
-    public GameObject Owner => gameObject;
-
+    public GameObject ThisGameObject => gameObject;
     public Collider ColliderForCulling => _health._collider;
+
     private void Awake()
     {
-        SetForceHideUI(true);
+        SetForceHideUI(_isForceHideUI);
     }
+
     private void Update()
     {
         UpdateHealthBarPosition();
@@ -47,13 +50,27 @@ public class HealthBar : MonoBehaviour, ICullingUI
 
     }
 
+
+    //Active가 켜지는 순간 새로고침
+    private void OnEnable()
+    {
+        if (!_health) return;
+        _hpBarSlider.value = _health.CurrentHealthPct;
+        _hpChipBarSlider.value = _health.CurrentHealthPct;
+    }
+    private void OnDisable()
+    {
+        if (!_health) return;
+        _hpBarSlider.value = _health.CurrentHealthPct;
+        _hpChipBarSlider.value = _health.CurrentHealthPct;
+    }
     private void UpdateHealthBar(float pct)
     {
         if (_bLerpHealthBar)
         {
             if (_hpBarSlider.value != pct)
             {
-                _hpBarSlider.value = Mathf.MoveTowards(_hpBarSlider.value, _curPct, Time.deltaTime * _healthTimeSpeed);
+                _hpBarSlider.value = Mathf.MoveTowards(_hpBarSlider.value, pct, Time.deltaTime * _healthTimeSpeed);
             }
             else
             {
@@ -74,7 +91,7 @@ public class HealthBar : MonoBehaviour, ICullingUI
             }
             else
             {
-                _hpChipBarSlider.value = Mathf.MoveTowards(_hpChipBarSlider.value, _curPct, Time.deltaTime * _chipTimeSpeed);
+                _hpChipBarSlider.value = Mathf.MoveTowards(_hpChipBarSlider.value, pct, Time.deltaTime * _chipTimeSpeed);
             }
         }
         else
@@ -83,7 +100,6 @@ public class HealthBar : MonoBehaviour, ICullingUI
             if (CheckDead(pct))
             {
                 ObjectVisbilitySystem.Instance.RemoveToList(this);
-                Destroy(gameObject);
             }
         }
     }
@@ -120,15 +136,30 @@ public class HealthBar : MonoBehaviour, ICullingUI
         }
     }
 
-    public void SetFillColor(Color color) =>_fill.color = color;
-    private void OnDestroy()
+    private bool _playingHide = false;
+    public IEnumerator IEShowUI(float showDuration = -1f)
     {
-        _health.OnHealthPctChanged -= HandleHealthPctChanged;
+        if (_playingHide) yield break;
+        _playingHide = true;
+        if(showDuration <= 0)
+        {
+            showDuration = _showDuration;
+        }
+        SetForceHideUI(false);
+        yield return new WaitForSeconds(showDuration);
+        if (this == null) yield break;
+        SetForceHideUI(true);
+        _playingHide = false;
     }
+
 
     public void SetForceHideUI(bool isForceHide)
     {
-        IsForceHideUI = isForceHide;
+        _isForceHideUI = isForceHide;
         gameObject.SetActive(!isForceHide);
     }
+
+    public void SetFillColor(Color color) =>_fill.color = color;
+    public bool IsForceHideUI => _isForceHideUI;
+
 }

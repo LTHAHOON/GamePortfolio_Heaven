@@ -9,7 +9,7 @@ public class CreateLoadComponent : LoadingTextComponent<CreateLoad>, ICullingUI
     private UIFollowObject _uiFollowObject;
 
     public bool ForceHideUI => false;
-    public GameObject Owner => gameObject;
+    public GameObject ThisGameObject => gameObject;
     public Collider ColliderForCulling => _load._collider;
 
     public bool IsForceHideUI { get; set; }

@@ -38,13 +38,13 @@ public class StateMachine<TEnumState, TOwner>
             _currentState?.ExitState(this);
             _currentState = state;
             if (_currentState._bOnceEnter) return;
-            _currentState.EnterState(this);
+            _currentState?.EnterState(this);
         }
     }
 
     public void UpdateCurrentState()
     {
-        _currentState.UpdateState(this);
+        _currentState?.UpdateState(this);
     }
     public bool TryGetStateData<T>(out T result)
     {

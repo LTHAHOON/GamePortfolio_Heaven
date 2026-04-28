@@ -16,7 +16,7 @@ public enum CreatureState
 }
 
 [RequireComponent(typeof(StatusComponent))]
-public class CreatureFSM : Unit, ISelectableOwner
+public class Creature : Unit, ISelectableOwner
 {
     #region 상태 데이터 및 상태머신
     [Header("NavMesh 데이터")]
@@ -31,23 +31,21 @@ public class CreatureFSM : Unit, ISelectableOwner
     [Header("공격 발동 확률 데이터")]
     [SerializeField]
     private AttackActivationStatData _attackActivationStatData;
-    [Header("레이어 데이터")]
+    [Header("Die 스탯 데이터")]
     [SerializeField]
-    private LayerStatData _layerStatData;
-    private StateMachine<CreatureState, CreatureFSM> _stateMachine;
-    public StateMachine<CreatureState, CreatureFSM> StateMachine => _stateMachine;
+    private DieStatData _dieStatData;
+
+    private StateMachine<CreatureState, Creature> _stateMachine;
+    public StateMachine<CreatureState, Creature> StateMachine => _stateMachine;
     #endregion
     #region Physics 데이터
-    [SerializeField]
-    private Collider _clickCollider;
+
     [Header("중력 세기")]
     [SerializeField]
     private float _gravity = -12f;
-    private bool _isMoveGravity = true;
+    private bool _isGravity = true;
     #endregion
-    #region 체력 컴포넌트
-    [SerializeField]
-    private Health _health;
+    #region 체력 MaterialInstance
     [SerializeField]
     private HPMaterialInstance _hpMaterialInstance;
     #endregion
@@ -105,7 +103,7 @@ public class CreatureFSM : Unit, ISelectableOwner
             _animatorStatData,
             _surroundPosData,
             _attackActivationStatData,
-            _layerStatData,
+            _dieStatData,
         });
         #endregion
         #region State 추가
@@ -130,15 +128,14 @@ public class CreatureFSM : Unit, ISelectableOwner
         _health.OnDamageHit += DamageHit;
         _health.OnDie += Die;
         _status = _statusComponent.GetStatus();
-        //_navMeshStatData._navmeshAgentData._navMeshAgent.enabled = true;
     }
     private void Update()
     {
-        UpdateFSM();
+        UpdateState();
     }
     private void FixedUpdate()
     {
-        if (_isMoveGravity)
+        if (_isGravity)
         {
             GravityMove();
         }
@@ -146,7 +143,7 @@ public class CreatureFSM : Unit, ISelectableOwner
     #endregion
 
     //생물체 FSM
-    private void UpdateFSM()
+    private void UpdateState()
     {
         if (!CheckGround()) return;
         _stateMachine.UpdateCurrentState();
@@ -174,9 +171,9 @@ public class CreatureFSM : Unit, ISelectableOwner
 
     //SphereCast에 의한 가까운 적 구하는 함수
     private readonly RaycastHit[] _enemies = new RaycastHit[25];
-    public bool TryGetAroundEnemy(out RaycastHit enemy, float radius, LayerStatData layerStatData)
+    public bool TryGetAroundEnemy(out RaycastHit enemy, float radius)
     {
-        int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemies, 0, layerStatData._enemyTargetLayer);
+        int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemies, 0, GameLayer.EnemyTargetLayer);
         if (enemyCount > 0)
         {
             enemy = MinDistanceEnemy(_enemies, enemyCount);
@@ -197,7 +194,7 @@ public class CreatureFSM : Unit, ISelectableOwner
         navMeshAgent.destination = TargetPosition.Value;
         navMeshAgent.speed = _status.DEX * 1.5f;
         currentWalkSpeed = navMeshAgent.desiredVelocity.magnitude;
-        animator.SetFloat(_animatorStatData._dicAnimParameterHash[AnimParameter.WalkSpeed], currentWalkSpeed * _animatorStatData.animatorSpeedMultiplier);
+        animator.SetFloat(_animatorStatData._dicAnimParameterHash[AnimParameter.WalkSpeed], currentWalkSpeed * _animatorStatData._animatorSpeedMultiplier);
         animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], true);
     }
     public void StopToMove(NavMeshAgent navMeshAgent, Animator animator)
@@ -213,7 +210,7 @@ public class CreatureFSM : Unit, ISelectableOwner
 
     #region Attack상태에 들아가기 전 한번 더 추적하는 함수
     public bool HandleAttacktarget(NavMeshAgentStatData navMeshAgentData, AnimatorStatData animatorStatData, 
-                                                    SurroundPosStatData surroundPosData, LayerStatData layerStatData)
+                                                    SurroundPosStatData surroundPosData)
     {
         //둘러쌓은 위치를 가졌는데 적 타겟을 가지고 있을 경우
         if (_enemy.collider != null || SurroundPosManager.IsContainTargetPos(gameObject))
@@ -222,7 +219,7 @@ public class CreatureFSM : Unit, ISelectableOwner
             return true;
         }
         //사용자가 지정한 위치에 도달했을 때 적 추적을 실패할 경우 적 넥서스 타겟 지정
-        else if (!TryGetAroundEnemy(out _enemy, navMeshAgentData._traceRaidus, layerStatData))
+        else if (!TryGetAroundEnemy(out _enemy, navMeshAgentData._traceRaidus))
         {
             if (_isAttackMode && _attackMark)
             {
@@ -248,16 +245,22 @@ public class CreatureFSM : Unit, ISelectableOwner
     #region 데미지 및 힐될 때 호출되는 함수
     public void DamageHit()
     {
-        if (_hpMaterialInstance.isActiveAndEnabled && _health)
+        if (_hpMaterialInstance.isActiveAndEnabled && _health && _health.HealthBar)
         {
+            StartCoroutine(_health.HealthBar.IEShowUI());
             _hpMaterialInstance.ChangeHP(_health.CurrentHealth, _health.MaxHealth);
             _animatorStatData._animator.SetTrigger(_animatorStatData._dicAnimParameterHash[AnimParameter.GetHit]);
+        }
+        else
+        {
+            _animatorStatData._animator.ResetTrigger(_animatorStatData._dicAnimParameterHash[AnimParameter.GetHit]);
         }
     }
     public void HealHit()
     {
-        if (_hpMaterialInstance.isActiveAndEnabled && _health)
+        if (_hpMaterialInstance.isActiveAndEnabled && _health && _health.HealthBar)
         {
+            StartCoroutine(_health.HealthBar.IEShowUI());
             _hpMaterialInstance.ChangeHP(_health.CurrentHealth, _health.MaxHealth);
         }
     }
@@ -266,14 +269,13 @@ public class CreatureFSM : Unit, ISelectableOwner
     #region 죽을 때 호출되는 함수
     public void Die()
     {
+        _health.HealthBar.
+
+        StopAllCoroutines();
         _stateMachine.ChangeState(CreatureState.Die);
     }
 
-    public IEnumerator IEDie(float dieDelayTime)
-    {
-        yield return new WaitForSeconds(dieDelayTime);
-        Destroy(gameObject);
-    }
+
     #endregion
 
     #region 확률에 의한 랜덤 공격 함수
@@ -322,7 +324,7 @@ public class CreatureFSM : Unit, ISelectableOwner
     {
         if (_characterController.isGrounded)
         {
-            _isMoveGravity = false;
+            _isGravity = false;
         }
         return _characterController.isGrounded;
     }
@@ -392,11 +394,11 @@ public class CreatureFSM : Unit, ISelectableOwner
 
     #region 데이터 반환 함수
     public int GetAnimParameterHash(AnimParameter animParameter) => _animatorStatData._dicAnimParameterHash[animParameter];
-    public Collider GetClickCollider() => _clickCollider;   
+
     public float GetAttackDistance(NavMeshAgentStatData data) => (_enemy.collider != null) ? _enemy.collider.bounds.extents.magnitude : data._nexusAttackDistance;
     public Vector3 GetEnemyNexusDirection() => (_enemyNexusPos - transform.position);
     public Vector3 GetMoveDirection() => (TargetPosition.Value - transform.position);
-    public Health GetHealth() => _health;
+
     public GameObject GetCreatureHP() => _hpMaterialInstance.GetCreatureHP();
     public void SetIsAttackMode(bool isAttackMode) => _isAttackMode = isAttackMode;
     public void SetIsAttackTarget(bool isAttackTarget) => _isAttackTarget = isAttackTarget;

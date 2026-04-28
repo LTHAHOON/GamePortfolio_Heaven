@@ -5,6 +5,9 @@ using UnityEngine;
 public class SpawnComponent : MonoBehaviour
 {
     [SerializeField]
+    private float _spawnHeight = 5f;
+
+    [SerializeField]
     private PrefabDatabase _prefabDatabase;
 
     private GameObject spawnPrefab;
@@ -17,4 +20,5 @@ public class SpawnComponent : MonoBehaviour
         }
         return spawnPrefab;
     }
+    public float SpawnHeight => _spawnHeight;
 }

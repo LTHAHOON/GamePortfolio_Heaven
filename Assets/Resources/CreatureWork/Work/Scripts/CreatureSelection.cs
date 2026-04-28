@@ -9,7 +9,7 @@ using UnityEngine.AI;
 using UnityEngine.TextCore.Text;
 using static UnityEngine.GraphicsBuffer;
 
-public class CreatureSelection : Selection<CreatureFSM>
+public class CreatureSelection : Selection<Creature>
 {
     private void OnDestroy()
     {
@@ -20,7 +20,7 @@ public class CreatureSelection : Selection<CreatureFSM>
     {
         if (_selectedList.Count <= 0) return null;
         List<TComp> components = new(_selectedList.Count);
-        if (typeof(TComp) == typeof(CreatureFSM))
+        if (typeof(TComp) == typeof(Creature))
         {
             components = (List<TComp>)(object)_selectedList;
             return components;

@@ -4,43 +4,45 @@ using UnityEngine;
 
 public class PassengerController : Unit
 {
-    private Dictionary<long, PassengerData> _passengerDatas = new();
-    protected List<PassengerData> GetPassengerDatas()
+    private Dictionary<long, PassengerData> _dicPassengerDatas = new();
+    public List<PassengerData> GetPassengerDatas()
     {
-        return _passengerDatas.Values.ToList();
+        return _dicPassengerDatas.Values.ToList();
     }
 
-    protected void AddPassengerInData(CreatureFSM creature, int passengerCount)
+    protected void AddPassengerInData(Creature creature, int passengerCount)
     {
-        if(_passengerDatas.ContainsKey(creature.GetID()))
+        if(_dicPassengerDatas.ContainsKey(creature.GetID()))
         {
-            _passengerDatas[creature.GetID()]._passengerCount += passengerCount;
+            _dicPassengerDatas[creature.GetID()]._passengerCount += passengerCount;
         }
         else
         {
-            _passengerDatas.Add(creature.GetID(), new PassengerData(creature, passengerCount));
+            _dicPassengerDatas.Add(creature.GetID(), new PassengerData(creature, passengerCount));
         }
 
     }
 
-    protected void RemovePassengerInData(CreatureFSM creature)
+
+    protected void RemovePassengerInData(Creature creature)
     {
-        if(_passengerDatas.ContainsKey(creature.GetID()))
+        if(_dicPassengerDatas.ContainsKey(creature.GetID()))
         {
-            _passengerDatas.Remove(creature.GetID());
+            _dicPassengerDatas.Remove(creature.GetID());
         }
     }
-
-    protected CreatureFSM[] GetPassengers()
+    protected Creature[] GetPassengers()
     {
-        return _passengerDatas.Values.Select(v => v._passenger).ToArray();
+        return _dicPassengerDatas.Values.Select(v => v._passenger).ToArray();
     }
     protected void ClearPassengerDatas()
     {
-        _passengerDatas.Clear();
+        _dicPassengerDatas.Clear();
     }
     protected int GetPassengerCountInData(long id)
     {
-        return _passengerDatas[id]._passengerCount;
+        return _dicPassengerDatas[id]._passengerCount;
     }
+
+    protected bool HasPassenger => _dicPassengerDatas.Count >= 1;
 }

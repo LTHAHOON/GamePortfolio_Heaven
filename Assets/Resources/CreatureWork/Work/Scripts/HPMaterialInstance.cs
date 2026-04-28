@@ -49,7 +49,7 @@ public class HPMaterialInstance : MonoBehaviour
     private float _degree = 360;
     public void ChangeHP(float curHP, float maxHP = 1)
     {
-        float changedHP = (_degree - (curHP / maxHP) * _degree); //a:b = c:d -> a*d = b*c
+        float changedHP = (_degree - (curHP / maxHP) * _degree);
         Debug.Log(changedHP);
         _hpMaterial.SetFloat("_Arc2", changedHP);
     }

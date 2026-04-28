@@ -8,7 +8,7 @@ public class HealthBarController : MonoBehaviour
     [SerializeField]
     private HealthBar[] _arrHealthBarPrefab = new HealthBar[4];
 
-    private Dictionary<Health, HealthBar> healthBars = new();
+    private Dictionary<Health, HealthBar> _healthBars = new();
     private void Awake()
     {
         Health.OnHealthAdded += AddHealthBar;
@@ -21,7 +21,7 @@ public class HealthBarController : MonoBehaviour
         Debug.Log(health);
         for (int i = 0; i < _arrHealthBarPrefab.Length; i++)
         {
-            if (healthBars.ContainsKey(health) == false)
+            if (_healthBars.ContainsKey(health) == false)
             {
                 if (health.gameObject.layer == _arrHealthBarPrefab[i].gameObject.layer)
                 {
@@ -35,7 +35,7 @@ public class HealthBarController : MonoBehaviour
                     {
                         healthBar.SetFillColor(UIManager.Instance.GetFactionEnemyColor());
                     }
-                    healthBars.Add(health, healthBar);
+                    _healthBars.Add(health, healthBar);
                     healthBar.SetHealth(health);
                     break;
                 }
@@ -47,17 +47,17 @@ public class HealthBarController : MonoBehaviour
 
     private void RemoveHealthBar(Health health)
     {
-        if (healthBars.ContainsKey(health) == true)
+        if (_healthBars.ContainsKey(health) == true)
         {
-            healthBars.Remove(health);
+            _healthBars.Remove(health);
         }
     }
 
     private HealthBar FindHealthBar(Health health)
     {
-        if(healthBars.ContainsKey(health) == true)
+        if(_healthBars.ContainsKey(health) == true)
         {
-            return healthBars[health];
+            return _healthBars[health];
         }
         else
         {

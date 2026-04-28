@@ -194,18 +194,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7d1f96a0cf3f5443b02f8e9acf1b5ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clickCollider: {fileID: 0}
   _health: {fileID: 8972049251848072008}
+  _dragSelectable: {fileID: 0}
+  _selectable: {fileID: 0}
+  _unitType: 0
+  _hitMaxCount: 5
+  _healInterval: 2
+  _distanceFromCenter: 13
+  _homeParticleSystem: {fileID: 2331171663771061486}
+  gravity: -9.81
+  _isGravity: 0
   _createLoad: {fileID: 280874787388841356}
   _targetLayerMask:
     serializedVersion: 2
     m_Bits: 8192
-  gravity: -9.81
-  _hitMaxCount: 5
-  _healInterval: 2
-  _homeParticleSystem: {fileID: 2331171663771061486}
-  _distanceFromCenter: 13
-  _fixedHealingPower: 0.05
-  _isGravity: 0
 --- !u!54 &7832424511407746320
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -268,7 +271,6 @@ MonoBehaviour:
   _fixedHP: 0.001
   _autoInitHealth: 0
   _collider: {fileID: 8983812915028920838}
-  _currentHealth: 0
   _isModifyingHealth: 0
 --- !u!114 &280874787388841356
 MonoBehaviour:

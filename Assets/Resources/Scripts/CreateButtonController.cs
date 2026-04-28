@@ -59,15 +59,16 @@ public class CreateButtonController : ModeButton
             CreatePrefab();
         }
     }
-    private GameObject _curUnitPrefab;
-    public void ReadyPrefab()
+    private Unit _curUnitPrefab;
+    public override void ReadyPrefab()
     {
         TransparentMaterialControl.SurfaceType surfaceType = TransparentMaterialControl.SurfaceType.Transparent;
         Color changedColor = new Color32(255, 255, 255, 60);
         Transform instantiateParent = GetSelectedUnitParentTransform(_selectedUnitType);
 
-        _curUnitPrefab = Instantiate<GameObject>(_unitPrefab, instantiateParent);
-        _curUnitPrefab = TransparentMaterialControl.SetQpaqueOrTransparentControl(_curUnitPrefab, _selectedUnitType, surfaceType, changedColor);
+        _curUnitPrefab = Instantiate(_unitPrefab, instantiateParent);
+        _curUnitPrefab.transform.position = new Vector3(instantiateParent.position.x, _spawnComponent.SpawnHeight, instantiateParent.position.z);
+        TransparentMaterialControl.SetQpaqueOrTransparentControl(_curUnitPrefab.gameObject, _selectedUnitType, surfaceType, changedColor);
 
         //TODO: GridBuildingContainer 열기
         ButtonSystem.buttonInvoker.PressButton(ButtonIdentifier.Open, _gridBuildingContainer);
@@ -95,13 +96,11 @@ public class CreateButtonController : ModeButton
             {
                 spacecraftControl._isGravity = true;
                 spacecraftControl.GetCreateLoad().SetLoadReady(true);
-                spacecraftControl.SetStatus(StatusSliderController._status);
             }
             else if(_curUnitPrefab.TryGetComponent(out HomeController homeControl))
             {
                 homeControl._isGravity = true;
                 homeControl.GetCreateLoad().SetLoadReady(true);
-                homeControl.SetStatus(StatusSliderController._status);
             }
             else
             {
@@ -145,11 +144,11 @@ public class CreateButtonController : ModeButton
 
         if(_placementSystem.GetUnitIndicator() == null)
         {
-            _placementSystem.SetUnitIndicator(_curUnitPrefab);
+            _placementSystem.SetUnitIndicator(_curUnitPrefab.gameObject);
         }
 
-        _placementSystem.CalculateIndicator(_curUnitPrefab);
-        _placementSystem.FollowIndicatorByMouse(_curUnitPrefab, 3f);
+        _placementSystem.CalculateIndicator(_curUnitPrefab.gameObject);
+        _placementSystem.FollowIndicatorByMouse(_curUnitPrefab.gameObject);
     }
     protected override void OpenData()
     {

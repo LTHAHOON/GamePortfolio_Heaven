@@ -26,7 +26,7 @@ public class PlacementSystem : MonoBehaviour
     }
     private void Update()
     {
-        FollowIndicatorByMouse(cellIndicator.gameObject, 0);
+        FollowIndicatorByMouse(cellIndicator.gameObject);
     }
 
     public bool ComparePosInBoxCollider(Vector3 pos)
@@ -62,7 +62,7 @@ public class PlacementSystem : MonoBehaviour
     }
 
 
-    public void FollowIndicatorByMouse(GameObject indicator, float heightOffset)
+    public void FollowIndicatorByMouse(GameObject indicator)
     {
         Camera camera = Camera.main;
         Vector3? worldMousePos = InputManager.Instance.GetWolrdMousePosByRaycast(camera, _gridLayerMask, offset:_gridOffset);
@@ -71,7 +71,7 @@ public class PlacementSystem : MonoBehaviour
             indicator.SetActive(worldMousePos.HasValue);
             Vector3Int gridPosition = _grid.WorldToCell(worldMousePos.Value);
             Vector3 indicatorPos = _grid.CellToWorld(gridPosition);
-            indicatorPos.y += heightOffset;
+            indicatorPos.y = indicator.transform.position.y;
             indicator.transform.position = indicatorPos;
         }
     }

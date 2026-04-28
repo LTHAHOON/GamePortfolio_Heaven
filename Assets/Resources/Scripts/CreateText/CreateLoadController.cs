@@ -7,8 +7,6 @@ public class CreateLoadController : MonoBehaviour
 {
     [SerializeField]
     CreateLoadComponent loadingTextPrefab;
-    [SerializeField]
-    private Transform parent;
     void Awake()
     {
         CreateLoad.OnStartCreateLoad += StartCreateLoad;
@@ -16,7 +14,7 @@ public class CreateLoadController : MonoBehaviour
 
     private LoadingTask StartCreateLoad(CreateLoad createLoad, float createTime, float loadingDelayTime)
     {
-        CreateLoadComponent loadingTextComponent = Instantiate(loadingTextPrefab, parent);
+        CreateLoadComponent loadingTextComponent = Instantiate(loadingTextPrefab, transform);
         createLoad._loadingTextComponent = loadingTextComponent;
         LoadingTask loadingTask = loadingTextComponent.StartLoadingText(createLoad, createTime, loadingDelayTime);
         ObjectVisbilitySystem.Instance.AddToList(loadingTextComponent);

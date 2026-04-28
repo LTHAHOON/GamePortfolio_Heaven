@@ -12,7 +12,7 @@ public enum ModeType
     CreateMode,
     NONE
 }
-public abstract class ModeButton : MonoBehaviour
+public abstract class ModeButton : Singleton<ModeButton>
 {
     [Space(10f)]
     [Header("GuideText")]
@@ -44,7 +44,8 @@ public abstract class ModeButton : MonoBehaviour
     }
     protected TextMeshProUGUI _buttonText;
     protected Image _buttonImage;
-    protected GameObject _unitPrefab;
+    protected SpawnComponent _spawnComponent;
+    protected Unit _unitPrefab;
     protected MPData? _unitMPData;
     protected static bool _bGetUnitPrefab = false;
     protected static UnitType _selectedUnitType;
@@ -73,6 +74,9 @@ public abstract class ModeButton : MonoBehaviour
         _unitPrefab = null;
         _unitMPData = null;
     }
+
+    public abstract void ReadyPrefab();
+
     public void OnClickOpenModeButton()
     {
         PlanetInternalPopController.OnClickOpenModeButton(_modeType);
@@ -90,8 +94,8 @@ public abstract class ModeButton : MonoBehaviour
     {
         StatusComponent status = StatusDataController.GetSelectedStatusComponent();
         UnitData unitData = status.GetUnitData();
-        SpawnComponent spawnComponent = status.gameObject.GetComponent<SpawnComponent>();
-        _unitPrefab = spawnComponent.GetSpawnPrefab(unitData.ID);
+        _spawnComponent = status.gameObject.GetComponent<SpawnComponent>();
+        _spawnComponent.GetSpawnPrefab(unitData.ID).TryGetComponent(out _unitPrefab);
         if (_unitPrefab != null)
         {
             if (!StatusDataMng.Instance.TryGetSelectedUnitMPData(out _unitMPData))

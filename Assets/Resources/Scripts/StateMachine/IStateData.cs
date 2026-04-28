@@ -13,6 +13,50 @@ public interface IStateData<T> : IStateData
 {
     T GetData();
 }
+#region 탑승 데이터
+[Serializable]
+public class BoardingStatData : IStateData<BoardingStatData>
+{
+    public int _maxCount = 7;
+    [HideInInspector]
+    public List<Creature> _boardingCreatureList = new();
+    [HideInInspector]
+    public DriveButton driveButton;
+    // 길이 막혀서 탑승 못하는 생명체를 제외한 최종 탑승 가능한 생명체 수
+    [HideInInspector]
+    public int _finalMaxCount = 0;
+    [HideInInspector]
+    public int _curCount = 0;
+    public void Clear()
+    {
+        _boardingCreatureList.Clear();
+        _finalMaxCount = 0;
+        _curCount = 0;
+    }
+    public BoardingStatData GetData()
+    {
+        return this;
+    }
+}
+#endregion
+
+#region 베지어 곡선 데이터
+[Serializable]
+public class BezierCurveStatData : IStateData<BezierCurveStatData>
+{
+    public float _curTime = 0;
+    public bool _move = false;
+    public Vector3 _startPoint;
+    public Vector3 _middlePoint;
+    public Vector3 _endPoint;
+    public readonly float _maxTime = 15f;
+
+    public BezierCurveStatData GetData()
+    {
+        return this;
+    }
+}
+#endregion
 
 #region 둘러쌓은 위치를 구하기 위한 데이터
 [Serializable]
@@ -80,7 +124,7 @@ public class AnimatorStatData : IStateData<AnimatorStatData>
 {
     public Animator _animator;
     [Header("애니메이션 속도 보완값")]
-    public float animatorSpeedMultiplier = 0.2f;
+    public float _animatorSpeedMultiplier = 0.2f;
     public readonly Dictionary<AnimParameter, int> _dicAnimParameterHash = new()
     {
         { AnimParameter.IsWalk, Animator.StringToHash(AnimParameter.IsWalk.ToString())},
@@ -104,13 +148,13 @@ public enum AnimParameter
 }
 #endregion
 
-#region 행성 및 우주 레이어 데이터
+#region 행성 및 우주 레이어 타겟 데이터
 [Serializable]
-public class LayerStatData : IStateData<LayerStatData>
+public class LayerTargetStatData : IStateData<LayerTargetStatData>
 {
-    [Header("상대 레이어")]
-    public LayerMask _enemyTargetLayer;
-    public LayerStatData GetData()
+
+    public LayerList _layerTargetList = new();
+    public LayerTargetStatData GetData()
     {
         return this;
     }
@@ -118,6 +162,7 @@ public class LayerStatData : IStateData<LayerStatData>
 #endregion
 
 #region 죽을 때 필요한 데이터
+[Serializable]
 public class DieStatData : IStateData<DieStatData>
 {
     [Header("사망 후 오브젝트 제거 딜레이 시간")]

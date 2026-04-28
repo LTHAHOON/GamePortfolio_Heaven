@@ -79,8 +79,6 @@ MonoBehaviour:
   _statusComponent: {fileID: 6577384197347526474}
   _hitTriggerCount: 1
   _fixedHitValue: 10
-  _hitTag: Enemy
-  _hitTagNexus: EnemyNexus
 --- !u!1 &1325714381311164514
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,8 +242,6 @@ MonoBehaviour:
   _statusComponent: {fileID: 6577384197347526474}
   _hitTriggerCount: 1
   _fixedHitValue: 10
-  _hitTag: Enemy
-  _hitTagNexus: EnemyNexus
 --- !u!1 &2725456489477395752
 GameObject:
   m_ObjectHideFlags: 0
@@ -1086,8 +1082,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8647673517041798145}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.36172855, y: 0.60757923, z: -0.36172855, w: 0.60757923}
-  m_LocalPosition: {x: 0, y: 1.1480594, z: -0.08118893}
+  m_LocalRotation: {x: -0.3588049, y: 0.6093104, z: -0.3588049, w: 0.6093103}
+  m_LocalPosition: {x: -0.00000006053597, y: 1.0546201, z: -0.08112571}
   m_LocalScale: {x: 0.009999997, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1202,7 +1198,7 @@ GameObject:
   - component: {fileID: 8650114514710025279}
   - component: {fileID: 3486500040614899222}
   - component: {fileID: 756336440211488194}
-  - component: {fileID: 8879714799506671875}
+  - component: {fileID: 2377568404541230190}
   - component: {fileID: 7539079264029945472}
   - component: {fileID: 6577384197347526474}
   - component: {fileID: 2958941772831905820}
@@ -1225,7 +1221,7 @@ Transform:
   m_GameObject: {fileID: 8648885205316709853}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -189.86826, y: 0.75, z: 2320.676}
+  m_LocalPosition: {x: 575.0099, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1269,7 +1265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e09a08a022c7d14ab7baa8ded371b45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8879714799506671875
+--- !u!114 &2377568404541230190
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1281,6 +1277,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ea86c07378963847bc075e6a7f9dfa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _clickCollider: {fileID: 7155546631525753451}
+  _health: {fileID: 7539079264029945472}
+  _dragSelectable: {fileID: 0}
+  _selectable: {fileID: 0}
+  _unitType: 0
   _navMeshStatData:
     _navMeshObstacle: {fileID: -7876647252322154718}
     _navmeshAgentData:
@@ -1290,20 +1291,16 @@ MonoBehaviour:
       _nexusAttackDistance: 13
   _animatorStatData:
     _animator: {fileID: 3486500040614899222}
-    animatorSpeedMultiplier: 0.2
+    _animatorSpeedMultiplier: 0.2
   _surroundPosData:
     _distanceFromUnit: 8
     _radiusFromCenter: 10
     _firstRingCount: 9
   _attackActivationStatData:
     _normalAttackActivationRate: 80
-  _layerStatData:
-    _enemyTargetLayer:
-      serializedVersion: 2
-      m_Bits: 268435456
-  _clickCollider: {fileID: 7155546631525753451}
-  _gravity: -20
-  _health: {fileID: 7539079264029945472}
+  _dieStatData:
+    _dieDelayTime: 4
+  _gravity: -12
   _hpMaterialInstance: {fileID: 7243985748991935311}
   _statusComponent: {fileID: 6577384197347526474}
   _enemyNexusPos: {x: 0, y: 0, z: 0}
@@ -1329,7 +1326,6 @@ MonoBehaviour:
   _fixedHP: 100
   _autoInitHealth: 1
   _collider: {fileID: 425025699822928217}
-  _currentHealth: 0
   _isModifyingHealth: 0
 --- !u!114 &6577384197347526474
 MonoBehaviour:
@@ -1385,11 +1381,11 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 5
-  m_Radius: 2.5
+  m_Height: 4
+  m_Radius: 1.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.3
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 2, z: 0}
 --- !u!195 &6957047390637402131
@@ -1399,7 +1395,7 @@ NavMeshAgent:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8648885205316709853}
-  m_Enabled: 0
+  m_Enabled: 1
   m_AgentTypeID: -334000983
   m_Radius: 1.5
   m_Speed: 10

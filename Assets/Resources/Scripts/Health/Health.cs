@@ -27,7 +27,7 @@ public class Health : MonoBehaviour
     private RuntimeUnitStatus _status;
     private float _curStatusCON;
     public Collider _collider;
-    public float _currentHealth;
+    private float _currentHealth;
     public delegate void HealthPctChanged(float currentHealthPct, bool useLerp);
     public HealthPctChanged OnHealthPctChanged;
     private HealthBar _healthBar;
@@ -37,12 +37,12 @@ public class Health : MonoBehaviour
     {
         if (_autoInitHealth)
         {
-            InitHealth();
+            InitHealth(GetComponent<StatusComponent>().GetStatus());
         }
     }
-    public void InitHealth()
+    public void InitHealth(RuntimeUnitStatus status)
     {
-        _status = GetComponent<StatusComponent>().GetStatus();
+        _status = status;
         if (_status != null)
         {
             SetMaxHP();
@@ -57,15 +57,7 @@ public class Health : MonoBehaviour
     {
         if (!_healthBar) return;
         if (_status == null) return;
-        if ((_currentHealth) <= 0)
-        {
-            OnDie?.Invoke();
-            if (!_healthBar.isActiveAndEnabled)
-            {
-                Destroy(_healthBar.gameObject);
-            }
-            enabled = false;
-        }
+
         UpdateMaxHP();
     }
 
@@ -106,6 +98,12 @@ public class Health : MonoBehaviour
         if (amount < 0)
         {
             OnDamageHit?.Invoke();
+            if ((_currentHealth) <= 0)
+            {
+                StopAllCoroutines();
+                OnDie?.Invoke();
+                enabled = false;
+            }
         }
         else 
         { 
@@ -131,12 +129,12 @@ public class Health : MonoBehaviour
 
     private void OnDestroy()
     {
-        ObjectVisbilitySystem.Instance.RemoveToList(_healthBar);
         OnHealthRemoved?.Invoke(this);
     }
 
-    public HealthBar GetHealthBar() => _healthBar;
-    public void SetActiveHealthBar(bool isActive) => _healthBar.gameObject.SetActive(isActive); 
+    public HealthBar HealthBar => _healthBar;
     public float MaxHealth => _maxHealth;
     public float CurrentHealth => _currentHealth;
+    public float CurrentHealthPct => _currentHealth / _maxHealth;
+    public void SetActiveHealthBar(bool isActive) => _healthBar.gameObject.SetActive(isActive); 
 }

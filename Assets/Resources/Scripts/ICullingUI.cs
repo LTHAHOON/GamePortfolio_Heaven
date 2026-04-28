@@ -4,8 +4,8 @@ using UnityEngine;
 
 public interface ICullingUI
 {
-    GameObject Owner { get; }
+    GameObject ThisGameObject { get; }
     Collider ColliderForCulling { get; }
-    bool IsForceHideUI { get; set; }
+    bool IsForceHideUI { get;}
     void SetForceHideUI(bool isForceHide);
 }
