@@ -76,12 +76,12 @@ public class CreateCountController : MonoBehaviour
 
     public void SetMaxCreateCount(MPData unitMPData)
     {
-        float maxCreateCount = MPController.Instance.MP_StatusSlider.value / unitMPData.MP_ConsValue;
+        float maxCreateCount = MPDataController.Instance.MP_StatusSlider.value / unitMPData.MP_ConsValue;
         _maxCreateCount = Mathf.FloorToInt(maxCreateCount);
     }
     public void SetMaxCreateCount(MPData unitMPData, MPData subUnitMPData)
     {
-        float maxCreateCount = (MPController.Instance.MP_StatusSlider.value - unitMPData.MP_ConsValue) /  subUnitMPData.MP_ConsValue;
+        float maxCreateCount = (MPDataController.Instance.MP_StatusSlider.value - unitMPData.MP_ConsValue) /  subUnitMPData.MP_ConsValue;
         maxCreateCount = Mathf.Abs(maxCreateCount);
         _maxCreateCount = Mathf.FloorToInt(maxCreateCount);
     }

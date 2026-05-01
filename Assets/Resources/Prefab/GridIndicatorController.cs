@@ -111,10 +111,6 @@ public class GridIndicatorController : MonoBehaviour
         }
     }
  
-    public static bool GetIsCreatableUnit()
-    {
-        return _isCreatableUnit;
-    }
 
     public static void SetIsCreatableUnit(bool isCreatableUnit)
     {
@@ -141,4 +137,7 @@ public class GridIndicatorController : MonoBehaviour
     {
         _isTriggerEnter = false;
     }
+
+    public static bool IsCreatableUnit => _isCreatableUnit;
+
 }

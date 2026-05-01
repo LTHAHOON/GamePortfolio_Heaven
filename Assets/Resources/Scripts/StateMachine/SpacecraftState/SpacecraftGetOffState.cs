@@ -28,13 +28,17 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                 {
                     passengerList[i]._passenger.transform.position = hit.position;
                 }
-                Creature creature = MonoBehaviour.Instantiate(passengerList[i]._passenger, owner.PassengerParent);
-                MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType.Creature, creature);
-                creature.SetStatus(StatusSliderController._status);
-                creature.SetEnemyNexusTargetPos(owner.GoalData._enemytNexusPos);
-                creature.TargetPosition = arrGoalPos[j];
-                creature.SetIsAttackTarget(true);
-                creature.SetIsAttackMode(true);
+                Unit passenger = MonoBehaviour.Instantiate(passengerList[i]._passenger, owner.PassengerParent);
+                if (passenger.TryGetComponent(out Creature creature))
+                {
+                    MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType.Creature, passenger);
+                    //  creature.SetStatus(StatusSliderController._status);
+                    creature.SetEnemyNexusTargetPos(owner.GoalData._enemytNexusPos);
+                    creature.TargetPosition = arrGoalPos[j];
+                    creature.SetIsAttackTarget(true);
+                    creature.SetIsAttackMode(true);    
+                }
+                
                 if (j == 0)
                 {
                     owner.SetAttackMarkToCreature(creature);

@@ -13,12 +13,13 @@ GameObject:
   - component: {fileID: 5820308796582565537}
   - component: {fileID: 4632914432180362014}
   - component: {fileID: 6950376055611771128}
-  - component: {fileID: -2610589478213232088}
+  - component: {fileID: 2558612126303910355}
   - component: {fileID: 5638037004003040695}
   - component: {fileID: 8213857833276490046}
   - component: {fileID: 5173253301099837291}
   - component: {fileID: 5508778958628241092}
   - component: {fileID: 5890873039175000992}
+  - component: {fileID: 3893955883631265625}
   m_Layer: 14
   m_Name: "\uC544\uB974\uD0C0\uC2A4"
   m_TagString: Ally
@@ -36,7 +37,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6089111537380842995}
@@ -64,14 +65,14 @@ MeshRenderer:
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d56cb054a753e0247853e8f55248bb04, type: 2}
+  - {fileID: 2100000, guid: aa1e936803633064facac17fa9620e73, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -141,7 +142,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 72, y: 23, z: 110}
   m_Center: {x: 0, y: 1.6, z: 0}
---- !u!114 &-2610589478213232088
+--- !u!114 &2558612126303910355
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -150,11 +151,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5258289083879301757}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa29e930415c7054197677c28eff0595, type: 3}
+  m_Script: {fileID: 11500000, guid: cefe48b5d825f2841aa9a89499734a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _mpData:
-    MP_ConsValue: 0
+  _unitData:
+    Type: 1
+    Property: 2
+    ID: 30004
 --- !u!114 &5638037004003040695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,8 +173,9 @@ MonoBehaviour:
   _clickCollider: {fileID: 2179843097095081772}
   _health: {fileID: 5508778958628241092}
   _dragSelectable: {fileID: 0}
-  _selectable: {fileID: 0}
-  _unitType: 1
+  _statusComponent: {fileID: 8213857833276490046}
+  _mpDataComponent: {fileID: 3893955883631265625}
+  _unitInfo: {fileID: 2558612126303910355}
   _boardingStatData:
     _maxCount: 7
     _boardingCreatureList: []
@@ -206,10 +210,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
   _useIDForInteract: 0
-  _unitData:
-    Type: 1
-    Property: 2
-    ID: 30004
 --- !u!114 &5173253301099837291
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,6 +259,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e89f3c0ee5bf79e4fbd2af08db831cd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3893955883631265625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258289083879301757}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e9fc1c981f316439ecf11bdd896619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mpData:
+    MP_ConsValue: 1000
 --- !u!1001 &2040837720034956269
 PrefabInstance:
   m_ObjectHideFlags: 0

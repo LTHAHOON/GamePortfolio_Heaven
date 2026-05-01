@@ -57,7 +57,7 @@ public class RuntimeUnitStatus
             CON = unitStatusData.CON;
             HealingPower = unitStatusData.HealingPower;
         }
-        else if(data is HealhStatusData healhStatusData)
+        else if(data is UnitHealhStatusData healhStatusData)
         {
             _baseStatusData = healhStatusData;
             CON = healhStatusData.CON;

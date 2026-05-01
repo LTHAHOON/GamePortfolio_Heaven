@@ -8,27 +8,27 @@ public class StatusDatabase : ScriptableObject
     private List<BaseUnitStatusData> dataList = new();
 
 
-    public T Get<T>(UnitData id, bool useIDForInteract) where T : BaseUnitStatusData
+    public T Get<T>(UnitInfo unitInfo, bool useIDForInteract) where T : BaseUnitStatusData
     {
         for (int i = 0; i < dataList.Count; i++)
         {
             if(useIDForInteract)
             {
-                if (dataList[i]._unitData.ID == id.ID && dataList[i]._unitData.Type == id.Type && dataList[i]._unitData.Property == id.Property)
+                if (dataList[i].UnitData.ID == unitInfo.ID && dataList[i].UnitData.Type == unitInfo.Type && dataList[i].UnitData.Property == unitInfo.Property)
                 {
                     return dataList[i] as T;
                 }
             }
             else
             {
-                if (dataList[i]._unitData.Type == id.Type && dataList[i]._unitData.Property == id.Property)
+                if (dataList[i].UnitData.Type == unitInfo.Type && dataList[i].UnitData.Property == unitInfo.Property)
                 {
                     return dataList[i] as T;
                 }
             }
             
         }
-        Debug.LogError("StatusDatabase: No data found for " + id.Type + " " + id.Property);
+        Debug.LogError("StatusDatabase: No data found for " + unitInfo.Type + " " + unitInfo.Property);
         return null;
     }
 }

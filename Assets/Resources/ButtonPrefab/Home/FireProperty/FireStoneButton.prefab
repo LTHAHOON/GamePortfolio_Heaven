@@ -220,10 +220,12 @@ GameObject:
   m_Component:
   - component: {fileID: 8473842458896490320}
   - component: {fileID: 1218638390520909724}
+  - component: {fileID: 2745436760464182606}
+  - component: {fileID: 2102519259989479824}
+  - component: {fileID: 7239157246316481460}
+  - component: {fileID: 4783542710072075971}
   - component: {fileID: 7211443823728700798}
   - component: {fileID: 8967705409578634099}
-  - component: {fileID: 5093663198217454431}
-  - component: {fileID: 1560170096536727579}
   m_Layer: 0
   m_Name: FireStoneButton
   m_TagString: Home
@@ -244,7 +246,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6690076277048743901}
-  - {fileID: 61373024480273740}
   - {fileID: 6521686757720368317}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -261,6 +262,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7269718366323223131}
   m_CullTransparentMesh: 1
+--- !u!114 &2745436760464182606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7269718366323223131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee1a32fef1c23d45b1778f0f63f3be1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unitSpawnComponent: {fileID: 4783542710072075971}
+  unitInfo: {fileID: 7239157246316481460}
+  _nameText: {fileID: 4513181868674924250}
+  _unitChipState: {fileID: 2102519259989479824}
+--- !u!114 &2102519259989479824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7269718366323223131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b98d5522488f5a543b1f645455a6dbc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isAddedUnitChip: 1
+  unitInfo: {fileID: 7239157246316481460}
+  _horizontalLength: 3
+  _verticalLength: 3
+  _functionDecription: "\uBD88 \uC18D\uC131 \uC0DD\uBB3C\uCCB4\uB9CC \uCE58\uC720
+    \uAC00\uB2A5\uD558\uB2E4."
+--- !u!114 &7239157246316481460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7269718366323223131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cefe48b5d825f2841aa9a89499734a2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unitData:
+    Type: 2
+    Property: 0
+    ID: 20001
+--- !u!114 &4783542710072075971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7269718366323223131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7fbc192880846c45a3b2302961080a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7211443823728700798
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -334,131 +397,4 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7211443823728700798}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8664085527074117263}
-        m_TargetAssemblyTypeName: StatusDataController, Assembly-CSharp
-        m_MethodName: OnClickUnitButton
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 3223861554226389557}
-          m_ObjectArgumentAssemblyTypeName: StatusComponent, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &5093663198217454431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7269718366323223131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a50be66dbf343c459a1d9f053d3cf65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isAddedUnitChip: 1
-  _statusComponent: {fileID: 3223861554226389557}
-  _horizontalLength: 3
-  _verticalLength: 3
-  _functionDecription: "\uBD88 \uC18D\uC131 \uC0DD\uBB3C\uCCB4\uB9CC \uCE58\uC720
-    \uAC00\uB2A5\uD558\uB2E4."
---- !u!114 &1560170096536727579
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7269718366323223131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa29e930415c7054197677c28eff0595, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _mpData:
-    MP_ConsValue: 2000
---- !u!1 &9088180706342553141
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 61373024480273740}
-  - component: {fileID: 8664085527074117263}
-  - component: {fileID: 3223861554226389557}
-  - component: {fileID: 551408948293409264}
-  m_Layer: 0
-  m_Name: StatusControl
-  m_TagString: Home
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &61373024480273740
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9088180706342553141}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8473842458896490320}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000038146973, y: -0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8664085527074117263
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9088180706342553141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ee1a32fef1c23d45b1778f0f63f3be1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _selectedUnitButton: {fileID: 0}
-  _nameText: {fileID: 4513181868674924250}
---- !u!114 &3223861554226389557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9088180706342553141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55953f737a545044f9b17ed8488bffef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
-  _useIDForInteract: 1
-  _unitData:
-    Type: 2
-    Property: 0
-    ID: 20001
---- !u!114 &551408948293409264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9088180706342553141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7fbc192880846c45a3b2302961080a7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _prefabDatabase: {fileID: 11400000, guid: 67719da1f9e8fa14085bc6e2c5b43ef5, type: 2}
+      m_Calls: []

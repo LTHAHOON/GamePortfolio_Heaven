@@ -131,7 +131,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 3130688980346029913}
   m_HandleRect: {fileID: 0}
@@ -341,7 +341,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6363692822203979539}
   - component: {fileID: 267858217653549724}
-  m_Layer: 13
+  m_Layer: 27
   m_Name: ChipBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -407,7 +407,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 7394376815186766596}
   m_HandleRect: {fileID: 0}
@@ -428,7 +428,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5481902487836515840}
-  m_Layer: 13
+  m_Layer: 27
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -466,7 +466,7 @@ GameObject:
   - component: {fileID: 7394376815186766596}
   - component: {fileID: 4104251017976474130}
   - component: {fileID: 3267913181068092509}
-  m_Layer: 13
+  m_Layer: 27
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}

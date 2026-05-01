@@ -14,16 +14,16 @@ public class HomeDecriptionMng : MonoBehaviour
 
     public void SetHomeDecription(GameObject selectedUnitButton)
     {
-        if(selectedUnitButton.TryGetComponent(out UnitChipState unitChipState))
+        if(selectedUnitButton.TryGetComponent(out HomeUnitChipState homeUnitChipState))
         {
-            float horizontalLength = unitChipState.GetHorizontalLength();
-            float verticaLength = unitChipState.GetVerticalLength();
+            float horizontalLength = homeUnitChipState.GetHorizontalLength();
+            float verticaLength = homeUnitChipState.GetVerticalLength();
             _extentText.text = $"면적: {verticaLength} X {horizontalLength}";
 
-            string decription = unitChipState.GetFunctionDecription();
+            string decription = homeUnitChipState.GetFunctionDecription();
             _functionDescription.text = $"기능: {decription}";
         }
-        if(selectedUnitButton.TryGetComponent(out MPComponent mpComponent))
+        if(selectedUnitButton.TryGetComponent(out MPDataComponent mpComponent))
         {
             _mpResumeAmountText.text = $"MP 소모량: {mpComponent.GetMPData().MP_ConsValue}";
         }

@@ -21,10 +21,13 @@ public class PlanetInternalPopController : MonoBehaviour
     private GameObject _planetPopUpCanvas;
     private Transform _planetCloseButton;
     private Transform _planetOpenButton;
+    private static Action OnClickPlanetOpen;
+    private static Action OnClickPlanetClose;
     public static Transform _planetInternal;
     void Awake()
     {
-        OnClickPlaentOpen += OnClickPlanetOpenButton;
+        OnClickPlanetOpen = OnClickPlanetOpenButton;
+        OnClickPlanetClose = OnClickPlanetCloseButton;
     }
     void Start()
     {
@@ -35,21 +38,25 @@ public class PlanetInternalPopController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.BackQuote) && _mode == ModeType.NONE)
+        //�ݱ� ����Ű ��ħ ����
+        if (ModeButtonManager.Instance.IsUpdateMode)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.BackQuote))
         {
             if (_isDoorOpened)
             {
-                OnClickPlanetCloseButton(_mode);
+                OnClickPlanetCloseButton();
             }
             else
             {
-                OnClickPlanetOpenButton(_mode);
+                OnClickPlanetOpenButton();
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.BackQuote) && _mode != ModeType.NONE) //수비표시 또는 공격표시하는 상황일 경우
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            OnClickPlanetCloseButton(_mode);
+            OnClickPlanetCloseButton();
         }
 
     }
@@ -65,23 +72,17 @@ public class PlanetInternalPopController : MonoBehaviour
             image.raycastTarget = interactable;
         }
     }
-    public static void OnClickOpenModeButton(ModeType mode)
+    public static void OnClickOpenModeButton()
     {
-        OnClickPlaentOpen?.Invoke(mode);
+        OnClickPlanetOpen?.Invoke();
+    }
+    public static void OnClickCloseModeButton()
+    {
+        OnClickPlanetClose?.Invoke();
     }
 
     public void OnClickPlanetOpenButton()
     {
-        OnClickPlanetOpenButton(_mode);
-    }
-    public void OnClickPlanetCloseButton()
-    {
-        OnClickPlanetCloseButton(_mode);
-    }
-    private static ModeType _mode = ModeType.NONE;
-    public void OnClickPlanetOpenButton(ModeType mode) // mode는 수비표시 또는 공격표시 모드이다.
-    {
-        _mode = mode;
         _spaceHUDMask.enabled = true;
         CullingMaskExtension.ChangeVirtualCamera(_mainVcam, _subVcam);
         _isDoorOpened = true;
@@ -89,18 +90,9 @@ public class PlanetInternalPopController : MonoBehaviour
         _planetCloseButton.gameObject.SetActive(true);
         _planetOpenButton.gameObject.SetActive(false);
         _planetInternal.gameObject.SetActive(true);
-        if(mode != ModeType.NONE)
-        {
-            OpenMode(mode);
-        }
     }
-    public void OnClickPlanetCloseButton(ModeType mode)
+    public void OnClickPlanetCloseButton()
     {
-        if (mode != ModeType.NONE)
-        {
-            CloseMode(mode);
-            return;
-        }
         _spaceHUDMask.enabled = false;
         CullingMaskExtension.ChangeVirtualCamera(_subVcam, _mainVcam);
         _isDoorOpened = false;
@@ -109,43 +101,5 @@ public class PlanetInternalPopController : MonoBehaviour
         _planetOpenButton.gameObject.SetActive(true);
         _planetInternal.gameObject.SetActive(false);
     }
-    public static event Action OnCreateModeOpen;
-    public static event Action OnAttackModeOpen;
-    public static event Action OnDefenseModeOpen;
-    public static void OpenMode(ModeType mode)
-    {
-        switch (mode)
-        {
-            case ModeType.AttackMode:
-                OnAttackModeOpen?.Invoke();
-                break;
-            case ModeType.DefenseMode:
-                OnDefenseModeOpen?.Invoke();
-                break;
-            case ModeType.CreateMode:
-                OnCreateModeOpen?.Invoke();
-                break;
-        }
-    }
-    public static event Action<ModeType> OnClickPlaentOpen;
-    public static event Action OnCreateModeClose;
-    public static event Action OnAttackModeClose;
-    public static event Action OnDefenseModeClose;
 
-    public static void CloseMode(ModeType mode)
-    {
-        switch (mode)
-        {
-            case ModeType.AttackMode:
-                OnAttackModeClose?.Invoke();
-                break;
-            case ModeType.DefenseMode:
-                OnDefenseModeClose?.Invoke();
-                break;
-            case ModeType.CreateMode:
-                OnCreateModeClose?.Invoke();
-                break;
-        }
-        _mode = ModeType.NONE;
-    }
 }

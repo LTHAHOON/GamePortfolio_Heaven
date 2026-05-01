@@ -53,9 +53,9 @@ public class StatusSliderController : MonoBehaviour
 
     private static bool _bSetStatus;
     public static RuntimeUnitStatus _status;
-    public static void SetStatusSliders(GameObject selectedUnitButton)
+    public static void SetStatusSliders(long unitID)
     {
-       _status = StatusDataMng.FindStatusData(selectedUnitButton);
+       _status = StatusDataMng.Instance.FindStatusData(unitID);
         ReloadStatus();
     }
     public static void ReloadStatus()

@@ -42,11 +42,11 @@ public class MyUnitPrefabDataControl : Singleton<MyUnitPrefabDataControl>
             _dicUnitStorage[unitType]._unitList.Remove(unitprefab);
             unitprefab.GetClickCollider().enabled = false;
             animatorStatData?._animator.SetTrigger(animatorStatData._dicAnimParameterHash[AnimParameter.Die]);
-            StartCoroutine(IEDie(unitprefab, dieDelayTime));
+            StartCoroutine(IEDestroyUnit(unitprefab, dieDelayTime));
         }
 
     }
-    public IEnumerator IEDie(Unit unitPrefab, float dieDelayTime)
+    public IEnumerator IEDestroyUnit(Unit unitPrefab, float dieDelayTime)
     {
         yield return new WaitForSeconds(dieDelayTime);
         Destroy(unitPrefab.gameObject);

@@ -47,7 +47,6 @@ public class HealthBar : MonoBehaviour, ICullingUI
         UpdateHealthBarPosition();
         UpdateHealthBar(_curPct);
         UpdateChipBar(_curPct);
-
     }
 
 
@@ -147,7 +146,7 @@ public class HealthBar : MonoBehaviour, ICullingUI
         }
         SetForceHideUI(false);
         yield return new WaitForSeconds(showDuration);
-        if (this == null) yield break;
+        if (!this) yield break;
         SetForceHideUI(true);
         _playingHide = false;
     }

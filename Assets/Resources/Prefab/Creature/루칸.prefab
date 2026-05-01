@@ -1197,11 +1197,13 @@ GameObject:
   m_Component:
   - component: {fileID: 8650114514710025279}
   - component: {fileID: 3486500040614899222}
+  - component: {fileID: 1707762775526271287}
   - component: {fileID: 756336440211488194}
   - component: {fileID: 2377568404541230190}
   - component: {fileID: 7539079264029945472}
   - component: {fileID: 6577384197347526474}
   - component: {fileID: 2958941772831905820}
+  - component: {fileID: 831644206258632783}
   - component: {fileID: 425025699822928217}
   - component: {fileID: 6957047390637402131}
   - component: {fileID: -7876647252322154718}
@@ -1221,7 +1223,7 @@ Transform:
   m_GameObject: {fileID: 8648885205316709853}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 575.0099, y: 0, z: 0}
+  m_LocalPosition: {x: -190.22173, y: 0.75, z: 2359.064}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1253,6 +1255,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1707762775526271287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8648885205316709853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cefe48b5d825f2841aa9a89499734a2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unitData:
+    Type: 0
+    Property: 2
+    ID: 10007
 --- !u!114 &756336440211488194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1279,9 +1297,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _clickCollider: {fileID: 7155546631525753451}
   _health: {fileID: 7539079264029945472}
-  _dragSelectable: {fileID: 0}
-  _selectable: {fileID: 0}
-  _unitType: 0
+  _statusComponent: {fileID: 6577384197347526474}
+  _unitInfo: {fileID: 1707762775526271287}
   _navMeshStatData:
     _navMeshObstacle: {fileID: -7876647252322154718}
     _navmeshAgentData:
@@ -1302,7 +1319,6 @@ MonoBehaviour:
     _dieDelayTime: 4
   _gravity: -12
   _hpMaterialInstance: {fileID: 7243985748991935311}
-  _statusComponent: {fileID: 6577384197347526474}
   _enemyNexusPos: {x: 0, y: 0, z: 0}
   _skillDatas:
   - {fileID: 11400000, guid: 249a93768c8c15a4fbe23776cc88e96f, type: 2}
@@ -1341,10 +1357,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
   _useIDForInteract: 0
-  _unitData:
-    Type: 0
-    Property: 2
-    ID: 10007
 --- !u!114 &2958941772831905820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1362,6 +1374,20 @@ MonoBehaviour:
     _hitColliderControl: {fileID: 4482189637305650758}
   - _hitKType: 1
     _hitColliderControl: {fileID: 8683570391585992289}
+--- !u!114 &831644206258632783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8648885205316709853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e9fc1c981f316439ecf11bdd896619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mpData:
+    MP_ConsValue: 100
 --- !u!143 &425025699822928217
 CharacterController:
   m_ObjectHideFlags: 0

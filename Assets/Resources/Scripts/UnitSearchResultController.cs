@@ -254,8 +254,8 @@ public class UnitSearchResultController : Singleton<UnitSearchResultController>
         {
             if(unitButton[i].TryGetComponent<UnitChipState>(out UnitChipState unitChipState))
             {
-                UnitData unitData = unitChipState.GetUnitData();
-                if (unitData.Property == property)
+                UnitInfo unitInfo = unitChipState.GetUnitData();
+                if (unitInfo.Property == property)
                 {
                     AddUnitButton(unitButton[i], property);
                 //    _unitButton = _unitButton.Where((gameObject, index) => _unitButton[index] != unitButton[i]).ToArray();

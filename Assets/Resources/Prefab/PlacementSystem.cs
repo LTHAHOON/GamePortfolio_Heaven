@@ -8,7 +8,8 @@ public class PlacementSystem : MonoBehaviour
     [SerializeField]
     private GridIndicatorController cellIndicator;
     [SerializeField]
-    private InputManager _inputManager;
+    private MouseCursorController _mouseCursorController;
+    private CursorContraintPos _cursorContraintPos;
     [SerializeField]
     private LayerMask _gridLayerMask;
     [SerializeField]
@@ -22,6 +23,7 @@ public class PlacementSystem : MonoBehaviour
 
     private void Awake()
     {
+        _cursorContraintPos = CursorManager.Instance.CursorContraintPos;
         _gridBasePosition = _grid.transform.position;
     }
     private void Update()
@@ -76,6 +78,7 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
+
     private GameObject _curUnitIndicator;
     [HideInInspector]
     public bool _isCellCalculate = false;
@@ -89,6 +92,7 @@ public class PlacementSystem : MonoBehaviour
             CalculateCellIndicator(unitIndicator);
         }
     }
+
 
 
     [Header("Grid Settings")]
@@ -120,7 +124,30 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
-    
+    public bool FollowUnitPrefabByMouse(Unit unit)
+    {
+        if (GetUnitIndicator() == null)
+        {
+            SetUnitIndicator(unit.gameObject);
+        }
+
+        CalculateIndicator(unit.gameObject);
+        FollowIndicatorByMouse(unit.gameObject);
+
+        Vector3 mousePosition = Input.mousePosition;
+        if (mousePosition.x >= _cursorContraintPos._maxX || mousePosition.x <= _cursorContraintPos._minX ||
+            mousePosition.y >= _cursorContraintPos._maxY || mousePosition.y <= _cursorContraintPos._minY)
+        {
+            _mouseCursorController.ShowCursor(true);
+            return false;
+        }
+        else
+        {
+            _mouseCursorController.ShowCursor(false);
+            return true;
+        }
+    }
+
     public void SetUnitIndicator(GameObject unit)
     {
         _curUnitIndicator = unit;

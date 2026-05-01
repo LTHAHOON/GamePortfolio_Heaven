@@ -8,7 +8,6 @@ public class SpacecraftIdleState : State<SpacecraftState, SpacecraftController>
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {
         SpacecraftController owner = stateMachine.GetOwner();
-        TransparentMaterialControl.SetQpaqueOrTransparentControl(owner.gameObject, owner.UnitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
         
     }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PoolManager : Singleton<PoolManager>
 {
-    private Dictionary<GameObject, PoolComponent> _dicPool = new();
+    private readonly Dictionary<GameObject, PoolComponent> _dicPool = new();
 
     public void AddPool(GameObject poolObject, int initalPoolSize = 5, int maxPoolSize = 10, Transform poolParent = null)
     {

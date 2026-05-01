@@ -384,8 +384,8 @@ public class UnitEditController : MonoBehaviour
         for (int i = 0; i < allUnitPrefabTemp.Length; i++)
         {
             UnitChipState unitChipState = allUnitPrefabTemp[i];
-            UnitData unitData = unitChipState.GetUnitData();
-            if (unitData.Type == _searchButtonNames[searchButtonIndex].type)
+            UnitInfo unitInfo = unitChipState.GetUnitData();
+            if (unitInfo.Type == _searchButtonNames[searchButtonIndex].type)
             {
                 if (unitChipState.GetIsAddedUnitChip() == true)
                 {
@@ -581,7 +581,7 @@ public class UnitEditController : MonoBehaviour
 
     public void OnClickPropertySortRadioBoxButton(GameObject radioBox)
     {
-        if(radioBox.tag == _addedUnitChipInvenViewPort.tag)
+        if (radioBox.CompareTag(_addedUnitChipInvenViewPort.tag))
         {
             _isAddedInven = true;
         }
@@ -592,7 +592,7 @@ public class UnitEditController : MonoBehaviour
     }
 
 
-    public List<GameObject> _allUnitButtonsOrder = new();
+    public readonly List<GameObject> _allUnitButtonsOrder = new();
     private bool _isAddedInven;
     private bool _forceToRun = false;
     public void OnClickPropertySortRadioBoxButton(int propertyIndex)
@@ -639,8 +639,8 @@ public class UnitEditController : MonoBehaviour
                 GameObject unitButton = contentGroup.transform.GetChild(i).gameObject;
                 if(unitButton.TryGetComponent(out UnitChipState unitChipState))
                 {
-                    UnitData unitData = unitChipState.GetUnitData();
-                    if (unitData.Property == property)
+                    UnitInfo unitInfo = unitChipState.GetUnitData();
+                    if (unitInfo.Property == property)
                     {
                         allUnitButtonsOrder.Add(unitButton);
                     }

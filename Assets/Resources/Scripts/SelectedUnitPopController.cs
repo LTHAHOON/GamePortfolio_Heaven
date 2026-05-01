@@ -9,7 +9,7 @@ public class SelectedUnitPopController : Singleton<SelectedUnitPopController>
     [SerializeField]
     private CreateButtonController _createButtonController;
     [SerializeField]
-    private AttackButtonController _attackButtonController;
+    private AttackDriveButtonController _attackButtonController;
     [SerializeField]
     private DefenseButtonController _defendButtonController;
     [SerializeField]
@@ -41,11 +41,11 @@ public class SelectedUnitPopController : Singleton<SelectedUnitPopController>
     }
 
 
-    public void SetSelectedUnit(string unitName, GameObject selectedUnitButton, UnitData selectedUnitData)
+    public void SetSelectedUnit(string unitName, GameObject selectedUnitButton, UnitInfo selectedUnitInfo)
     {
         Sprite unitSprite = SpriteController.GetUnitSprite(unitName);
         _selectedUnitImage.sprite = unitSprite;
-        Sprite unitPropertySprite = SpriteController.GetUnitPropertySprite(selectedUnitData.Property);
+        Sprite unitPropertySprite = SpriteController.GetUnitPropertySprite(selectedUnitInfo.Property);
         _selectedUnitPropertyImage.sprite = unitPropertySprite;
         _selectedUnitButton = selectedUnitButton;
         _selectedUnitNameText.text = unitName;
@@ -61,7 +61,7 @@ public class SelectedUnitPopController : Singleton<SelectedUnitPopController>
         {
             for (int i = 0; i < _selectedUnitPopChildList.Count; i++)
             {
-                if (_createButtonController.gameObject == _selectedUnitPopChildList[i])
+                if (_createButtonController.ThisButton.gameObject == _selectedUnitPopChildList[i])
                 {
                     _selectedUnitPopChildList[i].SetActive(false);
                 }
@@ -84,11 +84,11 @@ public class SelectedUnitPopController : Singleton<SelectedUnitPopController>
         {
             for (int i = 0; i < _selectedUnitPopChildList.Count; i++)
             {
-                if (_attackButtonController.gameObject == _selectedUnitPopChildList[i])
+                if (_attackButtonController.ThisButton.gameObject == _selectedUnitPopChildList[i])
                 {
                     _selectedUnitPopChildList[i].SetActive(false);
                 }
-                else if (_defendButtonController.gameObject == _selectedUnitPopChildList[i])
+                else if (_defendButtonController.ThisButton.gameObject == _selectedUnitPopChildList[i])
                 {
                     _selectedUnitPopChildList[i].SetActive(false);
                 }
@@ -110,7 +110,6 @@ public class SelectedUnitPopController : Singleton<SelectedUnitPopController>
                 _statusPop.SetActive(true);
             }
         }
-        ModeButton.SetUnitPrefab(true, unitType);
         SetActiveOfSelectedUnitPop(true);
     }
 

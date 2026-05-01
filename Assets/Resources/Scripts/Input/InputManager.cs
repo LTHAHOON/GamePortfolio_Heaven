@@ -10,7 +10,7 @@ public class InputManager : Singleton<InputManager>
     private Vector3 _dragStartPosition;
     private Vector3 _subDragStartPosition;
     private bool _isDragging = false;
-    private Bounds dragBounds;
+    private Bounds _dragBounds;
     private void OnGUI()
     {
         if (_isDragging && UIManager.Instance.IsSubCameraActive)
@@ -25,7 +25,7 @@ public class InputManager : Singleton<InputManager>
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(dragBounds.center, dragBounds.size);
+        Gizmos.DrawWireCube(_dragBounds.center, _dragBounds.size);
 
     }
     public void OnDebugSelection(int count)
@@ -53,11 +53,11 @@ public class InputManager : Singleton<InputManager>
                 {
                     selectable.OnSelected();
                     selection.AddToSelectedList(selectable.Owner);
-                    OnDebugSelection(1);
+                    //OnDebugSelection(1);
                     return selection;
                 }
             }
-            OnDebugSelection(0);
+           // OnDebugSelection(0);
             return null;
         }
         return null;
@@ -77,7 +77,7 @@ public class InputManager : Singleton<InputManager>
         return null;
     }
     private readonly List<ISelection> _selectionList = new();
-    public List<ISelection> TryDragSelection<T>(out bool bOnDrag, List<T> selectableList, Camera camera) where T :MonoBehaviour
+    private List<ISelection> TryDragSelection<T>(out bool bOnDrag, List<T> selectableList, Camera camera) where T :MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && _isDragging == false)
         {
@@ -105,7 +105,7 @@ public class InputManager : Singleton<InputManager>
                 {
                     if (selectableList[i] is Unit unit)
                     {
-                        dragSelectable = unit._dragSelectable;
+                        dragSelectable = unit.DragSelectable;
                     }
                     else if (selectableList[i].TryGetComponent(out dragSelectable)) { }
 

@@ -37,7 +37,7 @@ public class Health : MonoBehaviour
     {
         if (_autoInitHealth)
         {
-            InitHealth(GetComponent<StatusComponent>().GetStatus());
+          //  InitHealth(GetComponent<StatusComponent>().GetStatus());
         }
     }
     public void InitHealth(RuntimeUnitStatus status)

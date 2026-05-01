@@ -147,7 +147,6 @@ GameObject:
   - component: {fileID: 8286231947356237274}
   - component: {fileID: 7663677386508973261}
   - component: {fileID: 5903517659067850664}
-  - component: {fileID: 4400261701388002844}
   m_Layer: 14
   m_Name: BostokButton
   m_TagString: Spacecraft
@@ -271,23 +270,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &4400261701388002844
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2844375161876102662}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a50be66dbf343c459a1d9f053d3cf65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _isAddedUnitChip: 0
-  _statusComponent: {fileID: 0}
-  _horizontalLength: 0
-  _verticalLength: 0
-  _functionDecription: 
 --- !u!1 &3966839438543445092
 GameObject:
   m_ObjectHideFlags: 0
@@ -373,6 +355,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4160316019255048442}
   - component: {fileID: 4098707325422816280}
+  - component: {fileID: 8217704199466006750}
   m_Layer: 14
   m_Name: StatusControl
   m_TagString: Spacecraft
@@ -411,4 +394,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee1a32fef1c23d45b1778f0f63f3be1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selectedUnitButton: {fileID: 0}
+  _unitSpawnComponent: {fileID: 0}
+  _unitData: {fileID: 0}
+  _nameText: {fileID: 0}
+--- !u!114 &8217704199466006750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5913062461611486754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 0}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []

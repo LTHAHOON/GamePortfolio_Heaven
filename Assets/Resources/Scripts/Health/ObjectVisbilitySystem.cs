@@ -14,8 +14,8 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
     private float _maxCheckTime = 0.5f;
 
     private float _curCheckTime = 0;
-    private List<ICullingUI> _cullingUIList = new();
-    private Dictionary<ICullingUI, Collider> _dicTargetObj = new();
+    private readonly List<ICullingUI> _cullingUIList = new();
+    private readonly Dictionary<ICullingUI, Collider> _dicTargetObj = new();
     
     private void Update()
     {
@@ -72,7 +72,7 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
                                && CheckFrustrum(collider, camera)
                                && CheckObjectVisible(camera, collider);
             }
-            if(cullingUI != null && cullingUI.ThisGameObject)
+            if(cullingUI.ThisGameObject)
             {
                 if (cullingUI.ThisGameObject.activeSelf != shouldActive && !cullingUI.IsForceHideUI)
                 {

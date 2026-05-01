@@ -59,6 +59,7 @@ public class DriveButton : MonoBehaviour, ICullingUI
     public GameObject ThisGameObject => gameObject;
     public Collider ColliderForCulling => _owner.GetClickCollider();
     public bool IsForceHideUI => false;
+    public Button ThisButton => _driveButton;
     public void SetOnClickDriveEvent(UnityAction<PassengerController> action) => _driveButton.onClick.AddListener(() => action?.Invoke(_owner));
     public void SetForceHideUI(bool isForceHide){}
     public void SetOwner(PassengerController owner) => _owner = owner;

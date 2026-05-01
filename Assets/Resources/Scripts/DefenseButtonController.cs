@@ -3,38 +3,32 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class DefenseButtonController : ModeButton
+public class DefenseButtonController : ModeButtonController
 {
-    [Header("InstancePos(Parent)")]
-    [SerializeField]
-    private GameObject _myUnitPrefab;
-
-    public override void OnEnable()
-    {
-        base.OnEnable();
-        PlanetInternalPopController.OnDefenseModeOpen += OpenData;
-        PlanetInternalPopController.OnDefenseModeClose += CloseData;
-    }
-
-    public override void OnDisable()
-    {
-        base.OnDisable();
-        PlanetInternalPopController.OnDefenseModeOpen -= OpenData;
-        PlanetInternalPopController.OnDefenseModeClose -= CloseData;
-    }
-
     private MouseCursorData _cursorData;
-    void Update()
+    private Transform instantiateParent;
+    
+    private Unit _curSpawnedUnit;
+    public override void OnEnter()
     {
-        if (_bGetUnitPrefab && _unitMPData != null)
+        base.OnEnter();
+        _planetButtonController.SetToggleIsOn(0, true);
+        _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_selectedUnitPrefab);
+        _curSpawnedUnit.gameObject.SetActive(false);
+    }
+
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+        if (_bGetUnit && _curSpawnedUnit)
         {
-            StatusDataMng.Instance.UpdateButtonToMPData(_unitMPData.Value, ref _thisButton, ref _buttonImage, ref _buttonText);
+            MPDataController.Instance.UpdateButtonToMPData(_curSpawnedUnit.MPData, ref _thisButton, ref _buttonImage, ref _buttonText);
         }
 
-        if (_bReadyPrefab && _unitPrefab)
+        if (_bReadyUnit && _curSpawnedUnit)
         {
-            _createCountController.RefreshCreateCount(_unitMPData.Value);
-            if(_cursorData == null)
+            _createCountController.RefreshCreateCount(_curSpawnedUnit.MPData);
+            if (_cursorData == null)
             {
                 CursorManager.Instance.SetCursor(CursorType.Defend);
                 _cursorData = CursorManager.GetCursorData(CursorType.Defend);
@@ -43,66 +37,43 @@ public class DefenseButtonController : ModeButton
             {
                 CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
             }
-            CreatePrefab();
+            if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
+            {
+                OnExecute();
+            }
         }
     }
-
-    private Unit _curUnitPrefab;
-    public override void ReadyPrefab()
+    public override void OnExecute()
     {
-        if (_selectedUnitType == UnitType.Creature)
+        base.OnExecute();
+        if (_curSpawnedUnit.TryGetComponent(out Creature creature))
         {
-            Transform instantiateParent = GetSelectedUnitParentTransform(_selectedUnitType);
-            _curUnitPrefab = Instantiate(_unitPrefab, instantiateParent);
-            _curUnitPrefab.transform.position = new Vector3(instantiateParent.position.x, _spawnComponent.SpawnHeight, instantiateParent.position.z);
-            _curUnitPrefab.gameObject.SetActive(false);
+           // creature.SetStatus(StatusSliderController._status);
+            creature.SetIsAttackMode(false);
+            MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(creature.UnitType, creature);
         }
+        MouseCursorData data = CursorManager.GetCursorData(CursorType.Defend);
+        _curSpawnedUnit.transform.position = data.GetFollwingSpriteRenderer().transform.position;
+        _curSpawnedUnit.gameObject.SetActive(true);
+        MPDataController.Instance.UseUpMP(_curSpawnedUnit.MPData.MP_ConsValue, 1); //MPҸ
 
-        _bReadyPrefab = true;
-    }
-
-    private void CreatePrefab()
-    {
-        if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
+        _createCountController.ConsumeCurCreateCount(1);
+        _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_curSpawnedUnit.UnitInfo);
+        _curSpawnedUnit.gameObject.SetActive(false);
+        if (_createCountController.GetCurCreateCount() <= 0)
         {
-            if (_curUnitPrefab.TryGetComponent(out Creature creature))
-            {
-                creature.SetStatus(StatusSliderController._status);
-                creature.SetIsAttackMode(false);
-                MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(_selectedUnitType, creature);
-            }
-            MouseCursorData data = CursorManager.GetCursorData(CursorType.Defend);
-            _curUnitPrefab.transform.position = data.GetFollwingSpriteRenderer().transform.position;
-            _curUnitPrefab.gameObject.SetActive(true);
-            MPController.Instance.UseUpMP(_unitMPData.Value.MP_ConsValue, 1); //MPҸ
-            _curUnitPrefab = null;
-
-            _createCountController.ConsumeCurCreateCount(1);
-            if (_createCountController.GetCurCreateCount() >= 1)
-            {
-                ReadyPrefab();
-            }
-            else
-            {
-                PlanetInternalPopController.CloseMode(ModeType);
-            }
+            OnExit(true);
         }
     }
-    protected override void OpenData()
+
+    public override void OnExit(bool bExitCompletely)
     {
-        base.OpenData();
-        _planetButtonController.SetToggleIsOn(0, true);
-    }
-    protected override void CloseData()
-    {
-        base.CloseData();
+        base.OnExit(bExitCompletely);
         _planetButtonController.SetToggleIsOn(0, false);
         _cursorData = null;
-        if (_curUnitPrefab != null)
+        if (_curSpawnedUnit)
         {
-            Destroy(_curUnitPrefab);
-            _curUnitPrefab = null;
+            Destroy(_curSpawnedUnit.gameObject);
         }
     }
-
 }

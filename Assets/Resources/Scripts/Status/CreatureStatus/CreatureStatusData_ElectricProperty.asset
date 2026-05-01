@@ -16,6 +16,7 @@ MonoBehaviour:
     Type: 0
     Property: 3
     ID: 0
+  allStatusName: 00000000010000000200000003000000040000000500000006000000
   ATK: 6
   DEF: 6
   HIT: 5

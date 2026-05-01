@@ -60,8 +60,9 @@ public class UIManager : Singleton<UIManager>
     [SerializeField]
     private Color _buttonBaseColor = Color.white;
     [SerializeField]
+    private CanvasScaler _hudCanvasScaler;
+    [SerializeField]
     private RectMask2D _spaceHUDMask;
-    public bool IsSubCameraActive => _spaceHUDMask.enabled;
     void Awake()
     {
         LoadButtonColor();
@@ -207,4 +208,7 @@ public class UIManager : Singleton<UIManager>
             buttonTransform.localScale = Vector3.Lerp(buttonTransform.localScale, baseScale, Time.deltaTime * _buttonScaleUPSpeed);
         }
     }
+
+    public bool IsSubCameraActive => _spaceHUDMask.enabled;
+    public CanvasScaler HUDCanvasScaler => _hudCanvasScaler;
 }

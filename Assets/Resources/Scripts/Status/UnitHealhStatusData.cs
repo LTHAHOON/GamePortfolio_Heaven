@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "HealhStatusData", menuName = "StatusData/HealhStatusData", order = 2)]
-public class HealhStatusData : BaseUnitStatusData
+public class UnitHealhStatusData : BaseUnitStatusData
 {
     public AllStatusNames[] allStatusName =
     {

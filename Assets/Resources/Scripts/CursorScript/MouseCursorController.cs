@@ -29,12 +29,12 @@ public class MouseCursorController : MonoBehaviour
         Cursor.visible = visible;
     }
 
-    public void SpriteFollowMouse(SpriteContraintPos spriteContraintPos, SpriteRenderer spriteRenderer, Camera camera)
+    public void SpriteFollowMouse(CursorContraintPos cursorContraintPos, SpriteRenderer spriteRenderer, Camera camera)
     {
         Vector3 mousePosition = Input.mousePosition;
 
-        if (mousePosition.x >= spriteContraintPos._maxX || mousePosition.x <= spriteContraintPos._minX 
-        || mousePosition.y >= spriteContraintPos._maxY || mousePosition.y <= spriteContraintPos._minY)
+        if (mousePosition.x >= cursorContraintPos._maxX || mousePosition.x <= cursorContraintPos._minX 
+        || mousePosition.y >= cursorContraintPos._maxY || mousePosition.y <= cursorContraintPos._minY)
         {
             spriteRenderer.enabled = false;
             ShowCursor(true);

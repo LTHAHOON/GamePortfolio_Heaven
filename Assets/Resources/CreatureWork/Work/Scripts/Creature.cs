@@ -49,11 +49,6 @@ public class Creature : Unit, ISelectableOwner
     [SerializeField]
     private HPMaterialInstance _hpMaterialInstance;
     #endregion
-    #region 스테이터스 컴포넌트
-    [SerializeField]
-    private StatusComponent _statusComponent;
-    private RuntimeUnitStatus _status;
-    #endregion
     #region TargetPos 데이터
     [HideInInspector]
     public RaycastHit _enemy = default;
@@ -127,8 +122,13 @@ public class Creature : Unit, ISelectableOwner
         _health.OnHealHit += HealHit;
         _health.OnDamageHit += DamageHit;
         _health.OnDie += Die;
-        _status = _statusComponent.GetStatus();
     }
+
+    private void Start()
+    {
+        SetUp();
+    }
+
     private void Update()
     {
         UpdateState();
@@ -192,7 +192,7 @@ public class Creature : Unit, ISelectableOwner
             TargetPosition = targetPosition;
         }
         navMeshAgent.destination = TargetPosition.Value;
-        navMeshAgent.speed = _status.DEX * 1.5f;
+        navMeshAgent.speed = Status.DEX * 1.5f;
         currentWalkSpeed = navMeshAgent.desiredVelocity.magnitude;
         animator.SetFloat(_animatorStatData._dicAnimParameterHash[AnimParameter.WalkSpeed], currentWalkSpeed * _animatorStatData._animatorSpeedMultiplier);
         animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], true);
@@ -402,9 +402,9 @@ public class Creature : Unit, ISelectableOwner
     public GameObject GetCreatureHP() => _hpMaterialInstance.GetCreatureHP();
     public void SetIsAttackMode(bool isAttackMode) => _isAttackMode = isAttackMode;
     public void SetIsAttackTarget(bool isAttackTarget) => _isAttackTarget = isAttackTarget;
-    public RuntimeUnitStatus GetStatus() => _status;
-    public void SetStatus(RuntimeUnitStatus status) => _status = status;
-    public long GetID() => _statusComponent.GetUnitData().ID;
+    public RuntimeUnitStatus GetStatus() => Status;
+    //public void SetStatus(RuntimeUnitStatus status) => Status = status;
+
     public Animator GetAnimator() => _animatorStatData._animator;
     public NavMeshAgent GetNavMeshAgent() => _navMeshStatData._navmeshAgentData._navMeshAgent;
     #endregion

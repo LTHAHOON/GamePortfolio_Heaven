@@ -9,8 +9,11 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MPController : Singleton<MPController>
+public class MPDataController : Singleton<MPDataController>
 {
+    [SerializeField]
+    private List<ConsumeMPValue> _consumeMPValues;
+    //MP StatusAddButton
     [SerializeField]
     private StatusAddButtonController _statusAddButtonController;
     [SerializeField]
@@ -60,7 +63,7 @@ public class MPController : Singleton<MPController>
             CurrentMPValue = Mathf.Clamp(CurrentMPValue, 0, _mpMaxValue);
             MP_AmountText.text = $"MP {CurrentMPValue}";
             _curTime = 0;
-            StatusDataMng.Instance.RefreshStatusAddButtons();
+            _statusAddButtonController.RefreshStatusAddButtons(_consumeMPValues);
         }
     }
 
@@ -68,7 +71,45 @@ public class MPController : Singleton<MPController>
     {
         return MP_StatusSlider.value >= consumptionMPValue;
     }
-    
+
+    public void UpdateButtonToMPData(MPData unitMPData, ref Button button, ref Image buttonImage, ref TextMeshProUGUI buttonText)
+    {
+        float mpValue = MP_StatusSlider.value;
+
+        if (mpValue >= unitMPData.MP_ConsValue && button.interactable == false)
+        {
+            button.interactable = true;
+            Color newButtonColor = UIManager.Instance.ChangeToInitialColor();
+            Color newButtontextColor = UIManager.Instance.ChangeToInitialColor();
+
+            buttonImage.color = newButtonColor;
+            buttonText.color = newButtontextColor;
+        }
+        if (mpValue < unitMPData.MP_ConsValue && button.interactable == true)
+        {
+            button.interactable = false;
+            Color newButtonColor = UIManager.Instance.ChangeToImageDisableColor();
+            Color newButtontextColor = UIManager.Instance.ChangeToImageDisableColor();
+
+            buttonImage.color = newButtonColor;
+            buttonText.color = newButtontextColor;
+        }
+    }
+
+    public bool TryGetConsumeMPValue(AllStatusNames statusName, out ConsumeMPValue consumeMPValue)
+    {
+        for (int i = 0; i < _consumeMPValues.Count; i++)
+        {
+            if (_consumeMPValues[i].statusName == statusName)
+            {
+                consumeMPValue = _consumeMPValues[i];
+                return true;
+            }
+        }
+        consumeMPValue = default;
+        return false;
+    }
+
     public bool UseUpMP(float consumptionMPValue, int count)
     {
         bool canUseUpMP = CheckToUseUpMP(consumptionMPValue);
@@ -81,7 +122,7 @@ public class MPController : Singleton<MPController>
                 MP_AmountText.text = $"MP {CurrentMPValue}";
             }
         }
-        StatusDataMng.Instance.RefreshStatusAddButtons();
+        _statusAddButtonController.RefreshStatusAddButtons(_consumeMPValues);
         return canUseUpMP;
         
     }

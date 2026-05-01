@@ -32,24 +32,24 @@ public enum SpacecraftState
 [RequireComponent(typeof(Rigidbody))]
 public class SpacecraftController : PassengerController, ISelectableOwner
 {
-    #region »óÅÂ µ¥ÀÌÅÍ ¹× »óÅÂ¸Ó½Å
+    #region ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Â¸Ó½ï¿½
     private BezierCurveStatData _curveStatData = new();
-    [Header("À¯´Ö Å¾½Â¿¡ ÇÊ¿äÇÑ µ¥ÀÌÅÍ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ Å¾ï¿½Â¿ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField]
     private BoardingStatData _boardingStatData;
-    [Header("SurroundPos¿¡ ÇÊ¿äÇÑ µ¥ÀÌÅÍ")]
+    [Header("SurroundPosï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField]
     private SurroundPosStatData _surroundPosStatData;
-    [Header("·¹ÀÌ¾î Å¸°Ù µ¥ÀÌÅÍ")]
+    [Header("ï¿½ï¿½ï¿½Ì¾ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField]
     private LayerTargetStatData _layerTargetStatData;
-    [Header("Die ½ºÅÈ µ¥ÀÌÅÍ")]
+    [Header("Die ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField]
     private DieStatData _dieStatData;
     private StateMachine<SpacecraftState, SpacecraftController> _stateMachine;
     public StateMachine<SpacecraftState, SpacecraftController> StateMachine => _stateMachine;
     #endregion
-    #region Physics µ¥ÀÌÅÍ
+    #region Physics ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     [SerializeField]
     private float gravity = -9.81f;
     [HideInInspector]
@@ -59,7 +59,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     private Rigidbody _rigidbody;
     private BoxCollider _collider;
     #endregion
-    #region AttackMark µ¥ÀÌÅÍ
+    #region AttackMark ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public event Action<GameObject> OnReturnAttackMark;
     private GameObject _attackMark;
     #endregion
@@ -70,13 +70,11 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     private int _unitTypeLayer;
     private Transform _passengerParent;
     public MonoBehaviour Owner => this;
-    private RuntimeUnitStatus _status;
-
-    #region ÀÌº¥Æ® ÇÔ¼ö
+    #region ì´ë²¤íŠ¸ í•¨ìˆ˜
     protected override void Awake()
     {
         base.Awake();
-        #region StateMachine ÃÊ±âÈ­
+        #region StateMachine ï¿½Ê±ï¿½È­
         _stateMachine = new(this, new IStateData[]
         {
             _surroundPosStatData,
@@ -99,6 +97,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         colliderSizeData = _collider.size;
         _collider.isTrigger = true;
     }
+    
     private void Update()
     {
         if (_stateMachine.CurrentState != null)
@@ -119,15 +118,11 @@ public class SpacecraftController : PassengerController, ISelectableOwner
 
     public void Initialize()
     {
-        SetStatus();
+        SetUp();
         _clickCollider.enabled = true;
+        _health.SetActiveHealthBar(true);
         MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType, this);
-        _health.InitHealth(_status);
-    }
-
-    private void SetStatus()
-    {
-        _status = GetComponent<StatusComponent>().GetStatus();
+        TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, UnitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
     }
 
     public IEnumerator IEBoading(float elapsedTime)
@@ -160,7 +155,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         AddPassengerInData(creature, passengerCount);
     }
 
-    #region AttackMark ¼³Á¤
+    #region AttackMark ï¿½ï¿½ï¿½ï¿½
     public void SetAttackMark(GameObject attckMark, Action<GameObject> returnAttackmark)
     {
         _attackMark = attckMark;
@@ -198,7 +193,6 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         }
     }
 
-    public RuntimeUnitStatus Status => _status;
     public Transform PassengerParent => _passengerParent;
     public int UnitTypeLayer => _unitTypeLayer;
     public Goal GoalData => _goalData;

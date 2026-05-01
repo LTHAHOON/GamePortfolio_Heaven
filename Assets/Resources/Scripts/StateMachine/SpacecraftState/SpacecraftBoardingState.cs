@@ -19,9 +19,10 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {
         SpacecraftController owner = stateMachine.GetOwner();
-
-        List<Creature> _boardingCreatureList = CreatureSelection.Instance.GetSelectionComponents<Creature>();
-        int creatureMaxCount = Math.Clamp(_boardingCreatureList.Count, 0, _boardingStatData._maxCount);
+        if (DriveButtonController.Instance.IsContainDriveButton(owner))
+            return;
+        List<Creature> boardingCreatureList = CreatureSelection.Instance.GetSelectionComponents<Creature>();
+        int creatureMaxCount = Math.Clamp(boardingCreatureList.Count, 0, _boardingStatData._maxCount);
         _boardingStatData._finalMaxCount = creatureMaxCount;
         NavMeshPath path = new();
         bool isPathValid = false;
@@ -29,10 +30,13 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         {
             if (NavMesh.SamplePosition(owner.transform.position, out NavMeshHit hit, 30f, NavMesh.AllAreas))
             {
-                NavMesh.CalculatePath(_boardingCreatureList[i].transform.position, hit.position, NavMesh.AllAreas, path);
+                NavMeshQueryFilter filter = new NavMeshQueryFilter();
+                filter.agentTypeID = NavMesh.GetSettingsByIndex(1).agentTypeID;
+                filter.areaMask = NavMesh.AllAreas;
+                NavMesh.CalculatePath(boardingCreatureList[i].transform.position, hit.position, filter, path);
                 if (path.status == NavMeshPathStatus.PathInvalid)
                 {
-                    Debug.Log($"creatureList[{i}] ±æ ¸·Çû½À´Ï´Ù");
+                    Debug.Log($"creatureList[{i}] ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
                     --_boardingStatData._finalMaxCount;
                     continue;
                 }
@@ -40,9 +44,9 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
                 {
                     isPathValid = true;
                 }
-                _boardingCreatureList[i].TargetPosition = hit.position;
-                _boardingCreatureList[i].StateMachine.ChangeState(CreatureState.Boarding);
-                _boardingStatData._boardingCreatureList.Add(_boardingCreatureList[i]);
+                boardingCreatureList[i].TargetPosition = hit.position;
+                boardingCreatureList[i].StateMachine.ChangeState(CreatureState.Boarding);
+                _boardingStatData._boardingCreatureList.Add(boardingCreatureList[i]);
             }
         }
         CreatureSelection.Instance.ClearSelectedList();
@@ -54,7 +58,7 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         else
         {
             stateMachine.ChangeState(SpacecraftState.Idle);
-            Debug.Log("Å¾½Â °¡´ÉÇÑ À¯´ÖÀÌ ¾ø½À´Ï´Ù.");
+            Debug.Log("Å¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
     }
     public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
@@ -70,10 +74,18 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         SpacecraftController owner = stateMachine.GetOwner();
         for (int i = 0; i < _boardingStatData._boardingCreatureList.Count; i++)
         {
+            //Å¾ï¿½Â¿Ï·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
             if (!_boardingStatData._boardingCreatureList[i].gameObject.activeSelf)
             {
                 owner.AddPassenger(_boardingStatData._boardingCreatureList[i], 1, child.transform);
                 _boardingStatData.driveButton.SetDriveCount(++_boardingStatData._curCount, _boardingStatData._finalMaxCount);
+                _boardingStatData._boardingCreatureList.RemoveAt(i);
+                return;
+            }
+            //Å¾ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+            else if(_boardingStatData._boardingCreatureList[i].StateMachine.CurrentState.EState != CreatureState.Boarding)
+            {
+                _boardingStatData.driveButton.SetDriveCount(_boardingStatData._curCount, --_boardingStatData._finalMaxCount);
                 _boardingStatData._boardingCreatureList.RemoveAt(i);
                 return;
             }

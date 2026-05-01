@@ -9,38 +9,29 @@ public class StatusComponent : MonoBehaviour
     private StatusDatabase _statusDataBase;
     [SerializeField]
     private bool _useIDForInteract = false;
-    [SerializeField]
-    private UnitData _unitData;
     private RuntimeUnitStatus _status;
 
-    private void Awake()
+    public void InitializeStatus(UnitInfo unitInfo)
     {
-        if (_unitData.Type == UnitType.Nexus || _unitData.Type == UnitType.Home)
+        if (unitInfo.Type is UnitType.Nexus or UnitType.Home)
         {
-            InitializeStatus<HealhStatusData>();
+            InitializeStatus<UnitHealhStatusData>(unitInfo);
         }
         else
         {
-            InitializeStatus<UnitStatusData>();
+            InitializeStatus<UnitStatusData>(unitInfo);
         }
     }
-
-    private void InitializeStatus<T>() where T : BaseUnitStatusData
+    
+    private void InitializeStatus<T>(UnitInfo unitInfo) where T : BaseUnitStatusData
     {
-        T statusData = _statusDataBase.Get<T>(_unitData,_useIDForInteract);
+        var statusData = _statusDataBase.Get<T>(unitInfo, _useIDForInteract);
         _status = new RuntimeUnitStatus(statusData);
     }
-
-    public UnitData GetUnitData()
-    {
-        return _unitData;
-    }
+    
     public RuntimeUnitStatus GetStatus()
     {
         return _status;
     }
-    public void SetStatus(RuntimeUnitStatus status)
-    {
-        _status = status;
-    }
+    
 }

@@ -2,24 +2,37 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DriveButtonController : Singleton<DriveButtonController>
+public class DriveButtonController : BaseDriveButtonController
 {
-    [SerializeField]
-    private DriveButton _driveButtonPrefab;
-    [SerializeField]
-    private Dictionary<PassengerController, DriveButton> _dicDriveButton = new();
+    public static DriveButtonController Instance;
+    private readonly Dictionary<PassengerController, DriveButton> _dicDriveButton = new();
+    private PoolComponent _pcDriveButton;
+
+    protected virtual void Awake()
+    {
+        Instance = this;
+        ModeButtonManager.Instance.AddModeButtonControl(this);
+        PoolManager.Instance.AddPool(ThisButton.gameObject, 10, 20, _driveButtonParent);
+        _pcDriveButton = PoolManager.Instance.GetPool(ThisButton.gameObject);
+    }
+
     public void AddDriveButton(PassengerController owner, int maxCount)
     {
-        DriveButton driveButton = Instantiate(_driveButtonPrefab, transform);
+        GameObject driveButtonObj = _pcDriveButton.PopPoolObject();
+        if (!driveButtonObj.TryGetComponent(out DriveButton driveButton))
+            return;
         driveButton.SetOwner(owner);
         driveButton.SetOnClickDriveEvent(OnClickDrive);
         driveButton.SetDriveCount(0, maxCount);
         _dicDriveButton.Add(owner, driveButton);
+        ModeButtonManager.Instance.AddListenerModeButton(this, driveButton.ThisButton);
         ObjectVisbilitySystem.Instance.AddToList(driveButton);
     }
     public void RemoveDriveButton(PassengerController owner)
     {
-        if(_dicDriveButton.ContainsKey(owner))
+        ModeButtonManager.Instance.RemoveListenerModeButton(this, _dicDriveButton[owner].ThisButton);
+        _pcDriveButton.ReturnPoolObject(_dicDriveButton[owner].gameObject);
+        if (_dicDriveButton.ContainsKey(owner))
         {
             _dicDriveButton.Remove(owner);
         }
@@ -30,8 +43,9 @@ public class DriveButtonController : Singleton<DriveButtonController>
     }
     private void OnClickDrive(PassengerController owner)
     {
-        AttackButtonController.Instance.ReadyPrefab();
-        AttackButtonController.Instance.OnClickOpenModeButton();
+        SetVehicleUnit(owner);
         RemoveDriveButton(owner);
     }
+
+    public bool IsContainDriveButton(PassengerController owner) => _dicDriveButton.ContainsKey(owner);
 }

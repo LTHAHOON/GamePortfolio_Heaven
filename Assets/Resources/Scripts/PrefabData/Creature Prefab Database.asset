@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cba6b58334f2644c8e81831dd2ef72b, type: 3}
   m_Name: Creature Prefab Database
   m_EditorClassIdentifier: 
-  _prefabType: 0
-  prefabs:
-  - {fileID: 8648885205316709853, guid: 1f2691bf9596cf54e9fab5f4161672a2, type: 3}
+  _unitDataBaseType: 0
+  _unitPrefabs:
+  - {fileID: 2377568404541230190, guid: 1f2691bf9596cf54e9fab5f4161672a2, type: 3}

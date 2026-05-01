@@ -97,12 +97,13 @@ GameObject:
   - component: {fileID: 6464206576597278850}
   - component: {fileID: 2606695048307551015}
   - component: {fileID: 418019409460171227}
+  - component: {fileID: 6068686830223686512}
   - component: {fileID: 1544915735445127345}
-  - component: {fileID: -4365569495353306832}
   - component: {fileID: 5107849445524456116}
   - component: {fileID: 4639246461895064197}
   - component: {fileID: 1186304992142041858}
   - component: {fileID: 1564050856521398453}
+  - component: {fileID: 754315312147012691}
   m_Layer: 14
   m_Name: "\uBE14\uB808\uC774\uC800"
   m_TagString: Ally
@@ -159,7 +160,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 8192
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -192,6 +193,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 122
   m_CollisionDetection: 0
+--- !u!114 &6068686830223686512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6464206576591567170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cefe48b5d825f2841aa9a89499734a2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unitData:
+    Type: 1
+    Property: 0
+    ID: 30003
 --- !u!114 &1544915735445127345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,9 +223,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _clickCollider: {fileID: 4430298297893176840}
   _health: {fileID: 4639246461895064197}
-  _dragSelectable: {fileID: 0}
-  _selectable: {fileID: 0}
-  _unitType: 1
+  _statusComponent: {fileID: 5107849445524456116}
+  _unitInfo: {fileID: 6068686830223686512}
   _boardingStatData:
     _maxCount: 7
     _boardingCreatureList: []
@@ -221,27 +237,15 @@ MonoBehaviour:
     _firstRingCount: 10
   _layerTargetStatData:
     _layerTargetList:
-      _layerList: []
+      _layerList:
+      - {fileID: 6464206576591567170}
+      - {fileID: 8777580208163690496}
   _dieStatData:
     _dieDelayTime: 4
   gravity: -9.81
   _isGravity: 0
-  colliderSizeData: {x: 0, y: 0, z: 0}
+  colliderSizeData: {x: 1.681138, y: 0.6954612, z: 2.965279}
   _createLoad: {fileID: 1186304992142041858}
---- !u!114 &-4365569495353306832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6464206576591567170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa29e930415c7054197677c28eff0595, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _mpData:
-    MP_ConsValue: 0
 --- !u!114 &5107849445524456116
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,10 +260,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
   _useIDForInteract: 0
-  _unitData:
-    Type: 1
-    Property: 0
-    ID: 30003
 --- !u!114 &4639246461895064197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -273,7 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fraction: 0
-  _maxHealth: 200
+  _maxHealth: 1400
   _fixedHP: 100
   _autoInitHealth: 0
   _collider: {fileID: 2606695048307551015}
@@ -309,6 +309,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e89f3c0ee5bf79e4fbd2af08db831cd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &754315312147012691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6464206576591567170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0e9fc1c981f316439ecf11bdd896619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _mpData:
+    MP_ConsValue: 1000
 --- !u!1 &8777580208163690496
 GameObject:
   m_ObjectHideFlags: 0

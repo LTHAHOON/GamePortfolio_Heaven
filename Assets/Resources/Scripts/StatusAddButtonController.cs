@@ -29,7 +29,7 @@ public class StatusAddButtonController : MonoBehaviour
     {
         for (int i = 0; i < consumeMPValues.Count; i++)
         {
-            bool canUseUpMP = MPController.Instance.CheckToUseUpMP(consumeMPValues[i].consumeMPValue);
+            bool canUseUpMP = MPDataController.Instance.CheckToUseUpMP(consumeMPValues[i].consumeMPValue);
             SetInteractableStatusAddButton(canUseUpMP, consumeMPValues[i].statusName);
         }
     }

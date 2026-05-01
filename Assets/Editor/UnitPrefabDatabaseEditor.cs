@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(PrefabDatabase))]
-public class PrefabDatabaseEditor : Editor
+[CustomEditor(typeof(UnitPrefabDB))]
+public class UnitPrefabDatabaseEditor : Editor
 {
-    private const string creatureFolderPath = "Assets/Resources/Prefab/Creature";
+    private const string CreatureFolderPath = "Assets/Resources/Prefab/Creature";
     private const string SpacecraftFolderPath = "Assets/Resources/Prefab/Spacecraft";
     private const string HomeFolderPath = "Assets/Resources/Prefab/Home";
     public override void OnInspectorGUI()
@@ -14,7 +14,7 @@ public class PrefabDatabaseEditor : Editor
 
         DrawDefaultInspector();
 
-        PrefabDatabase db = (PrefabDatabase)target;
+        UnitPrefabDB db = (UnitPrefabDB)target;
         if(db)
         {
             GUILayout.Space(10);
@@ -27,20 +27,20 @@ public class PrefabDatabaseEditor : Editor
 
     }
 
-    private void AutoFill(PrefabDatabase db)
+    private void AutoFill(UnitPrefabDB db)
     {
-        db.prefabs.Clear();
-        PrefabType prefabType = db.GetPrefabType();
+        db.UnitPrefabs.Clear();
+        UnitType prefabType = db.UnitDataBaseType;
         string[] guids;
         switch (prefabType)
         {
-            case PrefabType.Creature:
-                guids = AssetDatabase.FindAssets("t:Prefab", new[] { creatureFolderPath });
+            case UnitType.Creature:
+                guids = AssetDatabase.FindAssets("t:Prefab", new[] { CreatureFolderPath });
                 break;
-            case PrefabType.Spacecraft:
+            case UnitType.Spacecraft:
                 guids = AssetDatabase.FindAssets("t:Prefab", new[] { SpacecraftFolderPath });
                 break;
-            case PrefabType.Home:
+            case UnitType.Home:
                 guids = AssetDatabase.FindAssets("t:Prefab", new[] { HomeFolderPath });
                 break;
             default:
@@ -53,10 +53,9 @@ public class PrefabDatabaseEditor : Editor
         foreach (string guid in guids)
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-            if (prefab != null)
-                db.prefabs.Add(prefab); ;
-
+            Unit prefab = AssetDatabase.LoadAssetAtPath<Unit>(path);
+            if (prefab)
+                db.UnitPrefabs.Add(prefab); ;
         }
         EditorUtility.SetDirty(db);
         AssetDatabase.SaveAssets();

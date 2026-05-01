@@ -10,15 +10,15 @@ public class PassengerController : Unit
         return _dicPassengerDatas.Values.ToList();
     }
 
-    protected void AddPassengerInData(Creature creature, int passengerCount)
+    protected void AddPassengerInData(Unit creature, int passengerCount)
     {
-        if(_dicPassengerDatas.ContainsKey(creature.GetID()))
+        if(_dicPassengerDatas.ContainsKey(creature.ID))
         {
-            _dicPassengerDatas[creature.GetID()]._passengerCount += passengerCount;
+            _dicPassengerDatas[creature.ID]._passengerCount += passengerCount;
         }
         else
         {
-            _dicPassengerDatas.Add(creature.GetID(), new PassengerData(creature, passengerCount));
+            _dicPassengerDatas.Add(creature.ID, new PassengerData(creature, passengerCount));
         }
 
     }
@@ -26,12 +26,12 @@ public class PassengerController : Unit
 
     protected void RemovePassengerInData(Creature creature)
     {
-        if(_dicPassengerDatas.ContainsKey(creature.GetID()))
+        if(_dicPassengerDatas.ContainsKey(creature.ID))
         {
-            _dicPassengerDatas.Remove(creature.GetID());
+            _dicPassengerDatas.Remove(creature.ID);
         }
     }
-    protected Creature[] GetPassengers()
+    protected Unit[] GetPassengers()
     {
         return _dicPassengerDatas.Values.Select(v => v._passenger).ToArray();
     }

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class PassengerData 
 {
-    public Creature _passenger;
+    public Unit _passenger;
     public int _passengerCount = 0;
 
-    public PassengerData(Creature passenger, int passengerCount)
+    public PassengerData(Unit passenger, int passengerCount)
     {
         _passenger = passenger;
         _passengerCount = passengerCount;

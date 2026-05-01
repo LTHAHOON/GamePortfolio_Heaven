@@ -41,8 +41,8 @@ public class HomeController : Unit
         hit = new RaycastHit[_hitMaxCount];
         _targetLayer = (int)Mathf.Log(_targetLayerMask, 2);
         _collider = GetComponent<BoxCollider>();
-
     }
+    
     private void Update()
     {
         HomeFunction();
@@ -58,13 +58,10 @@ public class HomeController : Unit
 
     private void Initialize()
     {
-        SetStatus();
-        _health.InitHealth(_status);
-        TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, _unitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
-    }
-    private void SetStatus()
-    {
-        _status = GetComponent<StatusComponent>().GetStatus();
+        SetUp();
+        _health.SetActiveHealthBar(true);
+        MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType, this);
+        TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, UnitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
     }
 
     private void HomeFunction()
