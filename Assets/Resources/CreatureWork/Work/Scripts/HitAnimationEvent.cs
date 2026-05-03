@@ -11,6 +11,8 @@ public enum HitType
 }
 public class HitAnimationEvent : MonoBehaviour
 {
+    [SerializeField] 
+    private Unit _owner;
     [Serializable] 
     private struct HitCollider 
     { 
@@ -25,6 +27,7 @@ public class HitAnimationEvent : MonoBehaviour
         for (int i = 0; i < _hitColliders.Length; i++)
         {
             _dicHitColliders[(int)_hitColliders[i]._hitKType] = _hitColliders[i]._hitColliderControl;
+            _hitColliders[i]._hitColliderControl.SetOwner(_owner);
         }
     }
     public void EnableHit(int hitKey)

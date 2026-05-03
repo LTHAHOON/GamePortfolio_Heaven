@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using static MyUnitPrefabDataControl;
+using static MyUnitPrefabDataManager;
 
-public class MyUnitPrefabDataControl : Singleton<MyUnitPrefabDataControl>
+public class MyUnitPrefabDataManager : Singleton<MyUnitPrefabDataManager>
 {
     //GameObject 또는 Component가 아닌 T로 지정한 이유는 GetComonent를 하지 않기 위해서 입니다.
     [Serializable]

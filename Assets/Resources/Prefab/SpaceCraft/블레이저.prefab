@@ -99,7 +99,6 @@ GameObject:
   - component: {fileID: 418019409460171227}
   - component: {fileID: 6068686830223686512}
   - component: {fileID: 1544915735445127345}
-  - component: {fileID: 5107849445524456116}
   - component: {fileID: 4639246461895064197}
   - component: {fileID: 1186304992142041858}
   - component: {fileID: 1564050856521398453}
@@ -121,7 +120,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 7, y: 7, z: 7}
+  m_LocalScale: {x: 11, y: 11, z: 11}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1182373288312879418}
@@ -209,6 +208,8 @@ MonoBehaviour:
     Type: 1
     Property: 0
     ID: 30003
+  _statusDBType: 1
+  _sliderType: 1
 --- !u!114 &1544915735445127345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,8 +224,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _clickCollider: {fileID: 4430298297893176840}
   _health: {fileID: 4639246461895064197}
-  _statusComponent: {fileID: 5107849445524456116}
   _unitInfo: {fileID: 6068686830223686512}
+  _unitMpDataComponent: {fileID: 754315312147012691}
   _boardingStatData:
     _maxCount: 7
     _boardingCreatureList: []
@@ -246,20 +247,6 @@ MonoBehaviour:
   _isGravity: 0
   colliderSizeData: {x: 1.681138, y: 0.6954612, z: 2.965279}
   _createLoad: {fileID: 1186304992142041858}
---- !u!114 &5107849445524456116
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6464206576591567170}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55953f737a545044f9b17ed8488bffef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
-  _useIDForInteract: 0
 --- !u!114 &4639246461895064197
 MonoBehaviour:
   m_ObjectHideFlags: 0

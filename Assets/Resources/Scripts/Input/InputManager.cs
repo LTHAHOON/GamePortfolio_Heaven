@@ -68,7 +68,7 @@ public class InputManager : Singleton<InputManager>
     //유닛 캐싱된 데이터로 Selection을 구하는 함수 
     public List<ISelection> TryDragSelectionByUnitType(out bool bOnDrag, Camera camera, UnitType unitType)
     {
-        if (MyUnitPrefabDataControl.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
+        if (MyUnitPrefabDataManager.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
         {
             List<ISelection> selection = TryDragSelection(out bOnDrag, unitList, camera);
             return selection;
@@ -177,7 +177,7 @@ public class InputManager : Singleton<InputManager>
         target = SelectBySphereCast(keyCode, camera, targetLayerMask);
         if(target)
         {
-            if (MyUnitPrefabDataControl.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
+            if (MyUnitPrefabDataManager.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
             {
                 if(bFindUsingTargetParent)
                 {

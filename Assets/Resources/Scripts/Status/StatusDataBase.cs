@@ -1,29 +1,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum StatusDBType
+{
+    IDType,
+    PropertyType,
+}
+
 [CreateAssetMenu(menuName = "Database/StatusDB")]
 public class StatusDatabase : ScriptableObject
 {
     [SerializeField]
-    private List<BaseUnitStatusData> dataList = new();
-
-
-    public T Get<T>(UnitInfo unitInfo, bool useIDForInteract) where T : BaseUnitStatusData
+    private List<BaseUnitStatusData> _statusDataList = new();
+    private readonly Dictionary<int, BaseUnitStatusData> _dicStatusData = new();
+    [SerializeField]
+    private StatusDBType _dbType;
+    
+    public void InitStatusDatas()
     {
-        for (int i = 0; i < dataList.Count; i++)
+        _dicStatusData.Clear();
+        for (int i = 0; i < _statusDataList.Count; i++)
         {
-            if(useIDForInteract)
+            _dicStatusData[_statusDataList[i].GetHashCode()] = _statusDataList[i];
+        }
+    }
+    
+    public BaseUnitStatusData Get(UnitInfo unitInfo)
+    {
+        for (int i = 0; i < _statusDataList.Count; i++)
+        {
+            int index = _statusDataList[i].GetHashCode();
+            if(_dbType == StatusDBType.IDType)
             {
-                if (dataList[i].UnitData.ID == unitInfo.ID && dataList[i].UnitData.Type == unitInfo.Type && dataList[i].UnitData.Property == unitInfo.Property)
+                if (_dicStatusData[index].UnitData.ID == unitInfo.ID && _dicStatusData[index].UnitData.Type == unitInfo.Type && _dicStatusData[index].UnitData.Property == unitInfo.Property)
                 {
-                    return dataList[i] as T;
+                    return _dicStatusData[index];
                 }
             }
-            else
+            else if(_dbType == StatusDBType.PropertyType)
             {
-                if (dataList[i].UnitData.Type == unitInfo.Type && dataList[i].UnitData.Property == unitInfo.Property)
+                if (_dicStatusData[index].UnitData.Type == unitInfo.Type && _dicStatusData[index].UnitData.Property == unitInfo.Property)
                 {
-                    return dataList[i] as T;
+                    return _dicStatusData[index];
                 }
             }
             
@@ -31,4 +49,6 @@ public class StatusDatabase : ScriptableObject
         Debug.LogError("StatusDatabase: No data found for " + unitInfo.Type + " " + unitInfo.Property);
         return null;
     }
+    
+    public StatusDBType DBType => _dbType;
 }

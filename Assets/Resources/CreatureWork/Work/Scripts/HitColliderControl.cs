@@ -6,8 +6,9 @@ public abstract class HitColliderControl : MonoBehaviour
 {
     [SerializeField]
     private Collider _collider;
-    [SerializeField]
-    protected StatusComponent _statusComponent;
+
+    [SerializeField] 
+    protected Unit _owner;
     [SerializeField]
     private int _hitTriggerCount = 1;
     [SerializeField]
@@ -18,6 +19,11 @@ public abstract class HitColliderControl : MonoBehaviour
     public virtual void Awake()
     {
         DisableHit();
+    }
+
+    public void SetOwner(Unit owner)
+    {
+        _owner = owner;
     }
     private void OnTriggerEnter(Collider other)
     {

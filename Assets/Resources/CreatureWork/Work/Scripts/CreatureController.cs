@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 public enum CreatureState
 {
@@ -15,84 +16,70 @@ public enum CreatureState
     Die,
 }
 
-[RequireComponent(typeof(StatusComponent))]
-public class Creature : Unit, ISelectableOwner
+public class CreatureController : Unit, ISelectableOwner, IPassenger
 {
     #region 상태 데이터 및 상태머신
-    [Header("NavMesh 데이터")]
-    [SerializeField]
+    [Header("NavMesh 데이터")] [SerializeField]
     private NavMeshStatData _navMeshStatData;
-    [Header("애니메이터 데이터")]
-    [SerializeField]
+    
+    [Header("애니메이터 데이터")] [SerializeField] 
     private AnimatorStatData _animatorStatData;
-    [Header("SurroundPos에 필요한 데이터")]
-    [SerializeField]
+
+    [Header("SurroundPos에 필요한 데이터")] [SerializeField]
     private SurroundPosStatData _surroundPosData;
-    [Header("공격 발동 확률 데이터")]
-    [SerializeField]
+
+    [Header("공격 발동 확률 데이터")] [SerializeField]
     private AttackActivationStatData _attackActivationStatData;
-    [Header("Die 스탯 데이터")]
-    [SerializeField]
+
+    [Header("Die 스탯 데이터")] [SerializeField]
     private DieStatData _dieStatData;
 
-    private StateMachine<CreatureState, Creature> _stateMachine;
-    public StateMachine<CreatureState, Creature> StateMachine => _stateMachine;
+    private StateMachine<CreatureState, CreatureController> _stateMachine;
+    public StateMachine<CreatureState, CreatureController> StateMachine => _stateMachine;
     #endregion
-    #region Physics 데이터
 
-    [Header("중력 세기")]
-    [SerializeField]
-    private float _gravity = -12f;
+    #region Physics 데이터
+    [Header("중력 세기")] [SerializeField] private float _gravity = -12f;
     private bool _isGravity = true;
     #endregion
+
     #region 체력 MaterialInstance
-    [SerializeField]
-    private HPMaterialInstance _hpMaterialInstance;
+    [SerializeField] private HPMaterialInstance _hpMaterialInstance;
     #endregion
+
     #region TargetPos 데이터
-    [HideInInspector]
-    public RaycastHit _enemy = default;
-    [HideInInspector]
-    public Vector3 _enemyNexusPos;
-    private Vector3? _targetPosition;
-    public Vector3? TargetPosition
-    {
-        get
-        {
-            if (_enemy.collider != null)
-            {
-                return _enemy.transform.position;
-            }
-            return _targetPosition;
-        }
-        set { _targetPosition = value; }
-    }
+    private Vector3 _enemyNexusPos;
+    private Vector3 _destination;
+    private Collider _enemyCollider;
     #endregion
+
     #region 스킬 데이터
-    [Header("스킬 데이터 저장공간")]
-    [SerializeField]
+    [Header("스킬 데이터 저장공간")] [SerializeField]
     private SkillData[] _skillDatas;
     #endregion
+
     #region 공격마크 데이터
-    public event Action<GameObject> OnReturnAttackMark;
-    [HideInInspector]
-    public GameObject _attackMark;
+    private event Action<GameObject> OnReturnAttackMark;
+    private GameObject _attackMark;
     #endregion
+
     [SerializeField]
     private CharacterController _characterController;
+    
     private bool _isAttackMode = false;
-    public bool IsAttackMode => _isAttackMode;
     private bool _isAttackTarget = false;
-    public bool IsAttackTarget => _isAttackTarget;
-    [HideInInspector]
+    [HideInInspector] 
     public bool _isChoice = true;
     public MonoBehaviour Owner => this;
+
     #region 유니티 이벤트 함수
+
     protected override void Awake()
     {
         base.Awake();
         #region StateMachine 초기화
-        _stateMachine = new(this, new IStateData[] 
+
+        _stateMachine = new(this, new IStateData[]
         {
             _navMeshStatData,
             _animatorStatData,
@@ -101,6 +88,7 @@ public class Creature : Unit, ISelectableOwner
             _dieStatData,
         });
         #endregion
+
         #region State 추가
         _stateMachine.AddState(new CreatureIdleState());
         _stateMachine.AddState(new CreatureTraceState());
@@ -111,12 +99,15 @@ public class Creature : Unit, ISelectableOwner
         _stateMachine.AddState(new CreatureDeSelectionState());
         _stateMachine.ChangeState(CreatureState.Idle);
         #endregion
+
         #region 공격 발동 확률 데이터 초기화
-        _attackActivationStatData._dicAttackActivationRate.TryAdd(_animatorStatData._dicAnimParameterHash[AnimParameter.NormalAttack],
-                                                                                    _attackActivationStatData._normalAttackActivationRate);
+        _attackActivationStatData._dicAttackActivationRate.TryAdd(
+            _animatorStatData._dicAnimParameterHash[AnimParameter.NormalAttack],
+            _attackActivationStatData._normalAttackActivationRate);
         for (int i = 0; i < _skillDatas.Length; ++i)
         {
-            _attackActivationStatData._dicAttackActivationRate.TryAdd(_skillDatas[i].GetSkillKeyToHash(), _skillDatas[i].ActivationRate);
+            _attackActivationStatData._dicAttackActivationRate.TryAdd(_skillDatas[i].GetSkillKeyToHash(),
+                _skillDatas[i].ActivationRate);
         }
         #endregion
         _health.OnHealHit += HealHit;
@@ -126,9 +117,8 @@ public class Creature : Unit, ISelectableOwner
 
     private void Start()
     {
-        SetUp();
+        SetUpUnit();
     }
-
     private void Update()
     {
         UpdateState();
@@ -141,7 +131,7 @@ public class Creature : Unit, ISelectableOwner
         }
     }
     #endregion
-
+    
     //생물체 FSM
     private void UpdateState()
     {
@@ -149,7 +139,14 @@ public class Creature : Unit, ISelectableOwner
         _stateMachine.UpdateCurrentState();
     }
 
+    public void SetAttackMark(GameObject attackMark, Action<GameObject> returnAttackmark)
+    {
+        _attackMark = attackMark;
+        OnReturnAttackMark += returnAttackmark;
+    }
+    
     #region 주변 적 구하는 함수
+
     //가까운 적 구하는 함수
     private RaycastHit MinDistanceEnemy(RaycastHit[] enemies, int enemyCount)
     {
@@ -166,83 +163,70 @@ public class Creature : Unit, ISelectableOwner
                 index = i;
             }
         }
+
         return enemies[index];
     }
-
+    
     //SphereCast에 의한 가까운 적 구하는 함수
     private readonly RaycastHit[] _enemies = new RaycastHit[25];
+
     public bool TryGetAroundEnemy(out RaycastHit enemy, float radius)
     {
-        int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemies, 0, GameLayer.EnemyTargetLayer);
+        int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemies, 0,
+            GameLayer.EnemyTargetLayer);
         if (enemyCount > 0)
         {
             enemy = MinDistanceEnemy(_enemies, enemyCount);
+            _enemyCollider = enemy.collider;
             return true;
         }
+
         enemy = default;
         return false;
     }
+
     #endregion
 
     #region 목적지에 이동 및 멈추는 함수
-    public void MoveToDestination(out float currentWalkSpeed ,NavMeshAgent navMeshAgent, Animator animator, Vector3? targetPosition)
+
+    public void MoveToDestination(out float currentWalkSpeed, NavMeshAgent navMeshAgent, Animator animator)
     {
-        if(TargetPosition != targetPosition)
-        {
-            TargetPosition = targetPosition;
-        }
-        navMeshAgent.destination = TargetPosition.Value;
+        MoveToDestination(out currentWalkSpeed, navMeshAgent, animator, _destination);
+    }
+
+    public void MoveToDestination(out float currentWalkSpeed, NavMeshAgent navMeshAgent, Animator animator,
+        Vector3 destination)
+    {
+        SetDestination(destination);
+        navMeshAgent.destination = destination;
         navMeshAgent.speed = Status.DEX * 1.5f;
         currentWalkSpeed = navMeshAgent.desiredVelocity.magnitude;
-        animator.SetFloat(_animatorStatData._dicAnimParameterHash[AnimParameter.WalkSpeed], currentWalkSpeed * _animatorStatData._animatorSpeedMultiplier);
+        animator.SetFloat(_animatorStatData._dicAnimParameterHash[AnimParameter.WalkSpeed],
+            currentWalkSpeed * _animatorStatData._animatorSpeedMultiplier);
         animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], true);
     }
+
     public void StopToMove(NavMeshAgent navMeshAgent, Animator animator)
     {
         //TargetPosition = null;
         animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
-        if(navMeshAgent.enabled)
+        if (navMeshAgent.enabled)
         {
             navMeshAgent.ResetPath();
         }
     }
+
     #endregion
 
-    #region Attack상태에 들아가기 전 한번 더 추적하는 함수
-    public bool HandleAttacktarget(NavMeshAgentStatData navMeshAgentData, AnimatorStatData animatorStatData, 
-                                                    SurroundPosStatData surroundPosData)
+    public void ReleaseAttackMark()
     {
-        //둘러쌓은 위치를 가졌는데 적 타겟을 가지고 있을 경우
-        if (_enemy.collider != null || SurroundPosManager.IsContainTargetPos(gameObject))
-        {
-            animatorStatData._animator.SetBool(animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
-            return true;
-        }
-        //사용자가 지정한 위치에 도달했을 때 적 추적을 실패할 경우 적 넥서스 타겟 지정
-        else if (!TryGetAroundEnemy(out _enemy, navMeshAgentData._traceRaidus))
-        {
-            if (_isAttackMode && _attackMark)
-            {
-                OnReturnAttackMark?.Invoke(_attackMark);
-                OnReturnAttackMark = null;
-            }
-
-            _enemy = default;
-            navMeshAgentData._navMeshAgent.stoppingDistance = 0.5f;
-            SurroundPosManager.AssignTargetPosition(gameObject, _enemyNexusPos, surroundPosData._radiusFromCenter,
-                surroundPosData._distanceFromUnit, surroundPosData._firstRingCount);
-            if (SurroundPosManager.TryGetAssignedTargetPositionAround(gameObject, out Vector3 assigendPos))
-            {
-                TargetPosition = assigendPos;
-                Debug.Log(assigendPos);
-            }
-
-        }
-        return false;
+        OnReturnAttackMark?.Invoke(_attackMark);
+        _attackMark = null;
+        OnReturnAttackMark = null;
     }
-    #endregion
 
     #region 데미지 및 힐될 때 호출되는 함수
+
     public void DamageHit()
     {
         if (_hpMaterialInstance.isActiveAndEnabled && _health && _health.HealthBar)
@@ -256,6 +240,7 @@ public class Creature : Unit, ISelectableOwner
             _animatorStatData._animator.ResetTrigger(_animatorStatData._dicAnimParameterHash[AnimParameter.GetHit]);
         }
     }
+
     public void HealHit()
     {
         if (_hpMaterialInstance.isActiveAndEnabled && _health && _health.HealthBar)
@@ -264,31 +249,34 @@ public class Creature : Unit, ISelectableOwner
             _hpMaterialInstance.ChangeHP(_health.CurrentHealth, _health.MaxHealth);
         }
     }
+
     #endregion
 
     #region 죽을 때 호출되는 함수
+
     public void Die()
     {
-        _health.HealthBar.
-
-        StopAllCoroutines();
+        _health.HealthBar.StopAllCoroutines();
         _stateMachine.ChangeState(CreatureState.Die);
     }
-
 
     #endregion
 
     #region 확률에 의한 랜덤 공격 함수
-    public IEnumerator IEAttackChoose(AnimatorStatData animatorStatData, AttackActivationStatData attackActivationStatData)
+
+    public IEnumerator IEAttackChoose(AnimatorStatData animatorStatData,
+        AttackActivationStatData attackActivationStatData)
     {
         _isChoice = false;
-        int animatorHash = attackActivationStatData._attackRandomProb.Choose<int>(attackActivationStatData._dicAttackActivationRate);
+        int animatorHash =
+            attackActivationStatData._attackRandomProb.Choose<int>(attackActivationStatData._dicAttackActivationRate);
         animatorStatData._animator.ResetTrigger(animatorHash); //연속 Trigger 보완
         animatorStatData._animator.SetTrigger(animatorHash);
         var state = animatorStatData._animator.GetCurrentAnimatorStateInfo(1);
         yield return new WaitForSeconds(state.length);
         _isChoice = true;
     }
+
     #endregion
 
     private void GravityMove()
@@ -297,28 +285,27 @@ public class Creature : Unit, ISelectableOwner
         Vector3 _gravityMotion = _gravityDirection * _gravity * Time.fixedDeltaTime;
         _characterController.Move(_gravityMotion);
     }
+
     public void SetEnemyNexusTargetPos(Vector3 nexusTargetPos)
     {
         _enemyNexusPos = nexusTargetPos;
     }
 
-    //타겟과의 거리를 구하는 함수
-    public float GetDistanceFromThisToTarget()
+    #region 거리 및 방향 구하는 함수
+    public float GetDistanceTo(Vector3 targetPos)
     {
-        Vector3 moveDirection;
-        if (SurroundPosManager.IsContainTargetPos(gameObject))
-        {
-            moveDirection = GetEnemyNexusDirection();
-        }
-        else
-        {
-            moveDirection = GetMoveDirection();
-
-        }
-        moveDirection.y = 0;
-        return moveDirection.sqrMagnitude;
+        Vector3 dir = targetPos - transform.position;
+        return dir.sqrMagnitude;
     }
-
+    
+    
+    public Vector3 GetLookDirection(Vector3 targetPos)
+    {
+        Vector3 dir = targetPos - transform.position;
+        return dir;
+    }
+    #endregion
+    
     //땅에 있는지 체크
     private bool CheckGround()
     {
@@ -326,19 +313,26 @@ public class Creature : Unit, ISelectableOwner
         {
             _isGravity = false;
         }
+
         return _characterController.isGrounded;
     }
 
     //타겟과 상태를 초기화(리셋)하는 함수
     public void ResetTargetAndState()
     {
-        _enemy = default;
-        TargetPosition = null;
+        _enemyCollider = null;
         _isChoice = true;
         _stateMachine.ChangeState(CreatureState.Idle);
     }
-
+    public void OnUnboard(Vector3 targetPosition, Vector3 enemyPosition)
+    {
+        SetEnemyNexusTargetPos(enemyPosition);
+        SetDestination(targetPosition);
+        SetIsAttackMode(true);
+    }
+    
     #region NavMeshAgent, NavMeshObstacle Enable 컨트롤
+
     private IEnumerator IEStopNavMeshAgent(NavMeshStatData navMeshStatData)
     {
         navMeshStatData._navMeshObstacle.enabled = false;
@@ -366,15 +360,17 @@ public class Creature : Unit, ISelectableOwner
             navMeshStatData._navMeshObstacle.carving = true;
         }
     }
-    #endregion
 
+    #endregion
+    
     #region 선택 및 선택해제될 때 호출되는 함수
+
     public void OnSelected()
     {
         _hpMaterialInstance.GetCreatureHP().SetActive(true);
-        TargetPosition = null;
         _stateMachine.ChangeState(CreatureState.Selection);
     }
+
     public void OnDeSelected()
     {
         _hpMaterialInstance.GetCreatureHP().SetActive(false);
@@ -382,31 +378,37 @@ public class Creature : Unit, ISelectableOwner
             return;
         _stateMachine.ChangeState(CreatureState.DeSelection);
     }
+
     public void OnDragSelected()
     {
         OnSelected();
     }
+
     public void OnDragDeSelected()
     {
         OnDeSelected();
     }
+
     #endregion
-
+    
     #region 데이터 반환 함수
-    public int GetAnimParameterHash(AnimParameter animParameter) => _animatorStatData._dicAnimParameterHash[animParameter];
 
-    public float GetAttackDistance(NavMeshAgentStatData data) => (_enemy.collider != null) ? _enemy.collider.bounds.extents.magnitude : data._nexusAttackDistance;
-    public Vector3 GetEnemyNexusDirection() => (_enemyNexusPos - transform.position);
-    public Vector3 GetMoveDirection() => (TargetPosition.Value - transform.position);
+    public bool IsAttackMode => _isAttackMode;
+    public bool IsAttackTarget => _isAttackTarget;
+    public int GetAnimParameterHash(AnimParameter animParameter) =>
+        _animatorStatData._dicAnimParameterHash[animParameter];
+    public bool IsEnemyColliderExist => _enemyCollider;
+    public Collider EnemyCollider => _enemyCollider;
+    public Vector3 EnemyNexusPos => _enemyNexusPos;
+    public bool IsAttackMarkExist => _attackMark;
+    public void SetDestination(Vector3 targetPosition) => _destination = targetPosition;
 
-    public GameObject GetCreatureHP() => _hpMaterialInstance.GetCreatureHP();
+    public float GetEnemyAttackDistance(NavMeshAgentStatData data) =>
+        _enemyCollider ? _enemyCollider.bounds.extents.magnitude : -1f;
+    public float GetNexusAttackDistance(NavMeshAgentStatData data)=> data._nexusAttackDistance;
     public void SetIsAttackMode(bool isAttackMode) => _isAttackMode = isAttackMode;
     public void SetIsAttackTarget(bool isAttackTarget) => _isAttackTarget = isAttackTarget;
-    public RuntimeUnitStatus GetStatus() => Status;
-    //public void SetStatus(RuntimeUnitStatus status) => Status = status;
-
     public Animator GetAnimator() => _animatorStatData._animator;
     public NavMeshAgent GetNavMeshAgent() => _navMeshStatData._navmeshAgentData._navMeshAgent;
     #endregion
 }
-

@@ -5,65 +5,105 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CreatureTraceState : State<CreatureState, Creature>
+public class CreatureTraceState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
     private AnimatorStatData _animatorStatData;
     private SurroundPosStatData _surroundPosData;
 
     public override CreatureState EState => CreatureState.Trace;
-    public override void InitState(StateMachine<CreatureState, Creature> stateMachine)
+
+    public override void InitState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
         stateMachine.TryGetStateData(out _navMeshStatData);
         stateMachine.TryGetStateData(out _animatorStatData);
         stateMachine.TryGetStateData(out _surroundPosData);
     }
-    public override void EnterState(StateMachine<CreatureState, Creature> stateMachine)
+
+    public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
-        Creature creature = stateMachine.GetOwner();
-        creature.SetEnableNavMeshAgent(_navMeshStatData);
+        CreatureController creatureController = stateMachine.GetOwner();
+        creatureController.SetEnableNavMeshAgent(_navMeshStatData);
     }
-    public override void UpdateState(StateMachine<CreatureState, Creature> stateMachine)
+
+    public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
-        Creature creature = stateMachine.GetOwner();
+        CreatureController creature = stateMachine.GetOwner();
         NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-        if (!navMeshAgent.enabled)
-        {
-            return;
-        }
-        float distanceToTarget = creature.GetDistanceFromThisToTarget();
-        //µÑ·¯½×Àº À§Ä¡¸¦ °¡Áö°í ÀÖÀ» °æ¿ì ÇØ´ç À§Ä¡·Î ÀÌµ¿ÇÕ´Ï´Ù.
-        if (SurroundPosManager.IsContainTargetPos(creature.gameObject))
-        {
-            creature.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator, creature.TargetPosition);
-        }
-        //ÃßÀû°Å¸®¾È¿¡ ÀÖÀ» ½Ã Å¸°ÙÀ§Ä¡·Î ÀÌµ¿ÇÕ´Ï´Ù.
-        else if (distanceToTarget <= (navMeshAgentStatData._traceDistance * navMeshAgentStatData._traceDistance) || creature.IsAttackTarget)
-        {
-            creature.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator, creature.TargetPosition);
-        }
-        //ÃßÀû°Å¸® ¹üÀ§º¸´Ù ¸Ö¾îÁ³À» °æ¿ì IdleÀüÈ¯
-        else
-        {
-            creature.TargetPosition = null;
-            stateMachine.ChangeState(CreatureState.Idle);
-        }
+        if (!navMeshAgent.enabled) return;
 
-        float attackDistance = creature.GetAttackDistance(navMeshAgentStatData);
-        if (navMeshAgent.pathPending) return;
-        //°ø°İ°Å¸®¾È¿¡ ÀÖÀ» ½Ã HandleAttackTargetÇÔ¼ö·Î È®½ÇÈ÷ AttackÇÒ Áö ÇÑ¹ø ´õ ÃßÀûÇÕ´Ï´Ù
-        if (distanceToTarget <= (attackDistance * attackDistance)
-            && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
+        if (creature.IsAttackMode || creature.IsAttackTarget)
         {
-            navMeshAgent.ResetPath();
-            creature.SetIsAttackTarget(false);
-            bool bAttack = creature.HandleAttacktarget(navMeshAgentStatData, _animatorStatData, _surroundPosData);
-            if (bAttack)
+            
+            creature.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator);
+            if (navMeshAgent.pathPending) return;
+          
+            //AttackMarkê°€ ì¡´ì¬í•˜ì§€ ì•Šì„ ê²½ìš°(ì¦‰, ë„¥ì„œìŠ¤ íƒ€ê²Ÿ ë˜ëŠ” Enemy íƒ€ê²Ÿ ì´ë¼ëŠ” ëœ»)
+            if (!creature.IsAttackMarkExist)
             {
-                stateMachine.ChangeState(CreatureState.Attack);
+                float attackDistance = 0f;
+                float distanceToTarget = 0f;
+                //Enemy íƒ€ê²Ÿì¼ ê²½ìš°
+                if (creature.IsEnemyColliderExist)
+                {
+                    attackDistance = creature.GetEnemyAttackDistance(navMeshAgentStatData);
+                    distanceToTarget = creature.GetDistanceTo(creature.EnemyCollider.transform.position);
+                    if (distanceToTarget > (navMeshAgentStatData._traceDistance * navMeshAgentStatData._traceDistance))
+                    {
+                        stateMachine.ChangeState(CreatureState.Idle);
+                    }
+                }
+                //ì´ë™ì¤‘ ì£¼ë³€ Enemy íƒìƒ‰
+                else if (creature.TryGetAroundEnemy(out RaycastHit enemy,
+                             _navMeshStatData._navmeshAgentData._traceRaidus))
+                {
+                    creature.SetDestination(enemy.transform.position);
+                }
+                //Nexus íƒ€ê²Ÿì¼ ê²½ìš°
+                else
+                {
+                    attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
+                    distanceToTarget = creature.GetDistanceTo(creature.EnemyNexusPos);
+                }                
+
+                if (currentWalkSpeed <= 0 && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance||
+                    navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+                {
+                    //ëª©ì ì§€ ë„ë‹¬ í›„ AttackDistance ì²´í¬
+                    if (distanceToTarget <= (attackDistance * attackDistance))
+                    {
+                        navMeshAgent.ResetPath();
+                        creature.SetIsAttackTarget(false);
+                        stateMachine.ChangeState(CreatureState.Attack);
+                    }
+                    //AttackDistanceë³´ë‹¤ ë©€ë©´ Idle
+                    else
+                    {
+                        stateMachine.ChangeState(CreatureState.Idle);
+                    }
+                }
+            }
+            //AttackMarkê°€ ì¡´ì¬í•  ê²½ìš°(AttackDistanceë¥¼ ì‚¬ìš©í•˜ì§€ ì•ŠìŒ)
+            else
+            {
+                Debug.Log("CreatureTraceState :Trace AttackMode or AttackTarget");
+                if (currentWalkSpeed <= 0 && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance||
+                    navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+                {
+                    creature.ReleaseAttackMark();
+                    SurroundPosManager.ReleaseTargetPosition(creature.gameObject);
+                    stateMachine.ChangeState(CreatureState.Idle);
+                }
             }
         }
+        else
+        {
+            stateMachine.ChangeState(CreatureState.Idle);
+        }
     }
-    public override void ExitState(StateMachine<CreatureState, Creature> stateMachine) { }
+
+    public override void ExitState(StateMachine<CreatureState, CreatureController> stateMachine)
+    {
+    }
 }

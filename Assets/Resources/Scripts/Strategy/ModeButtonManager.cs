@@ -63,15 +63,23 @@ public class ModeButtonManager : Singleton<ModeButtonManager>
         if (!_isUpdateMode || _curStrategy == null)
             return;
         _curStrategy.OnUpdate();
-        //´©¸¦¶§ ÃÊ±âÈ­
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
         if((Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.BackQuote)))
         {
             _curStrategy.OnExit(false);
         }
-        //¶ª¶§ ¿ÏÀüÈ÷ Exit
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Exit
         if(Input.GetKeyUp(KeyCode.Escape) || Input.GetKeyUp(KeyCode.BackQuote))
         {
             OnExitModeCompletely();
+        }
+    }
+    
+    public void RefreshModeButtons()
+    {
+        for (int i = 0; i < _modeButtonControlList.Count; i++)
+        {
+            _modeButtonControlList[i].RefreshModeButton();
         }
     }
     public IStrategy CurStrategy => _curStrategy;

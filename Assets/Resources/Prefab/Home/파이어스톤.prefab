@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 7832424511407746320}
   - component: {fileID: 6668413684282502912}
   - component: {fileID: 5477920877473272141}
-  - component: {fileID: -7546639952564579674}
   - component: {fileID: 8972049251848072008}
   - component: {fileID: 280874787388841356}
   - component: {fileID: 8177326884005219161}
@@ -36,7 +35,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7470213005817906524}
@@ -156,10 +155,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _clickCollider: {fileID: 6481697059004962632}
   _health: {fileID: 8972049251848072008}
-  _dragSelectable: {fileID: 0}
-  _statusComponent: {fileID: -7546639952564579674}
-  _mpDataComponent: {fileID: 8177326884005219161}
   _unitInfo: {fileID: 5477920877473272141}
+  _unitMpDataComponent: {fileID: 8177326884005219161}
   _hitMaxCount: 5
   _healInterval: 2
   _distanceFromCenter: 13
@@ -186,20 +183,8 @@ MonoBehaviour:
     Type: 2
     Property: 0
     ID: 20001
---- !u!114 &-7546639952564579674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2521004358535222546}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55953f737a545044f9b17ed8488bffef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
-  _useIDForInteract: 1
+  _statusDBType: 0
+  _sliderType: 2
 --- !u!114 &8972049251848072008
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,59 +6,47 @@ using UnityEngine.UI;
 public class DefenseButtonController : ModeButtonController
 {
     private MouseCursorData _cursorData;
-    private Transform instantiateParent;
-    
     private Unit _curSpawnedUnit;
+
     public override void OnEnter()
     {
         base.OnEnter();
+        CursorManager.Instance.SetCursor(CursorType.Defend);
+        _cursorData = CursorManager.GetCursorData(CursorType.Defend);
         _planetButtonController.SetToggleIsOn(0, true);
         _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_selectedUnitPrefab);
+        InitCreateCount(_curSpawnedUnit.UnitMPData); //MPData로 생성 카운트 세팅(MPData 필요)
         _curSpawnedUnit.gameObject.SetActive(false);
     }
 
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (_bGetUnit && _curSpawnedUnit)
+        if (!_curSpawnedUnit || _cursorData == null)
+            return;
+        _createCountController.RefreshCreateCount(_curSpawnedUnit.UnitMPData);
+        CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
+        if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
         {
-            MPDataController.Instance.UpdateButtonToMPData(_curSpawnedUnit.MPData, ref _thisButton, ref _buttonImage, ref _buttonText);
-        }
-
-        if (_bReadyUnit && _curSpawnedUnit)
-        {
-            _createCountController.RefreshCreateCount(_curSpawnedUnit.MPData);
-            if (_cursorData == null)
-            {
-                CursorManager.Instance.SetCursor(CursorType.Defend);
-                _cursorData = CursorManager.GetCursorData(CursorType.Defend);
-            }
-            else
-            {
-                CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
-            }
-            if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
-            {
-                OnExecute();
-            }
+            OnExecute();
         }
     }
+
     public override void OnExecute()
     {
         base.OnExecute();
-        if (_curSpawnedUnit.TryGetComponent(out Creature creature))
+        if (_curSpawnedUnit.TryGetComponent(out CreatureController creature))
         {
-           // creature.SetStatus(StatusSliderController._status);
             creature.SetIsAttackMode(false);
-            MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(creature.UnitType, creature);
         }
+
         MouseCursorData data = CursorManager.GetCursorData(CursorType.Defend);
         _curSpawnedUnit.transform.position = data.GetFollwingSpriteRenderer().transform.position;
         _curSpawnedUnit.gameObject.SetActive(true);
-        MPDataController.Instance.UseUpMP(_curSpawnedUnit.MPData.MP_ConsValue, 1); //MPҸ
+        MPDataController.Instance.UseUpMP(_curSpawnedUnit.UnitMPData, 1); //MPҸ
 
         _createCountController.ConsumeCurCreateCount(1);
-        _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_curSpawnedUnit.UnitInfo);
+        _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_curSpawnedUnit);
         _curSpawnedUnit.gameObject.SetActive(false);
         if (_createCountController.GetCurCreateCount() <= 0)
         {
@@ -73,7 +61,18 @@ public class DefenseButtonController : ModeButtonController
         _cursorData = null;
         if (_curSpawnedUnit)
         {
-            Destroy(_curSpawnedUnit.gameObject);
+            MyUnitPrefabDataManager.Instance.RemoveUnitPrefabToList(_curSpawnedUnit.UnitType, _curSpawnedUnit);
         }
+    }
+
+    public override void RefreshModeButton()
+    {
+        Unit selectedUnitPrefab = UnitButtonController.GetSelectedUnitPrefab();
+        if (!selectedUnitPrefab)
+            return;
+        MPData mpData = MPDataManager.Instance.FindUnitMPData(selectedUnitPrefab.ID);
+        if (mpData == null)
+            return;
+        MPDataController.Instance.UpdateButtonToMPData(mpData, ref _thisButton, ref _buttonImage, ref _buttonText);
     }
 }

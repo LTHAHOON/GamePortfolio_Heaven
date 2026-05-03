@@ -5,21 +5,43 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CreatureSelectionState : State<CreatureState, Creature>
+public class CreatureSelectionState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
 
     public override CreatureState EState => CreatureState.Selection;
-    public override void InitState(StateMachine<CreatureState, Creature> stateMachine)
+    public override void InitState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
         stateMachine.TryGetStateData(out _navMeshStatData);
     }
-    public override void EnterState(StateMachine<CreatureState, Creature> stateMachine)
+    public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
-        Creature creature = stateMachine.GetOwner();
+        CreatureController creature = stateMachine.GetOwner();
+
         creature.SetEnableNavMeshAgent(_navMeshStatData);
         _navMeshStatData._navmeshAgentData._navMeshAgent.stoppingDistance = 0.5f;
     }
-    public override void UpdateState(StateMachine<CreatureState, Creature> stateMachine) { }
-    public override void ExitState(StateMachine<CreatureState, Creature> stateMachine) { }
+
+    public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
+    {
+        CreatureController creature = stateMachine.GetOwner();
+        float attackDistance;
+        float distanceToTarget;
+        if (creature.IsEnemyColliderExist)
+        {
+            attackDistance = creature.GetEnemyAttackDistance(_navMeshStatData._navmeshAgentData);
+            distanceToTarget = creature.GetDistanceTo(creature.EnemyCollider.transform.position);
+        }
+        //Nexus 타겟일 경우
+        else
+        {
+            attackDistance = creature.GetNexusAttackDistance(_navMeshStatData._navmeshAgentData);
+            distanceToTarget = creature.GetDistanceTo(creature.EnemyNexusPos);
+        } 
+        if(distanceToTarget > (attackDistance * attackDistance))
+        {
+            SurroundPosManager.ReleaseTargetPosition(creature.gameObject);
+        }
+    }
+    public override void ExitState(StateMachine<CreatureState, CreatureController> stateMachine) { }
 }

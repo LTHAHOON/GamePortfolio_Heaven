@@ -27,7 +27,6 @@ public enum SpacecraftState
     Boarding,
 }
 
-[RequireComponent(typeof(StatusComponent))]
 [RequireComponent(typeof(BoxCollider))]
 [RequireComponent(typeof(Rigidbody))]
 public class SpacecraftController : PassengerController, ISelectableOwner
@@ -68,7 +67,6 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     private CreateLoad _createLoad;
     private Goal _goalData;
     private int _unitTypeLayer;
-    private Transform _passengerParent;
     public MonoBehaviour Owner => this;
     #region 이벤트 함수
     protected override void Awake()
@@ -118,10 +116,9 @@ public class SpacecraftController : PassengerController, ISelectableOwner
 
     public void Initialize()
     {
-        SetUp();
+        SetUpUnit();
         _clickCollider.enabled = true;
         _health.SetActiveHealthBar(true);
-        MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType, this);
         TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, UnitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
     }
 
@@ -149,10 +146,9 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         _stateMachine.ChangeState(SpacecraftState.Drive);
     }
 
-    public void AddPassenger(Creature creature, int passengerCount, Transform parent)
+    public void AddPassenger(IPassenger passenger, int passengerCount)
     {
-        _passengerParent = parent;
-        AddPassengerInData(creature, passengerCount);
+        AddPassengerInData(passenger, passengerCount);
     }
 
     #region AttackMark ����
@@ -161,10 +157,9 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         _attackMark = attckMark;
         OnReturnAttackMark += returnAttackmark;
     }
-    public void SetAttackMarkToCreature(Creature creature)
+    public void SetAttackMarkToCreature(CreatureController creature)
     {
-        creature._attackMark = _attackMark;
-        creature.OnReturnAttackMark += OnReturnAttackMark;
+        creature.SetAttackMark(_attackMark, OnReturnAttackMark);
     }
     #endregion
 
@@ -192,8 +187,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
             ClearPassengerDatas();
         }
     }
-
-    public Transform PassengerParent => _passengerParent;
+    
     public int UnitTypeLayer => _unitTypeLayer;
     public Goal GoalData => _goalData;
     public CreateLoad GetCreateLoad() => _createLoad;

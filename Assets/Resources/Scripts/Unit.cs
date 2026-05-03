@@ -10,35 +10,37 @@ public abstract class Unit : MonoBehaviour
     protected Collider _clickCollider;
     [SerializeField]
     protected Health _health;
-    [SerializeField]
-    private StatusComponent _statusComponent;
+    //전체 공유 데이터
     [SerializeField]
     private UnitInfo _unitInfo;
-    private MPDataComponent _mpDataComponent;
-    private RuntimeUnitStatus _status;
+    //MP 초기 데이터
+    private UnitMPDataComponent _unitMpDataComponent;
+
     private DragSelectable _dragSelectable;
     private Selectable _selectable;
 
     protected virtual void Awake()
     {
-        TryGetComponent(out _mpDataComponent);
+        TryGetComponent(out _unitMpDataComponent);
         #region Selectable 컴포넌트 할당(없으면 NULL)
         TryGetComponent(out _dragSelectable);
         TryGetComponent(out _selectable);
         #endregion
     }
-
-    protected void SetUp()
+    /// <summary>
+    /// SetUp은 UnitInfo를 설정하고 Health를 초기화하는 메서드입니다.(Awake()에 두면 Manager초기화와 겹칩니다.)
+    /// </summary>
+    protected void SetUpUnit()
     {
-        _status = StatusDataMng.Instance.FindStatusData(_unitInfo.ID);
-        _health.InitHealth(_status);
+        _unitInfo.MPData = MPDataManager.Instance.FindUnitMPData(_unitInfo.ID);
+        _unitInfo.Status = StatusManager.Instance.FindStatusData(_unitInfo.ID);
+        _health.InitHealth(_unitInfo.Status);
     }
 
-    public MPData MPData => _mpDataComponent.GetMPData();
+    public MPData UnitMPData => _unitMpDataComponent.UnitMPData;
     public DragSelectable DragSelectable => _dragSelectable;
     public Selectable Selectable => _selectable;
-    public StatusComponent StatusComponent => _statusComponent;
-    public RuntimeUnitStatus Status =>  _status;
+    public RuntimeUnitStatus Status =>  _unitInfo.Status;
     public Collider GetClickCollider() => _clickCollider;
     public long ID => _unitInfo.ID;
     public UnitInfo UnitInfo => _unitInfo;

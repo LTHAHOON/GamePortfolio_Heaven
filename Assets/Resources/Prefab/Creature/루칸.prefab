@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _collider: {fileID: 3708438549884251090}
-  _statusComponent: {fileID: 6577384197347526474}
+  _owner: {fileID: 0}
   _hitTriggerCount: 1
   _fixedHitValue: 10
 --- !u!1 &1325714381311164514
@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _collider: {fileID: 5469902899855929825}
-  _statusComponent: {fileID: 6577384197347526474}
+  _owner: {fileID: 0}
   _hitTriggerCount: 1
   _fixedHitValue: 10
 --- !u!1 &2725456489477395752
@@ -1201,7 +1201,6 @@ GameObject:
   - component: {fileID: 756336440211488194}
   - component: {fileID: 2377568404541230190}
   - component: {fileID: 7539079264029945472}
-  - component: {fileID: 6577384197347526474}
   - component: {fileID: 2958941772831905820}
   - component: {fileID: 831644206258632783}
   - component: {fileID: 425025699822928217}
@@ -1223,7 +1222,7 @@ Transform:
   m_GameObject: {fileID: 8648885205316709853}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -190.22173, y: 0.75, z: 2359.064}
+  m_LocalPosition: {x: -140.44366, y: 0.75, z: 2280.5806}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1271,6 +1270,8 @@ MonoBehaviour:
     Type: 0
     Property: 2
     ID: 10007
+  _statusDBType: 1
+  _sliderType: 1
 --- !u!114 &756336440211488194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1297,8 +1298,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _clickCollider: {fileID: 7155546631525753451}
   _health: {fileID: 7539079264029945472}
-  _statusComponent: {fileID: 6577384197347526474}
   _unitInfo: {fileID: 1707762775526271287}
+  _unitMpDataComponent: {fileID: 831644206258632783}
   _navMeshStatData:
     _navMeshObstacle: {fileID: -7876647252322154718}
     _navmeshAgentData:
@@ -1343,20 +1344,6 @@ MonoBehaviour:
   _autoInitHealth: 1
   _collider: {fileID: 425025699822928217}
   _isModifyingHealth: 0
---- !u!114 &6577384197347526474
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8648885205316709853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55953f737a545044f9b17ed8488bffef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
-  _useIDForInteract: 0
 --- !u!114 &2958941772831905820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1369,6 +1356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46a1e738773de3445a35e1025e53d488, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _owner: {fileID: 2377568404541230190}
   _hitColliders:
   - _hitKType: 0
     _hitColliderControl: {fileID: 4482189637305650758}

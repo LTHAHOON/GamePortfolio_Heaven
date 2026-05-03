@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PassengerData 
 {
-    public Unit _passenger;
-    public int _passengerCount = 0;
+    public Unit Passenger { get; set; }
+    public int PassengerCount { get; set; } = 0;
 
     public PassengerData(Unit passenger, int passengerCount)
     {
-        _passenger = passenger;
-        _passengerCount = passengerCount;
+        Passenger = passenger;
+        PassengerCount = passengerCount;
     }
 }

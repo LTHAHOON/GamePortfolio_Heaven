@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DriveButtonController : BaseDriveButtonController
 {
     public static DriveButtonController Instance;
+    [SerializeField] 
+    private Transform _driveButtonParent;
     private readonly Dictionary<PassengerController, DriveButton> _dicDriveButton = new();
     private PoolComponent _pcDriveButton;
-
     protected virtual void Awake()
     {
         Instance = this;
@@ -45,6 +47,14 @@ public class DriveButtonController : BaseDriveButtonController
     {
         SetVehicleUnit(owner);
         RemoveDriveButton(owner);
+    }
+
+    public override void RefreshModeButton()
+    {
+        for (int i = 0; i < _dicDriveButton.Count; i++)
+        {
+            _dicDriveButton.ElementAt(i).Value.RefreshModeButton(_totalMPData);
+        }
     }
 
     public bool IsContainDriveButton(PassengerController owner) => _dicDriveButton.ContainsKey(owner);

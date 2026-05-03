@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-[RequireComponent(typeof(StatusComponent))]
 [RequireComponent(typeof(BoxCollider))]
 public class HomeController : Unit
 {
@@ -58,9 +57,8 @@ public class HomeController : Unit
 
     private void Initialize()
     {
-        SetUp();
+        SetUpUnit();
         _health.SetActiveHealthBar(true);
-        MyUnitPrefabDataControl.Instance.AddUnitPrefabToList(UnitType, this);
         TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, UnitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
     }
 

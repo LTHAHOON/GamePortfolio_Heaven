@@ -21,7 +21,7 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         SpacecraftController owner = stateMachine.GetOwner();
         if (DriveButtonController.Instance.IsContainDriveButton(owner))
             return;
-        List<Creature> boardingCreatureList = CreatureSelection.Instance.GetSelectionComponents<Creature>();
+        List<CreatureController> boardingCreatureList = CreatureSelection.Instance.GetSelectionComponents<CreatureController>();
         int creatureMaxCount = Math.Clamp(boardingCreatureList.Count, 0, _boardingStatData._maxCount);
         _boardingStatData._finalMaxCount = creatureMaxCount;
         NavMeshPath path = new();
@@ -44,7 +44,7 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
                 {
                     isPathValid = true;
                 }
-                boardingCreatureList[i].TargetPosition = hit.position;
+                boardingCreatureList[i].SetDestination(hit.position);
                 boardingCreatureList[i].StateMachine.ChangeState(CreatureState.Boarding);
                 _boardingStatData._boardingCreatureList.Add(boardingCreatureList[i]);
             }
@@ -58,7 +58,6 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         else
         {
             stateMachine.ChangeState(SpacecraftState.Idle);
-            Debug.Log("ž�� ������ ������ �����ϴ�.");
         }
     }
     public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
@@ -68,16 +67,14 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
             stateMachine.ChangeState(SpacecraftState.Idle);
             return;
         }
-        bool bGetChild = MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject child, UnitType.Creature);
-        if (!bGetChild)
-            return;
+        
         SpacecraftController owner = stateMachine.GetOwner();
         for (int i = 0; i < _boardingStatData._boardingCreatureList.Count; i++)
         {
             //ž�¿Ϸ��� ���
             if (!_boardingStatData._boardingCreatureList[i].gameObject.activeSelf)
             {
-                owner.AddPassenger(_boardingStatData._boardingCreatureList[i], 1, child.transform);
+                owner.AddPassenger(_boardingStatData._boardingCreatureList[i], 1);
                 _boardingStatData.driveButton.SetDriveCount(++_boardingStatData._curCount, _boardingStatData._finalMaxCount);
                 _boardingStatData._boardingCreatureList.RemoveAt(i);
                 return;

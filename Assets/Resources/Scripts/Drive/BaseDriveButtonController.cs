@@ -5,30 +5,37 @@ using UnityEngine.Rendering;
 
 public class BaseDriveButtonController : ModeButtonController
 {
-    [SerializeField] private Transform _startPoint;
-    [SerializeField] private Transform _leftMiddlePoint;
-    [SerializeField] private Transform _rightMiddlePoint;
-    [SerializeField] private Transform _endPoint;
-
+    [Header("Next GuideText")]
+    [Multiline]
+    [SerializeField]
+    private string _guideText_Next;
+    #region 이동할 지점
+    [SerializeField] 
+    private Transform _startPoint;
+    [SerializeField] 
+    private Transform _leftMiddlePoint;
+    [SerializeField] 
+    private Transform _rightMiddlePoint;
+    [SerializeField] 
+    private Transform _endPoint;
+    #endregion
     [Header("EnemyNexusTarget")] [SerializeField]
     private Transform _enemyNexusTarget;
-
-    [Header("InstancePos(Parent)")] [SerializeField]
-    private GameObject _myUnitPrefab;
-
     [Space(10f)] [Header("MouseCursorScript")] [SerializeField]
     private MouseCursorController _mouseCursorController;
+    [SerializeField] 
+    protected GameObject _attackMark;
+    [SerializeField] 
+    protected Transform _mapMarkParent;
 
-    [SerializeField] protected GameObject _attackMark;
-    [SerializeField] protected Transform _mapMarkParent;
-    [SerializeField] protected Transform _driveButtonParent;
     protected Vector3 _startPos = new(0f, 0f, -173.5f);
     protected MouseCursorData _cursorData;
-    private MPData _totalMPData = new();
+
     protected bool _bSetGoalProcess = false;
     protected Goal _goalData;
     protected static PoolComponent _pcAttackMark;
     protected PassengerController _vehicleUnit;
+    protected MPData _totalMPData = new();
 
     protected void SetVehicleUnit(PassengerController vehicleUnit)
     {
@@ -37,8 +44,11 @@ public class BaseDriveButtonController : ModeButtonController
 
     public override void OnEnter()
     {
-        _bReadyUnit = true;
-        _bGetUnit = true;
+        UIManager.Instance.SetActiveAllChild(_createCountController.gameObject, true);
+        _createCountController.SetActiveCount(false);
+        CursorManager.Instance.SetCursor(CursorType.Attack);
+        CursorManager.SetSpriteRendererEnabled(CursorType.Attack, false);
+        _cursorData = CursorManager.GetCursorData(CursorType.Attack);
         _planetButtonController.SetToggleIsOn(1, true);
         UIManager.Instance.SetActiveAllChild(AttackSpawnTargetController.Instance.gameObject, true);
     }
@@ -49,17 +59,16 @@ public class BaseDriveButtonController : ModeButtonController
         GameObject attackMark = _pcAttackMark.PopPoolObject();
         attackMark.transform.position = _goalData._passengerGoalPos;
 
-        _vehicleUnit.transform.position = _startPos;
 
         List<PassengerData> passengerDatas = _vehicleUnit.GetPassengerDatas();
         for (int i = 0; i < passengerDatas.Count; i++)
         {
-            MPData passengerMPData = passengerDatas[i]._passenger.MPData;
-            MPDataController.Instance.UseUpMP(passengerMPData.MP_ConsValue,
-                passengerDatas[i]._passengerCount);
+            MPData unitMpData = passengerDatas[i].Passenger.UnitMPData;
+            MPDataController.Instance.UseUpMP(unitMpData, passengerDatas[i].PassengerCount);
         }
-        MPDataController.Instance.UseUpMP(_vehicleUnit.MPData.MP_ConsValue, 1);
+        MPDataController.Instance.UseUpMP(_vehicleUnit.UnitMPData, 1);
         
+        _vehicleUnit.transform.position = _startPos;
         if (_vehicleUnit.TryGetComponent(out SpacecraftController spacecraftController))
         {
             spacecraftController.GetCreateLoad().SetLoadReady(false);
@@ -67,7 +76,6 @@ public class BaseDriveButtonController : ModeButtonController
         }
 
         _bSetGoalProcess = false;
-        //��ǥ �����ϱ�
         SetGoal(_vehicleUnit.gameObject, _goalData);
         OnExit(true);
     }
@@ -75,31 +83,17 @@ public class BaseDriveButtonController : ModeButtonController
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (_bGetUnit)
-        {
-            _totalMPData.MP_ConsValue = _vehicleUnit.MPData.MP_ConsValue + _selectedUnitPrefab.MPData.MP_ConsValue;
-            MPDataController.Instance.UpdateButtonToMPData(_totalMPData, ref _thisButton, ref _buttonImage,
-                ref _buttonText);
-        }
+        if (!_vehicleUnit || _cursorData == null) 
+            return;
 
-        if (_bReadyUnit)
-        {
-            _createCountController.RefreshCreateCount(_vehicleUnit.MPData, _selectedUnitPrefab.MPData);
-            if (_cursorData == null)
-            {
-                CursorManager.Instance.SetCursor(CursorType.Attack);
-                CursorManager.SetSpriteRendererEnabled(CursorType.Attack, false);
-                _cursorData = CursorManager.GetCursorData(CursorType.Attack);
-            }
 
-            if (_bSetGoalProcess)
+        if (_bSetGoalProcess)
+        {
+            CursorManager.SetSpriteRendererEnabled(CursorType.Attack, true);
+            CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
+            if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
             {
-                CursorManager.SetSpriteRendererEnabled(CursorType.Attack, true);
-                CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
-                if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
-                {
-                    OnExecute();
-                }
+                OnExecute();
             }
         }
     }
@@ -113,8 +107,11 @@ public class BaseDriveButtonController : ModeButtonController
         _cursorData = null;
     }
 
+    public override void RefreshModeButton(){ }
+
     public virtual void SetGoalProcess(Vector3 spacecraftGoalPosition, RespawnPositionType respawnPositionType)
     {
+        _createCountController.ChangeGuideText(_guideText_Next);
         UIManager.Instance.SetActiveAllChild(AttackSpawnTargetController.Instance.gameObject, false);
         _goalData = new()
         {

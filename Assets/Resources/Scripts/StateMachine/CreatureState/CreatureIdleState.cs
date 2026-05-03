@@ -7,65 +7,66 @@ using UnityEngine.AI;
 using static UnityEngine.UI.GridLayoutGroup;
 
 
-public class CreatureIdleState : State<CreatureState, Creature>
+public class CreatureIdleState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
     private AnimatorStatData _animatorStatData;
     private SurroundPosStatData _surroundPosData;
 
     public override CreatureState EState => CreatureState.Idle;
-    public override void InitState(StateMachine<CreatureState, Creature> stateMachine)
+
+    public override void InitState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
         stateMachine.TryGetStateData(out _navMeshStatData);
         stateMachine.TryGetStateData(out _animatorStatData);
         stateMachine.TryGetStateData(out _surroundPosData);
     }
 
-    public override void EnterState(StateMachine<CreatureState, Creature> stateMachine) 
+    public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
-        Creature creature = stateMachine.GetOwner();
-        creature.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
+        CreatureController creatureController = stateMachine.GetOwner();
+        creatureController.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
     }
-    public override void UpdateState(StateMachine<CreatureState, Creature> stateMachine) 
-    {
-        try
-        {
-            Creature creature = stateMachine.GetOwner();
-            NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
-            NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-            _animatorStatData._animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
-            Vector3 origin = creature.transform.position;
-            origin.y += 30f;
-            if (creature.TargetPosition != null && (creature.IsAttackMode || creature.IsAttackTarget))//»ç¿ëÀÚ À§Ä¡·Î ÀÌµ¿ÇØ¾ßÇÒ °æ¿ì
-            {
-                stateMachine.ChangeState(CreatureState.Trace);
-            }
-            else if (creature.TryGetAroundEnemy(out creature._enemy, _navMeshStatData._navmeshAgentData._traceRaidus)) //ÁÖº¯ Å½»ö(»ç¿ëÀÚ À§Ä¡ µµ´Ş ÈÄ)
-            {
-                stateMachine.ChangeState(CreatureState.Trace);
-            }
-            else if(creature.IsAttackMode || creature.IsAttackTarget) //»ó´ë ³Ø¼­½º À§Ä¡ °áÁ¤(»ç¿ëÀÚ À§Ä¡ µµ´Ş ÈÄ) 
-            {
-                if (!SurroundPosManager.IsContainTargetPos(creature.gameObject))
-                {
-                    navMeshAgent.stoppingDistance = 0.5f;
-                    SurroundPosManager.AssignTargetPosition(creature.gameObject, creature._enemyNexusPos,
-                        _surroundPosData._radiusFromCenter, _surroundPosData._distanceFromUnit, _surroundPosData._firstRingCount);
-                }
-                if (SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject, out Vector3 assigendPos))
-                {
-                    creature.TargetPosition = assigendPos;
-                }
-                stateMachine.ChangeState(CreatureState.Trace);
-            }
 
-        }
-        catch (Exception e)
+    public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
+    {
+        CreatureController creatureController = stateMachine.GetOwner();
+        NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
+        NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
+        _animatorStatData._animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
+        Vector3 origin = creatureController.transform.position;
+        origin.y += 30f;
+        if (creatureController.IsAttackMode || creatureController.IsAttackTarget) //ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ìµï¿½ï¿½Ø¾ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
         {
-            Debug.LogError(e);
-            return;
+            //AttackMode ì²˜ìŒ ë“¤ì–´ê°ˆë•Œ(AttackMarkê°€ ìˆì„ ê²½ìš°)
+            if (SurroundPosManager.IsContainTargetPos(creatureController.gameObject) && creatureController.IsAttackMarkExist)
+            {
+                Debug.Log("CreatureIdleState : Idle AttackMode or AttackTarget");
+                stateMachine.ChangeState(CreatureState.Trace);
+            }
+            //ë„¥ì„œìŠ¤ íƒ€ê²Ÿ ê²°ì •í•˜ê¸° ì „ ì£¼ë³€ Enemy ì²´í¬
+            else if (creatureController.TryGetAroundEnemy(out RaycastHit enemy,
+                         _navMeshStatData._navmeshAgentData._traceRaidus)) //ï¿½Öºï¿½ Å½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+            {
+                creatureController.SetDestination(enemy.transform.position);
+                stateMachine.ChangeState(CreatureState.Trace);
+            }
+            //ë„¥ì„œìŠ¤ íƒ€ê²Ÿ ìœ„ì¹˜ í• ë‹¹
+            else if(!SurroundPosManager.IsContainTargetPos(creatureController.gameObject))
+            {
+                navMeshAgent.stoppingDistance = 0.5f;
+                SurroundPosManager.AssignTargetPosition(creatureController.gameObject, creatureController.EnemyNexusPos,
+                    _surroundPosData._radiusFromCenter, _surroundPosData._distanceFromUnit,
+                    _surroundPosData._firstRingCount);
+                if (SurroundPosManager.TryGetAssignedTargetPositionAround(creatureController.gameObject, out Vector3 assigendPos))
+                {
+                    creatureController.SetDestination(assigendPos);
+                }
+                stateMachine.ChangeState(CreatureState.Trace);
+            }
         }
+
     }
-    public override void ExitState(StateMachine<CreatureState, Creature> stateMachine) { }
+
+    public override void ExitState(StateMachine<CreatureState, CreatureController> stateMachine) { }
 }
-

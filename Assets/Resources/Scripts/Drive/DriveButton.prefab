@@ -65,6 +65,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _uiFollowObject: {fileID: 3544952560017949452}
   _driveButton: {fileID: 9219919052307354611}
+  _driveButtonImage: {fileID: 4107699993078009754}
   _driveButtonData:
     _driveText: {fileID: 8933096826652107337}
     _countText: {fileID: 6153763209190655103}

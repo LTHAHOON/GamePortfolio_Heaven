@@ -12,9 +12,6 @@ using UnityEngine.UI;
 public class MPDataController : Singleton<MPDataController>
 {
     [SerializeField]
-    private List<ConsumeMPValue> _consumeMPValues;
-    //MP StatusAddButton
-    [SerializeField]
     private StatusAddButtonController _statusAddButtonController;
     [SerializeField]
     private TextMeshProUGUI MP_AmountText;
@@ -63,20 +60,59 @@ public class MPDataController : Singleton<MPDataController>
             CurrentMPValue = Mathf.Clamp(CurrentMPValue, 0, _mpMaxValue);
             MP_AmountText.text = $"MP {CurrentMPValue}";
             _curTime = 0;
-            _statusAddButtonController.RefreshStatusAddButtons(_consumeMPValues);
+            _statusAddButtonController.RefreshStatusAddButtons();
+            ModeButtonManager.Instance.RefreshModeButtons();
         }
     }
 
-    public bool CheckToUseUpMP(float consumptionMPValue)
+    public bool CheckToUseUpMP(float MP_ConsValue)
     {
-        return MP_StatusSlider.value >= consumptionMPValue;
+        return MP_StatusSlider.value >= MP_ConsValue;
     }
 
-    public void UpdateButtonToMPData(MPData unitMPData, ref Button button, ref Image buttonImage, ref TextMeshProUGUI buttonText)
+    public bool UseUpMP(float MP_ConsValue, int count)
+    {
+        bool canUseUpMP = CheckToUseUpMP(MP_ConsValue);
+        for(int i = 0; i < count; i++) 
+        {
+            if(canUseUpMP)
+            {
+                CurrentMPValue -= MP_ConsValue;
+                MP_StatusSlider.value = CurrentMPValue;
+                MP_AmountText.text = $"MP {CurrentMPValue}";
+            }
+        }
+        _statusAddButtonController.RefreshStatusAddButtons();
+        return canUseUpMP;
+    }
+    public bool UseUpMP(MPData mpData, int count)
+    {
+        bool canUseUpMP = UseUpMP(mpData.MP_ConsValue, count);
+        ModeButtonManager.Instance.RefreshModeButtons();
+        return canUseUpMP;
+    }
+
+    public void UpdateButtonToMPData(MPData mpData,ref Button button)
     {
         float mpValue = MP_StatusSlider.value;
 
-        if (mpValue >= unitMPData.MP_ConsValue && button.interactable == false)
+        if (mpValue >= mpData.MP_ConsValue && button.interactable == false)
+        {
+            Color newButtonColor = UIManager.Instance.ChangeToInitialColor();
+            Color newButtontextColor = UIManager.Instance.ChangeToInitialColor();
+        }
+        if (mpValue < mpData.MP_ConsValue && button.interactable == true)
+        {
+            button.interactable = false;
+            Color newButtonColor = UIManager.Instance.ChangeToImageDisableColor();
+            Color newButtontextColor = UIManager.Instance.ChangeToImageDisableColor();
+        }
+    }
+    public void UpdateButtonToMPData(MPData mpData, ref Button button, ref Image buttonImage, ref TextMeshProUGUI buttonText)
+    {
+        float mpValue = MP_StatusSlider.value;
+
+        if (mpValue >= mpData.MP_ConsValue && button.interactable == false)
         {
             button.interactable = true;
             Color newButtonColor = UIManager.Instance.ChangeToInitialColor();
@@ -85,7 +121,7 @@ public class MPDataController : Singleton<MPDataController>
             buttonImage.color = newButtonColor;
             buttonText.color = newButtontextColor;
         }
-        if (mpValue < unitMPData.MP_ConsValue && button.interactable == true)
+        if (mpValue < mpData.MP_ConsValue && button.interactable == true)
         {
             button.interactable = false;
             Color newButtonColor = UIManager.Instance.ChangeToImageDisableColor();
@@ -96,36 +132,9 @@ public class MPDataController : Singleton<MPDataController>
         }
     }
 
-    public bool TryGetConsumeMPValue(AllStatusNames statusName, out ConsumeMPValue consumeMPValue)
-    {
-        for (int i = 0; i < _consumeMPValues.Count; i++)
-        {
-            if (_consumeMPValues[i].statusName == statusName)
-            {
-                consumeMPValue = _consumeMPValues[i];
-                return true;
-            }
-        }
-        consumeMPValue = default;
-        return false;
-    }
+   
 
-    public bool UseUpMP(float consumptionMPValue, int count)
-    {
-        bool canUseUpMP = CheckToUseUpMP(consumptionMPValue);
-        for(int i = 0; i < count; i++) 
-        {
-            if(canUseUpMP)
-            {
-                CurrentMPValue -= consumptionMPValue;
-                MP_StatusSlider.value = CurrentMPValue;
-                MP_AmountText.text = $"MP {CurrentMPValue}";
-            }
-        }
-        _statusAddButtonController.RefreshStatusAddButtons(_consumeMPValues);
-        return canUseUpMP;
-        
-    }
+
 
     public void OnClickMPAddButton()
     {

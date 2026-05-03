@@ -12,7 +12,7 @@ public class AttackColliderControl : HitColliderControl
     {
         if(target.transform.gameObject.TryGetComponent(out Health health))
         {
-            health.ModifyHealth(-(_statusComponent.GetStatus().ATK * _fixedHitValue));
+            health.ModifyHealth(-(_owner.Status.ATK * _fixedHitValue));
         }
     }
 }

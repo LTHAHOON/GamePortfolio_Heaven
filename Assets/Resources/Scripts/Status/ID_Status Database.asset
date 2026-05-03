@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b63e4d96c8366b47b6f5c92d219cb2c, type: 3}
-  m_Name: Status Database
+  m_Name: ID_Status Database
   m_EditorClassIdentifier: 
-  dataList:
+  _statusDataList:
   - {fileID: 11400000, guid: 0989eeb6e3c4b29408959e73bd8ddfdc, type: 2}
   - {fileID: 11400000, guid: 589235e8c20f5d14c9c26a58b200981d, type: 2}
   - {fileID: 11400000, guid: 0fdc0b9f6a5fe6d45b3627900f702d03, type: 2}
@@ -21,6 +21,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6ac8beea2f955224fa187f283df4c787, type: 2}
   - {fileID: 11400000, guid: 1241f2d3f9169e948b0f0ed48e74e780, type: 2}
   - {fileID: 11400000, guid: d6f36d264c1c9dd4fa15ae2972270ce9, type: 2}
-  - {fileID: 11400000, guid: d6f36d264c1c9dd4fa15ae2972270ce9, type: 2}
-  - {fileID: 11400000, guid: b58dc39a24b501a44aef9d48c83d64c6, type: 2}
-  - {fileID: 11400000, guid: fbb8ebdcea86aeb419d3868f78033d0d, type: 2}
+  _dbType: 1

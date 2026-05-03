@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class NexusController : Unit
 {
-    protected void Awake()
+    protected override void Awake()
     {
         base.Awake();
-        StatusComponent.InitializeStatus(UnitInfo);
-        StatusDataMng.Instance.AddStatusData(UnitInfo.ID, StatusComponent);
+        StatusManager.Instance.TryAddStatusData(UnitInfo);
     }
     private void Start()
     {
-        SetUp();
+        SetUpUnit();
     }
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 
 
 
-[RequireComponent(typeof(StatusComponent))]
 public class Health : MonoBehaviour
 {
     [SerializeField]

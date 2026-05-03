@@ -56,6 +56,19 @@ public class DriveButton : MonoBehaviour, ICullingUI
             _driveButtonData._countText.gameObject.SetActive(true);
         }
     }
+    public void RefreshModeButton(MPData totalMPData)
+    {
+        List<PassengerData> passengerDatas = _owner.GetPassengerDatas();
+        float passengerTotalMP = 0f;
+        for (int i = 0; i < passengerDatas.Count; i++)
+        {
+            MPData unitMpData = passengerDatas[i].Passenger.UnitMPData;
+            passengerTotalMP += unitMpData.MP_ConsValue * passengerDatas[i].PassengerCount;
+        }
+        totalMPData.SetMPConsValue(_owner.UnitMPData.MP_ConsValue + passengerTotalMP);
+        
+        MPDataController.Instance.UpdateButtonToMPData(totalMPData, ref _driveButton);
+    }
     public GameObject ThisGameObject => gameObject;
     public Collider ColliderForCulling => _owner.GetClickCollider();
     public bool IsForceHideUI => false;

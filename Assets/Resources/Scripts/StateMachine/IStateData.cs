@@ -19,7 +19,7 @@ public class BoardingStatData : IStateData<BoardingStatData>
 {
     public int _maxCount = 7;
     [HideInInspector]
-    public List<Creature> _boardingCreatureList = new();
+    public List<CreatureController> _boardingCreatureList = new();
     [HideInInspector]
     public DriveButton driveButton;
     // 길이 막혀서 탑승 못하는 생명체를 제외한 최종 탑승 가능한 생명체 수

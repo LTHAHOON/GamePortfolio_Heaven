@@ -1,19 +1,33 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusSliderController : MonoBehaviour
+public enum StatusSldiersType
+{
+    //넥서스같은 Slider가 필요없는 유닛
+    None,
+    //모든 Status가 들어간 타입
+    Base,
+    //힐 위주의 Status가 들어간 타입
+    HealBase,
+}
+
+public class StatusSlidersController : MonoBehaviour
 {
     [SerializeField]
+    private StatusSldiersType _sliderType;
+    [SerializeField]
     private Slider[] _arrStatusSlider;
-
     [SerializeField]
     private float _sliderSpeed;
 
+    private bool _bSetStatus;
+    private RuntimeUnitStatus _status;
 
-    void Update()
+    private void Update()
     {
          if (_bSetStatus && _status != null)
         {
@@ -51,14 +65,12 @@ public class StatusSliderController : MonoBehaviour
         }
     }
 
-    private static bool _bSetStatus;
-    public static RuntimeUnitStatus _status;
-    public static void SetStatusSliders(long unitID)
+    public void SetStatusSliders(long unitID)
     {
-       _status = StatusDataMng.Instance.FindStatusData(unitID);
+       _status = StatusManager.Instance.FindStatusData(unitID);
         ReloadStatus();
     }
-    public static void ReloadStatus()
+    public void ReloadStatus()
     {
         if(_status != null)
         {
@@ -79,4 +91,6 @@ public class StatusSliderController : MonoBehaviour
             _ => 0f,
         };
     }
+    
+    public StatusSldiersType SliderType => _sliderType;
 }

@@ -6,9 +6,6 @@ using UnityEngine.UI;
 
 public class CreateButtonController : ModeButtonController
 {
-    [SerializeField]
-    private float _spawnHeight = 5f;
-
     [Space(10f)]
     [Header("MouseCursorScript")]
     [SerializeField]
@@ -33,7 +30,7 @@ public class CreateButtonController : ModeButtonController
         base.OnEnter();
         _planetButtonController.SetToggleIsOn(0, true);
         _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_selectedUnitPrefab);
-        _curSpawnedUnit.transform.position = new Vector3(0f, 5f ,0f);
+        InitCreateCount(_curSpawnedUnit.UnitMPData); //MPData로 생성 카운트 세팅(MPData 필요)
         TransparentMaterialControl.SetQpaqueOrTransparentControl(_curSpawnedUnit.gameObject, _curSpawnedUnit.UnitType, _transparentType, changedColor);
         //TODO: GridBuildingContainer 열기
         ButtonSystem.buttonInvoker.PressButton(ButtonIdentifier.Open, _gridBuildingContainer);
@@ -41,19 +38,14 @@ public class CreateButtonController : ModeButtonController
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (_bGetUnit && _curSpawnedUnit)
-        {
-            MPDataController.Instance.UpdateButtonToMPData(_curSpawnedUnit.MPData, ref _thisButton, ref _buttonImage, ref _buttonText);
-        }
+        if (!_curSpawnedUnit)
+            return;
 
-        if (_bReadyUnit && _curSpawnedUnit)
+        _createCountController.RefreshCreateCount(_curSpawnedUnit.UnitMPData);
+        _isCreatableByPointerPos = _placementSystem.FollowUnitPrefabByMouse(_curSpawnedUnit);
+        if (Input.GetMouseButtonDown(0) && GridIndicatorController.IsCreatableUnit && _isCreatableByPointerPos)
         {
-            _createCountController.RefreshCreateCount(_curSpawnedUnit.MPData);
-            _isCreatableByPointerPos = _placementSystem.FollowUnitPrefabByMouse(_curSpawnedUnit);
-            if (Input.GetMouseButtonDown(0) && GridIndicatorController.IsCreatableUnit && _isCreatableByPointerPos)
-            {
-                OnExecute();
-            }
+            OnExecute();
         }
     }
     public override void OnExecute()
@@ -85,7 +77,7 @@ public class CreateButtonController : ModeButtonController
         }
 
         //TODO: _unitMPData의 소모량만큼 MP 소모하기
-        MPDataController.Instance.UseUpMP(_curSpawnedUnit.MPData.MP_ConsValue, 1);
+        MPDataController.Instance.UseUpMP(_curSpawnedUnit.UnitMPData, 1);
 
         //TODO: 현재 생성할 갯수 하나 소모하기
         _createCountController.ConsumeCurCreateCount(1);
@@ -111,9 +103,19 @@ public class CreateButtonController : ModeButtonController
         if (_curSpawnedUnit)
         {
             ObjectVisbilitySystem.Instance.RemoveToList(_curSpawnedUnit.GetHealth().HealthBar);
-            Destroy(_curSpawnedUnit.gameObject);
+            MyUnitPrefabDataManager.Instance.RemoveUnitPrefabToList(_curSpawnedUnit.UnitType, _curSpawnedUnit);
+
         }
     }
 
-
+    public override void RefreshModeButton()
+    {
+        Unit selectedUnitPrefab = UnitButtonController.GetSelectedUnitPrefab();
+        if(!selectedUnitPrefab)
+            return;
+        MPData mpData = MPDataManager.Instance.FindUnitMPData(selectedUnitPrefab.ID);
+        if(mpData == null)
+            return;
+        MPDataController.Instance.UpdateButtonToMPData(mpData, ref _thisButton, ref _buttonImage, ref _buttonText);
+    }
 }

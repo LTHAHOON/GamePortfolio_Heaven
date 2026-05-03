@@ -38,32 +38,32 @@ public class CreateCountController : MonoBehaviour
             time -= Time.deltaTime;
         }
     }
-    public void RefreshCreateCount(MPData unitMPData, MPData? subUnitMPData = null)
+    public void RefreshCreateCount(MPData mpData, MPData subMpData = null)
     {
         if (GetCurCreateCount() <= 0)
         {
             SetCurCreateCount(1);
         }
-        if(subUnitMPData.HasValue)
+        if(subMpData != null)
         {
-            SetMaxCreateCount(unitMPData, subUnitMPData.Value);
+            SetMaxCreateCount(mpData, subMpData);
         }
         else
         {
-            SetMaxCreateCount(unitMPData);
+            SetMaxCreateCount(mpData);
         }
         ChangeCreateCountText();
     }
 
-    public void InitCreateCount(MPData unitMPData, string guideText, MPData? subUnitMPData = null)
+    public void InitCreateCount(MPData mpData, string guideText, MPData subMpData = null)
     {
-        if(subUnitMPData.HasValue)
+        if(subMpData != null)
         {
-            RefreshCreateCount(unitMPData, subUnitMPData);
+            RefreshCreateCount(mpData, subMpData);
         }
         else
         {
-            RefreshCreateCount(unitMPData);
+            RefreshCreateCount(mpData);
         }
         ChangeGuideText(guideText);
     }
@@ -74,14 +74,14 @@ public class CreateCountController : MonoBehaviour
         SetCurCreateCount(createCount);
     }
 
-    public void SetMaxCreateCount(MPData unitMPData)
+    public void SetMaxCreateCount(MPData mpData)
     {
-        float maxCreateCount = MPDataController.Instance.MP_StatusSlider.value / unitMPData.MP_ConsValue;
+        float maxCreateCount = MPDataController.Instance.MP_StatusSlider.value / mpData.MP_ConsValue;
         _maxCreateCount = Mathf.FloorToInt(maxCreateCount);
     }
-    public void SetMaxCreateCount(MPData unitMPData, MPData subUnitMPData)
+    public void SetMaxCreateCount(MPData mpData,MPData subMpData)
     {
-        float maxCreateCount = (MPDataController.Instance.MP_StatusSlider.value - unitMPData.MP_ConsValue) /  subUnitMPData.MP_ConsValue;
+        float maxCreateCount = (MPDataController.Instance.MP_StatusSlider.value - mpData.MP_ConsValue) /  subMpData.MP_ConsValue;
         maxCreateCount = Mathf.Abs(maxCreateCount);
         _maxCreateCount = Mathf.FloorToInt(maxCreateCount);
     }

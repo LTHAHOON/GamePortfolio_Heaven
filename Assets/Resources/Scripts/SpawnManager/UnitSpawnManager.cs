@@ -5,16 +5,32 @@ using UnityEngine;
 
 public class UnitSpawnManager : Singleton<UnitSpawnManager>
 {
-    public Unit Spawn(Unit unit)
+    private Dictionary<long, Vector3> _dicSpawnPos = new Dictionary<long, Vector3>();
+    [SerializeField]
+    private Vector3 _baseSpawnPos = new Vector3(0f, 5f, 0f);
+    
+    public bool TryAddSpawnHeightOffset(long unitId, float offset)
     {
-        MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject instantiateParentObj, unit.UnitType);
-        return Instantiate(unit, instantiateParentObj.transform);
+        if (_dicSpawnPos.ContainsKey(unitId))
+            return false;
+        Vector3 spawnPos = _baseSpawnPos + new Vector3(0f, offset, 0f);
+        return _dicSpawnPos.TryAdd(unitId, spawnPos);
     }
     
-    public Unit Spawn(UnitInfo unitInfo)
+    public Unit Spawn(Unit unit)
     {
-        MyUnitPrefabDataControl.Instance.TryGetChild(out GameObject instantiateParentObj, unitInfo.Type);
-        Unit unit = UnitPrefabDataManager.Instance.GetUnitPrefab(unitInfo);
-        return Instantiate(unit, instantiateParentObj.transform);
+        MyUnitPrefabDataManager.Instance.TryGetChild(out GameObject instantiateParentObj, unit.UnitType);
+        Unit spawnedUnit = Instantiate(unit, instantiateParentObj.transform);
+        MyUnitPrefabDataManager.Instance.AddUnitPrefabToList(spawnedUnit.UnitType, spawnedUnit);
+        bool bGetPos = _dicSpawnPos.TryGetValue(unit.ID, out Vector3 spawnPos);
+        if (bGetPos)
+        {
+            spawnedUnit.transform.position = spawnPos;
+        }
+        else
+        {
+            spawnedUnit.transform.position = _baseSpawnPos;
+        }
+        return spawnedUnit;
     }
 }

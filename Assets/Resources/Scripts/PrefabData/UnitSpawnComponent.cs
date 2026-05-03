@@ -5,6 +5,8 @@ using UnityEngine.Serialization;
 
 public class UnitSpawnComponent : MonoBehaviour
 {
+    [SerializeField]
+    private float _spawnHeightOffset = 0f;
     private Unit _unitSpawnPrefab;
     
     public Unit GetSpawnPrefab(UnitInfo unitInfo)
@@ -15,4 +17,6 @@ public class UnitSpawnComponent : MonoBehaviour
         }
         return _unitSpawnPrefab;
     }
+    
+    public float SpawnHeightOffset => _spawnHeightOffset;
 }

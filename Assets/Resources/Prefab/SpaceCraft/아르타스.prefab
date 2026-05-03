@@ -15,7 +15,6 @@ GameObject:
   - component: {fileID: 6950376055611771128}
   - component: {fileID: 2558612126303910355}
   - component: {fileID: 5638037004003040695}
-  - component: {fileID: 8213857833276490046}
   - component: {fileID: 5173253301099837291}
   - component: {fileID: 5508778958628241092}
   - component: {fileID: 5890873039175000992}
@@ -37,7 +36,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6089111537380842995}
@@ -158,6 +157,8 @@ MonoBehaviour:
     Type: 1
     Property: 2
     ID: 30004
+  _statusDBType: 1
+  _sliderType: 1
 --- !u!114 &5638037004003040695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,10 +173,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _clickCollider: {fileID: 2179843097095081772}
   _health: {fileID: 5508778958628241092}
-  _dragSelectable: {fileID: 0}
-  _statusComponent: {fileID: 8213857833276490046}
-  _mpDataComponent: {fileID: 3893955883631265625}
   _unitInfo: {fileID: 2558612126303910355}
+  _unitMpDataComponent: {fileID: 3893955883631265625}
   _boardingStatData:
     _maxCount: 7
     _boardingCreatureList: []
@@ -196,20 +195,6 @@ MonoBehaviour:
   _isGravity: 0
   colliderSizeData: {x: 0, y: 0, z: 0}
   _createLoad: {fileID: 5173253301099837291}
---- !u!114 &8213857833276490046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5258289083879301757}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55953f737a545044f9b17ed8488bffef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _statusDataBase: {fileID: 11400000, guid: 352687da3f127d24aaf817533f2bef6d, type: 2}
-  _useIDForInteract: 0
 --- !u!114 &5173253301099837291
 MonoBehaviour:
   m_ObjectHideFlags: 0

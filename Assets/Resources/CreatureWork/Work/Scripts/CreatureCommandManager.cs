@@ -5,7 +5,7 @@ using Unity.Burst.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CreatureControl : MonoBehaviour
+public class CreatureCommandManager : MonoBehaviour
 {
     [SerializeField]
     private CreatureSelection _creatureSelection;
@@ -49,9 +49,9 @@ public class CreatureControl : MonoBehaviour
     }
 
 
-    public static void RemoveTargetPos(Creature creatureFSM)
+    public static void RemoveTargetPos(CreatureController creatureControllerFsm)
     {
-        _dicTargetPosition.Remove(creatureFSM);
+        _dicTargetPosition.Remove(creatureControllerFsm);
     }
 
     private void SetTarget()
@@ -59,6 +59,8 @@ public class CreatureControl : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && CreatureSelection.Instance.GetSelectionCharactersCount() > 0)
         {
             _targetPosition = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _groundLayerMask).Value;
+            if (_targetPosition == null)
+                return;
             if (_targetPosition.HasValue)
             {
                 GameObject poolPrefab = _pcMoveMark.PopPoolObject();
@@ -70,7 +72,7 @@ public class CreatureControl : MonoBehaviour
             {
                 _isMoving = false;
             }
-            List<Creature> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<Creature>();
+            List<CreatureController> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<CreatureController>();
             float[] distancesArray = SurroundPosManager.DistanceArrayByCharacterCount(selectedCreatures.Count, _distanceFromUnit, _radiusFromCenter, _firstRingCount);
             int[] positionCountArray = SurroundPosManager.GetPositionCountArray(selectedCreatures.Count, _firstRingCount);
             Vector3[] targetPositions = SurroundPosManager.GetTargetPositionsAround(_targetPosition.Value, distancesArray, positionCountArray);
@@ -95,26 +97,26 @@ public class CreatureControl : MonoBehaviour
 
 
 
-    private static readonly Dictionary<Creature, Vector3> _dicTargetPosition = new();
+    private static readonly Dictionary<CreatureController, Vector3> _dicTargetPosition = new();
     private void SelectedCreatureMoveTo()
     {
-        List<Creature> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<Creature>();
+        List<CreatureController> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<CreatureController>();
         if (selectedCreatures == null) return;
         for (int i = 0; i < selectedCreatures.Count; i++)
         {
-            Creature selectedCreature = selectedCreatures[i];
+            CreatureController selectedCreatureController = selectedCreatures[i];
 
-            if (_dicTargetPosition.TryGetValue(selectedCreature, out Vector3 targetPosition))
+            if (_dicTargetPosition.TryGetValue(selectedCreatureController, out Vector3 targetPosition))
             {
-                NavMeshAgent selectedNavMeshAgent = selectedCreature.GetNavMeshAgent();
-                Animator selectedAnimator = selectedCreature.GetAnimator();
-                selectedCreature.MoveToDestination(out float currentWalkSpeed, selectedNavMeshAgent, selectedAnimator, targetPosition);
+                NavMeshAgent selectedNavMeshAgent = selectedCreatureController.GetNavMeshAgent();
+                Animator selectedAnimator = selectedCreatureController.GetAnimator();
+                selectedCreatureController.MoveToDestination(out float currentWalkSpeed, selectedNavMeshAgent, selectedAnimator, targetPosition);
                 if (!selectedNavMeshAgent.enabled || !selectedAnimator || !selectedNavMeshAgent) continue;
                 if (selectedNavMeshAgent.pathPending) continue;
                 if (currentWalkSpeed < 0.3f && selectedNavMeshAgent.remainingDistance <= selectedNavMeshAgent.stoppingDistance)
                 {
-                    RemoveTargetPos(selectedCreature);
-                    SelectedCreatureMoveStop(selectedCreature, selectedNavMeshAgent, selectedAnimator);
+                    RemoveTargetPos(selectedCreatureController);
+                    SelectedCreatureMoveStop(selectedCreatureController, selectedNavMeshAgent, selectedAnimator);
                     return;
                 }
 
@@ -122,9 +124,9 @@ public class CreatureControl : MonoBehaviour
         }
     }
 
-    private void SelectedCreatureMoveStop(Creature selectedCreature, NavMeshAgent navMeshAgent, Animator animator)
+    private void SelectedCreatureMoveStop(CreatureController selectedCreatureController, NavMeshAgent navMeshAgent, Animator animator)
     {
-        selectedCreature.StopToMove(navMeshAgent, animator);
+        selectedCreatureController.StopToMove(navMeshAgent, animator);
     }
 
     private float _rotateSpeed = 10f;

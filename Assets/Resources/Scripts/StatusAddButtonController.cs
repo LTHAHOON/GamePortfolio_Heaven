@@ -6,55 +6,48 @@ using UnityEngine.UI;
 
 public class StatusAddButtonController : MonoBehaviour
 {
-    [System.Serializable] 
+    [System.Serializable]
     public struct AllStatusAddButtonInfo
     {
         public Button button;
         public AllStatusNames statusName;
     }
-    [SerializeField]
-    private List<AllStatusAddButtonInfo> _statusAddButtonList;
+
+    [SerializeField] private AllStatusAddButtonInfo[] _statusAddButtonList;
+    private Dictionary<int, Button> _statusAddButtonDict = new();
+
     public void Awake()
     {
-        for (int i = 0; i < _statusAddButtonList.Count; i++)
+        for (int i = 0; i < _statusAddButtonList.Length; i++)
         {
             //클로저 문제 해결 위해 statusName을 for문 안에서 새로 선언
             AllStatusNames statusName = _statusAddButtonList[i].statusName;
             _statusAddButtonList[i].button.onClick.AddListener(() => OnClickStatusAddButton(statusName));
+            _statusAddButtonDict.Add((int)statusName, _statusAddButtonList[i].button);
         }
-
     }
 
-    public void RefreshStatusAddButtons(List<ConsumeMPValue> consumeMPValues)
+    public void RefreshStatusAddButtons()
     {
-        for (int i = 0; i < consumeMPValues.Count; i++)
+        List<StatusUnitMpData> statusMpDatas = MPDataManager.Instance.GetStatusMPDatas();
+        for (int i = 0; i < statusMpDatas.Count; i++)
         {
-            bool canUseUpMP = MPDataController.Instance.CheckToUseUpMP(consumeMPValues[i].consumeMPValue);
-            SetInteractableStatusAddButton(canUseUpMP, consumeMPValues[i].statusName);
+            bool canUseUpMP = MPDataController.Instance.CheckToUseUpMP(statusMpDatas[i].MP_ConsValue);
+            SetInteractableStatusAddButton(canUseUpMP, statusMpDatas[i].statusName);
         }
     }
+
     private void SetInteractableStatusAddButton(bool interactable, AllStatusNames statusName)
     {
-        Button button = FindStatusAddButton(statusName);
-        if(button != null)
+        bool bGetButton = _statusAddButtonDict.TryGetValue((int)statusName, out Button button);
+        if (bGetButton)
         {
             button.interactable = interactable;
         }
     }
 
-    private Button FindStatusAddButton(AllStatusNames statusName)
-    {
-        for (int i = 0; i < _statusAddButtonList.Count; i++)
-        {
-            if(_statusAddButtonList[i].statusName == statusName)
-            {
-                return _statusAddButtonList[i].button;
-            }
-        }
-        return null;
-    }
     public void OnClickStatusAddButton(AllStatusNames statusName)
     {
-        StatusDataMng.Instance.AddStatus(StatusSliderController._status, statusName);
+        StatusManager.Instance.AddStatus(statusName);
     }
 }
