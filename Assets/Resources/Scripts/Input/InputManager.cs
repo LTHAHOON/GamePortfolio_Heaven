@@ -207,7 +207,7 @@ public class InputManager : Singleton<InputManager>
 
     public GameObject SelectBySphereCast(out bool bOnClick, int mouseButton, Camera camera, LayerMask targetLayerMask)
     {
-        if (Input.GetMouseButtonDown(mouseButton))
+        if (Input.GetMouseButtonUp(mouseButton))
         {
             bOnClick = true;
             return SelectBySphereCast(camera, targetLayerMask);

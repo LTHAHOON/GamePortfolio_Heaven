@@ -17,10 +17,23 @@ public class UnitSpawnManager : Singleton<UnitSpawnManager>
         return _dicSpawnPos.TryAdd(unitId, spawnPos);
     }
     
-    public Unit Spawn(Unit unit)
+    public List<T> Spawn<T>(T unit, int unitCount) where T : Unit
+    {
+        List<T> spawnedUnitList = new();
+        for (int i = 0; i < unitCount; i++)
+        {
+            if(Spawn(unit) is T spawnedUnit)
+            {
+                spawnedUnitList ??= new List<T>(unitCount);
+                spawnedUnitList.Add(spawnedUnit);
+            }
+        }
+        return spawnedUnitList;
+    }
+    public T Spawn<T>(T unit) where T : Unit
     {
         MyUnitPrefabDataManager.Instance.TryGetChild(out GameObject instantiateParentObj, unit.UnitType);
-        Unit spawnedUnit = Instantiate(unit, instantiateParentObj.transform);
+        T spawnedUnit = Instantiate(unit, instantiateParentObj.transform);
         MyUnitPrefabDataManager.Instance.AddUnitPrefabToList(spawnedUnit.UnitType, spawnedUnit);
         bool bGetPos = _dicSpawnPos.TryGetValue(unit.ID, out Vector3 spawnPos);
         if (bGetPos)

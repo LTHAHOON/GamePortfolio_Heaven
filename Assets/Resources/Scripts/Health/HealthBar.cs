@@ -44,11 +44,14 @@ public class HealthBar : MonoBehaviour, ICullingUI
 
     private void Update()
     {
-        UpdateHealthBarPosition();
         UpdateHealthBar(_curPct);
         UpdateChipBar(_curPct);
     }
 
+    private void LateUpdate()
+    {
+        UpdateHealthBarPosition();
+    }
 
     //Active가 켜지는 순간 새로고침
     private void OnEnable()

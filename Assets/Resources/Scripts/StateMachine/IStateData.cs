@@ -19,7 +19,7 @@ public class BoardingStatData : IStateData<BoardingStatData>
 {
     public int _maxCount = 7;
     [HideInInspector]
-    public List<CreatureController> _boardingCreatureList = new();
+    public List<IPassenger> _boardingPassengerList = new();
     [HideInInspector]
     public DriveButton driveButton;
     // 길이 막혀서 탑승 못하는 생명체를 제외한 최종 탑승 가능한 생명체 수
@@ -29,7 +29,7 @@ public class BoardingStatData : IStateData<BoardingStatData>
     public int _curCount = 0;
     public void Clear()
     {
-        _boardingCreatureList.Clear();
+        _boardingPassengerList.Clear();
         _finalMaxCount = 0;
         _curCount = 0;
     }
@@ -62,6 +62,7 @@ public class BezierCurveStatData : IStateData<BezierCurveStatData>
 [Serializable]
 public class SurroundPosStatData : IStateData<SurroundPosStatData>
 {
+    public SurroundPosGroup _surroundPosGroup;
     public float _distanceFromUnit = 6;
     public float _radiusFromCenter = 6.5f;
     public int _firstRingCount = 9;

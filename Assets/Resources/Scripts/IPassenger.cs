@@ -5,5 +5,7 @@ using UnityEngine;
 
 public interface IPassenger
 {
-    void OnUnboard(Vector3 targetPosition, Vector3 enemyPosition);
+    bool SuccessBoard { get; }
+    void OnBoard();
+    void OnUnboard(Vector3 targetPosition);
 }

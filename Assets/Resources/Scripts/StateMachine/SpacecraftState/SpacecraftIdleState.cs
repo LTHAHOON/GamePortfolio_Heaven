@@ -7,7 +7,7 @@ public class SpacecraftIdleState : State<SpacecraftState, SpacecraftController>
     public override SpacecraftState EState => SpacecraftState.Idle;
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {
-        SpacecraftController owner = stateMachine.GetOwner();
+
         
     }
 

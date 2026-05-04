@@ -13,6 +13,7 @@ public abstract class Unit : MonoBehaviour
     //전체 공유 데이터
     [SerializeField]
     private UnitInfo _unitInfo;
+    [SerializeField]
     //MP 초기 데이터
     private UnitMPDataComponent _unitMpDataComponent;
 
@@ -21,7 +22,6 @@ public abstract class Unit : MonoBehaviour
 
     protected virtual void Awake()
     {
-        TryGetComponent(out _unitMpDataComponent);
         #region Selectable 컴포넌트 할당(없으면 NULL)
         TryGetComponent(out _dragSelectable);
         TryGetComponent(out _selectable);

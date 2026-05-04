@@ -39,9 +39,8 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
         if (creatureController.IsAttackMode || creatureController.IsAttackTarget) //����� ��ġ�� �̵��ؾ��� ���
         {
             //AttackMode 처음 들어갈때(AttackMark가 있을 경우)
-            if (SurroundPosManager.IsContainTargetPos(creatureController.gameObject) && creatureController.IsAttackMarkExist)
+            if (SurroundPosManager.IsContainTargetPos(creatureController.gameObject, _surroundPosData._surroundPosGroup) && creatureController.IsAttackMarkExist)
             {
-                Debug.Log("CreatureIdleState : Idle AttackMode or AttackTarget");
                 stateMachine.ChangeState(CreatureState.Trace);
             }
             //넥서스 타겟 결정하기 전 주변 Enemy 체크
@@ -52,13 +51,12 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
                 stateMachine.ChangeState(CreatureState.Trace);
             }
             //넥서스 타겟 위치 할당
-            else if(!SurroundPosManager.IsContainTargetPos(creatureController.gameObject))
+            else if(!SurroundPosManager.IsContainTargetPos(creatureController.gameObject, _surroundPosData._surroundPosGroup))
             {
                 navMeshAgent.stoppingDistance = 0.5f;
-                SurroundPosManager.AssignTargetPosition(creatureController.gameObject, creatureController.EnemyNexusPos,
-                    _surroundPosData._radiusFromCenter, _surroundPosData._distanceFromUnit,
-                    _surroundPosData._firstRingCount);
-                if (SurroundPosManager.TryGetAssignedTargetPositionAround(creatureController.gameObject, out Vector3 assigendPos))
+                _surroundPosData._surroundPosGroup = NexusManager.Instance.GetNexusSurroundPosGroup(Fraction.Enemy);
+                SurroundPosManager.AssignTargetPosition(creatureController.gameObject,_surroundPosData._surroundPosGroup);
+                if (SurroundPosManager.TryGetAssignedTargetPositionAround(creatureController.gameObject, _surroundPosData._surroundPosGroup ,out Vector3 assigendPos))
                 {
                     creatureController.SetDestination(assigendPos);
                 }

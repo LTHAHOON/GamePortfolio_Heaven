@@ -48,7 +48,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     #endregion
 
     #region TargetPos 데이터
-    private Vector3 _enemyNexusPos;
+    private Collider _enemyNexusCollider;
     private Vector3 _destination;
     private Collider _enemyCollider;
     #endregion
@@ -65,7 +65,9 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
 
     [SerializeField]
     private CharacterController _characterController;
-    
+
+    private bool _successBoard = false;
+    public bool SuccessBoard => _successBoard;
     private bool _isAttackMode = false;
     private bool _isAttackTarget = false;
     [HideInInspector] 
@@ -138,7 +140,6 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         if (!CheckGround()) return;
         _stateMachine.UpdateCurrentState();
     }
-
     public void SetAttackMark(GameObject attackMark, Action<GameObject> returnAttackmark)
     {
         _attackMark = attackMark;
@@ -286,9 +287,9 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         _characterController.Move(_gravityMotion);
     }
 
-    public void SetEnemyNexusTargetPos(Vector3 nexusTargetPos)
+    public void SetEnemyNexusCollider(Collider enemyNexusCollider)
     {
-        _enemyNexusPos = nexusTargetPos;
+        _enemyNexusCollider = enemyNexusCollider;
     }
 
     #region 거리 및 방향 구하는 함수
@@ -324,9 +325,12 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         _isChoice = true;
         _stateMachine.ChangeState(CreatureState.Idle);
     }
-    public void OnUnboard(Vector3 targetPosition, Vector3 enemyPosition)
+    public void OnBoard()
     {
-        SetEnemyNexusTargetPos(enemyPosition);
+        _successBoard = true;
+    }
+    public void OnUnboard(Vector3 targetPosition)
+    {
         SetDestination(targetPosition);
         SetIsAttackMode(true);
     }
@@ -399,10 +403,19 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         _animatorStatData._dicAnimParameterHash[animParameter];
     public bool IsEnemyColliderExist => _enemyCollider;
     public Collider EnemyCollider => _enemyCollider;
-    public Vector3 EnemyNexusPos => _enemyNexusPos;
+    public Collider EnemyNexusCollider => _enemyNexusCollider;
     public bool IsAttackMarkExist => _attackMark;
-    public void SetDestination(Vector3 targetPosition) => _destination = targetPosition;
-
+    public void SetDestination(Vector3 targetPosition)
+    {
+                Debug.Log(targetPosition);
+        
+        _destination = targetPosition;
+    }
+    public void SetSurroundPosGroup(SurroundPosGroup group)
+    {
+        _surroundPosData._surroundPosGroup = group;
+    }
+    
     public float GetEnemyAttackDistance(NavMeshAgentStatData data) =>
         _enemyCollider ? _enemyCollider.bounds.extents.magnitude : -1f;
     public float GetNexusAttackDistance(NavMeshAgentStatData data)=> data._nexusAttackDistance;
@@ -410,5 +423,6 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public void SetIsAttackTarget(bool isAttackTarget) => _isAttackTarget = isAttackTarget;
     public Animator GetAnimator() => _animatorStatData._animator;
     public NavMeshAgent GetNavMeshAgent() => _navMeshStatData._navmeshAgentData._navMeshAgent;
+    public SurroundPosGroup GetSurroundPosGroup() => _surroundPosData._surroundPosGroup;
     #endregion
 }

@@ -58,9 +58,7 @@ public class CreatureCommandManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1) && CreatureSelection.Instance.GetSelectionCharactersCount() > 0)
         {
-            _targetPosition = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _groundLayerMask).Value;
-            if (_targetPosition == null)
-                return;
+            _targetPosition = InputManager.Instance.GetWolrdMousePosByRaycast(Camera.main, _groundLayerMask);
             if (_targetPosition.HasValue)
             {
                 GameObject poolPrefab = _pcMoveMark.PopPoolObject();

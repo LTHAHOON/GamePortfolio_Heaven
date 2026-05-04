@@ -17,22 +17,22 @@ public class CreatureBoardingState : State<CreatureState, CreatureController>
 
     public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine) 
     {
-        CreatureController creatureController = stateMachine.GetOwner();
-        creatureController.SetEnableNavMeshAgent(_navMeshStatData);
+        CreatureController creature = stateMachine.GetOwner();
+        creature.SetEnableNavMeshAgent(_navMeshStatData);
     }
     public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
-        CreatureController creatureController = stateMachine.GetOwner();
+        CreatureController creature = stateMachine.GetOwner();
         NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-        creatureController.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator);
+        creature.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator);
 
         if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance * 3)
         {
-            Health health = creatureController.GetHealth();
+            Health health = creature.GetHealth();
             health.HealthBar.SetForceHideUI(true);
-            creatureController.gameObject.SetActive(false);
-            //stateMachine.ChangeState(CreatureState.DeSelection);
+            creature.OnBoard();
+            creature.StateMachine.ChangeState(CreatureState.Idle);
         }
     }
     public override void ExitState(StateMachine<CreatureState, CreatureController> stateMachine) { }

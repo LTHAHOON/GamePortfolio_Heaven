@@ -8,11 +8,12 @@ using UnityEngine.AI;
 public class CreatureSelectionState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
-
+    private SurroundPosStatData _surroundPosData;
     public override CreatureState EState => CreatureState.Selection;
     public override void InitState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
         stateMachine.TryGetStateData(out _navMeshStatData);
+        stateMachine.TryGetStateData(out _surroundPosData);
     }
     public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
@@ -36,11 +37,12 @@ public class CreatureSelectionState : State<CreatureState, CreatureController>
         else
         {
             attackDistance = creature.GetNexusAttackDistance(_navMeshStatData._navmeshAgentData);
-            distanceToTarget = creature.GetDistanceTo(creature.EnemyNexusPos);
+            Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
+            distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
         } 
         if(distanceToTarget > (attackDistance * attackDistance))
         {
-            SurroundPosManager.ReleaseTargetPosition(creature.gameObject);
+            SurroundPosManager.ReleaseTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
         }
     }
     public override void ExitState(StateMachine<CreatureState, CreatureController> stateMachine) { }

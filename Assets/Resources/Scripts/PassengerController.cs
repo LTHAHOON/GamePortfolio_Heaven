@@ -4,47 +4,76 @@ using UnityEngine;
 
 public class PassengerController : Unit
 {
-    private Dictionary<long, PassengerData> _dicPassengerDatas = new();
-    public List<PassengerData> GetPassengerDatas()
+    //인스턴스 중심의 Passengers 데이터(Spawn된 상태)
+    private List<Unit> _spawnedPassengerList = new();
+    //Passenger Count 중심의 Passengers 데이터(Spawn되지 않은 상태)
+    private readonly Dictionary<long, PassengerData> _dicUnSpawnedPassenger = new();
+    public List<PassengerData> GetUnSpawnedPassengers()
     {
-        return _dicPassengerDatas.Values.ToList();
+        return _dicUnSpawnedPassenger.Values.ToList();
+    }
+    public List<Unit> GetSpawnedPassengers()
+    {
+        return _spawnedPassengerList;
     }
 
-    protected void AddPassengerInData(IPassenger passenger, int passengerCount)
+    public void AddUnSpawnedPassenger(IPassenger passenger, int passengerCount)
     {
         if (passenger is Unit unit)
         {
-            if(_dicPassengerDatas.ContainsKey(unit.ID))
+            if (_dicUnSpawnedPassenger.ContainsKey(unit.ID))
             {
-                _dicPassengerDatas[unit.ID].PassengerCount += passengerCount;
+                _dicUnSpawnedPassenger[unit.ID].PassengerCount += 1;
             }
             else
             {
-                _dicPassengerDatas.Add(unit.ID, new PassengerData(unit, passengerCount));
+                _dicUnSpawnedPassenger.Add(unit.ID, new PassengerData(unit, passengerCount));
             }
         }
     }
 
-
-    protected void RemovePassengerInData(CreatureController creatureController)
+    public void AddSpawnedPassenger(IPassenger passenger)
     {
-        if(_dicPassengerDatas.ContainsKey(creatureController.ID))
+        if (passenger is Unit unit)
         {
-            _dicPassengerDatas.Remove(creatureController.ID);
+            if(!_spawnedPassengerList.Contains(unit))
+            {
+                _spawnedPassengerList.Add(unit);
+            }
+            
         }
     }
-    protected Unit[] GetPassengers()
+    public void AddSpawnedPassengers(List<IPassenger> passengers)
     {
-        return _dicPassengerDatas.Values.Select(v => v.Passenger).ToArray();
+        for (int i = 0; i < passengers.Count; i++)
+        {
+            AddSpawnedPassenger(passengers[i]);
+        }
     }
-    protected void ClearPassengerDatas()
+
+    public void RemoveUnSpawnedPassenger(Unit passenger)
     {
-        _dicPassengerDatas.Clear();
+        if(_dicUnSpawnedPassenger.ContainsKey(passenger.ID))
+        {
+            _dicUnSpawnedPassenger.Remove(passenger.ID);
+        }
     }
-    protected int GetPassengerCountInData(long id)
+    public void RemoveSpawnedPassenger(Unit passenger)
     {
-        return _dicPassengerDatas[id].PassengerCount;
+        if(_spawnedPassengerList.Contains(passenger))
+        {
+            _spawnedPassengerList.Remove(passenger);
+        }
     }
-    public int AllPassengerCount => _dicPassengerDatas.Values.Sum(v => v.PassengerCount);
-    protected bool HasPassenger => _dicPassengerDatas.Count >= 1;
+    public void ClearPassengerDatas()
+    {
+        _dicUnSpawnedPassenger.Clear();
+        _spawnedPassengerList.Clear();
+    }
+    public int GetPassengerCountInData(long id)
+    {
+        return _dicUnSpawnedPassenger[id].PassengerCount;
+    }
+    public int AllPassengerCount => _dicUnSpawnedPassenger.Values.Sum(v => v.PassengerCount) + _spawnedPassengerList.Count;
+    public bool HasPassenger => _dicUnSpawnedPassenger.Count > 0 ||_spawnedPassengerList.Count > 0;
 }

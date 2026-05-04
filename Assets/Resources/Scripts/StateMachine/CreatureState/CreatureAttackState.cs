@@ -43,8 +43,9 @@ public class CreatureAttackState : State<CreatureState, CreatureController>
             else
             {
                 attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
-                lookDirection = creature.GetLookDirection(creature.EnemyNexusPos);
-                distanceToTarget = creature.GetDistanceTo(creature.EnemyNexusPos);
+                Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
+                lookDirection = creature.GetLookDirection(enemyNexusPos);
+                distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
             }
             
             if (distanceToTarget > (attackDistance * attackDistance))

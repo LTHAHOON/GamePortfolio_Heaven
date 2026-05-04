@@ -1,28 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
+public class SurroundPosGroup
+{
+    public Dictionary<int, SurrondPos> _dicAssignedPos = new();
+    public HashSet<int> _assignedPosIndices = new();
+    public int _maxCount = 100;
+    public Vector3[] _positions = { };
+}
+
+public struct SurrondPos
+{
+    public Vector3 _position;
+    public int _positionIndex;
+
+    public SurrondPos(Vector3 position, int positionIndex)
+    {
+        _position = position;
+        _positionIndex = positionIndex;
+    }
+}
+
 public class SurroundPosManager : MonoBehaviour
 {
-    private struct SurrondPos
-    {
-        public Vector3 _position;
-        public int _positionIndex;
-
-        public SurrondPos(Vector3 position, int positionIndex)
-        {
-            _position = position;
-            _positionIndex = positionIndex;
-        }
-    }
-
-    private static Dictionary<int, SurrondPos> _dicAssignedPos = new();
-    private static HashSet<int> _assignedPosIndices = new();
+    private static Dictionary<GameObject, SurroundPosGroup> _dicSurroundPosGroups = new();
     private void OnDestroy()
     {
-        _dicAssignedPos.Clear();
-        _assignedPosIndices.Clear();
+        _dicSurroundPosGroups.Clear();
     }
 
     public static float[] DistanceArrayByCharacterCount(int chracterCount, float distanceFromUnit = 5f, float radiusFromCenter = -1f, int firstRingCount = 10)
@@ -119,12 +126,12 @@ public class SurroundPosManager : MonoBehaviour
         return positions.ToArray();
     }
 
-    public static int GetAssignedNextIndex()
+    public static int GetAssignedNextIndex(SurroundPosGroup group)
     {
         int index = 0;
-        for (int i = 0; i < _assignedPosIndices.Count + 1; i++)
+        for (int i = 0; i < group._assignedPosIndices.Count + 1; i++)
         {
-            if (!_assignedPosIndices.Contains(i))
+            if (!group._assignedPosIndices.Contains(i))
             {
                 return i;
             }
@@ -132,59 +139,90 @@ public class SurroundPosManager : MonoBehaviour
         return index;
     }
 
-    private static Vector3[] positions = { };
-    private static int _maxCharacterCount = 100;
-    public static void AssignTargetPosition(GameObject unit, Vector3 startPosition, float radiusFromCenter, float distanceFromUnit, int firstRingCount)
-    {
-        if (!IsContainTargetPos(unit))
-        {
-            int positionIndex = GetAssignedNextIndex();
 
-            if (positions.Length <= 0 || positionIndex > positions.Length)
+/// <summary>
+/// AssignTargetPosition을 하기 전에 AssignCenterTargetPosition을 호출하여 초기 등록을 해야 합니다.
+/// </summary>
+    public static void AssignTargetPosition(GameObject target, SurroundPosGroup group)
+    {
+        if (!IsContainTargetPos(target,group))
+        {
+            int positionIndex  = GetAssignedNextIndex(group);
+            if (positionIndex < group._positions.Length)
             {
-                if (positionIndex > positions.Length)
+                group._dicAssignedPos.Add(target.GetInstanceID(), new SurrondPos(group._positions[positionIndex], positionIndex));
+                group._assignedPosIndices.Add(positionIndex);
+                Debug.Log($"등록: {target.name} | Index: {positionIndex} | Pos: {group._positions[positionIndex]}");
+            }
+        }
+    }
+    
+    //초기 등록(SurroundPosGroup(Key) 반환)
+    public static SurroundPosGroup AssignCenterTargetPosition(GameObject centerTarget,Vector3 startPosition, float radiusFromCenter,
+                                                                float distanceFromUnit, int firstRingCount, bool bUseCenter = false)
+    {
+        if (!IsCotainCenterTarget(centerTarget))
+        {
+            _dicSurroundPosGroups.Add(centerTarget, new SurroundPosGroup());
+            SurroundPosGroup group = _dicSurroundPosGroups[centerTarget];
+            int positionIndex  = GetAssignedNextIndex(group);
+
+            if (group._positions.Length <= 0 || positionIndex > group._positions.Length)
+            {
+                if (positionIndex > group._positions.Length)
                 {
-                    ++_maxCharacterCount;
+                    ++group._maxCount;
                 }
-                float[] distanceArray = DistanceArrayByCharacterCount(_maxCharacterCount, distanceFromUnit, radiusFromCenter, firstRingCount);
-                int[] positionCountArray = GetPositionCountArray(_maxCharacterCount, firstRingCount);
-                positions = GetTargetPositionsAround(startPosition, distanceArray, positionCountArray, bUseCenter: false);
+                float[] distanceArray = DistanceArrayByCharacterCount(group._maxCount, distanceFromUnit, radiusFromCenter, firstRingCount);
+                int[] positionCountArray = GetPositionCountArray(group._maxCount, firstRingCount);
+                group._positions = GetTargetPositionsAround(startPosition, distanceArray, positionCountArray, bUseCenter);
+                if (bUseCenter)
+                {
+                    group._dicAssignedPos.Add(centerTarget.GetInstanceID(), new SurrondPos(group._positions[positionIndex], positionIndex));
+                    group._assignedPosIndices.Add(positionIndex);    
+                }
+                return group;
             }
+        }
+        return _dicSurroundPosGroups[centerTarget];
+    }
 
-            if (positionIndex < positions.Length)
+    public static void ReleaseTargetPosition(GameObject target, SurroundPosGroup group)
+    {
+        if(group == null)
+            return;
+        int id = target.GetHashCode();
+        if (group._dicAssignedPos.TryGetValue(id, out SurrondPos data))
+        {
+            group._assignedPosIndices.Remove(data._positionIndex);
+            group._dicAssignedPos.Remove(id);
+            Debug.Log($"등록해제: {target.name} | Index: {data._positionIndex}");
+        }
+    }
+
+    public static bool TryGetAssignedTargetPositionAround(GameObject target, SurroundPosGroup group ,out Vector3 assigendPos)
+    {
+        if (group != null)
+        {
+            if (group._dicAssignedPos.TryGetValue(target.GetHashCode(), out SurrondPos surrondPos))
             {
-                _dicAssignedPos.Add(unit.GetInstanceID(), new SurrondPos(positions[positionIndex], positionIndex));
-                _assignedPosIndices.Add(positionIndex);
-                Debug.Log($"등록: {unit.name} | Index: {positionIndex} | Pos: {positions[positionIndex]}");
-            }
-        }
-    }
-
-    public static void ReleaseTargetPosition(GameObject unit)
-    {
-        int id = unit.GetInstanceID();
-        if (_dicAssignedPos.TryGetValue(id, out SurrondPos data))
-        {
-            _assignedPosIndices.Remove(data._positionIndex);
-            _dicAssignedPos.Remove(id);
-            Debug.Log($"등록해제: {unit.name} | Index: {data._positionIndex}");
-        }
-    }
-
-    public static bool TryGetAssignedTargetPositionAround(GameObject unit, out Vector3 assigendPos)
-    {
-        if (_dicAssignedPos.TryGetValue(unit.GetInstanceID(), out SurrondPos surrondPos))
-        {
-            assigendPos = surrondPos._position;
-            return true;
+                assigendPos = surrondPos._position;
+                return true;
+            }     
         }
         assigendPos = default;
         return false;
     }
 
-    public static bool IsContainTargetPos(GameObject unit)
+    private static bool IsCotainCenterTarget(GameObject centerTarget)
     {
-        return _dicAssignedPos.ContainsKey(unit.GetInstanceID());
+        return _dicSurroundPosGroups.ContainsKey(centerTarget);
+    }
+    public static bool IsContainTargetPos(GameObject target, SurroundPosGroup group)
+    {
+        if(group == null)
+            return false;
+        return group._dicAssignedPos.ContainsKey(target.GetHashCode());
     }
 
     private static Vector3 ApplyRotationToVector(Vector3 vec, float angle)

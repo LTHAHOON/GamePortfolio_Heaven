@@ -138,10 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee1a32fef1c23d45b1778f0f63f3be1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unitSpawnComponent: {fileID: 7032706666757758276}
-  unitInfo: {fileID: 1315167457528967664}
   _nameText: {fileID: 1671201666222869672}
-  _unitChipState: {fileID: 230396542877651800}
 --- !u!114 &1315167457528967664
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,6 +155,8 @@ MonoBehaviour:
     Type: 1
     Property: 3
     ID: 30002
+  _statusDBType: 0
+  _sliderType: 1
 --- !u!114 &7032706666757758276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7fbc192880846c45a3b2302961080a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _spawnHeightOffset: 1
 --- !u!114 &230396542877651800
 MonoBehaviour:
   m_ObjectHideFlags: 0

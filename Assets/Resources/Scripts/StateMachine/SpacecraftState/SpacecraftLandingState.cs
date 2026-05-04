@@ -21,7 +21,14 @@ public class SpacecraftLandingState : State<SpacecraftState, SpacecraftControlle
         //Gravity로 인해 착륙하게 되고 바닥에 닿은 순간 Idle상태로 전환하게 된다.
         owner._isGravity = true;
     }
-    public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine){ }
+    public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
+    {
+        SpacecraftController owner = stateMachine.GetOwner();
+        if(!owner._isGravity)
+        {
+            stateMachine.ChangeState(SpacecraftState.GetOff);
+        }
+    }
 
     public override void ExitState(StateMachine<SpacecraftState, SpacecraftController> stateMachine){ }
 

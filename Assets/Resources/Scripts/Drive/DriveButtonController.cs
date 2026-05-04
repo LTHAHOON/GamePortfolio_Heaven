@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class DriveButtonController : BaseDriveButtonController
 {
@@ -32,6 +33,7 @@ public class DriveButtonController : BaseDriveButtonController
     }
     public void RemoveDriveButton(PassengerController owner)
     {
+        ObjectVisbilitySystem.Instance.RemoveToList(_dicDriveButton[owner]);
         ModeButtonManager.Instance.RemoveListenerModeButton(this, _dicDriveButton[owner].ThisButton);
         _pcDriveButton.ReturnPoolObject(_dicDriveButton[owner].gameObject);
         if (_dicDriveButton.ContainsKey(owner))
@@ -46,9 +48,13 @@ public class DriveButtonController : BaseDriveButtonController
     private void OnClickDrive(PassengerController owner)
     {
         SetVehicleUnit(owner);
-        RemoveDriveButton(owner);
     }
-
+    public override void OnExecute()
+    {
+        base.OnExecute();
+        RemoveDriveButton(_vehicleUnit);
+    }
+    
     public override void RefreshModeButton()
     {
         for (int i = 0; i < _dicDriveButton.Count; i++)

@@ -15,7 +15,6 @@ public struct Goal
 {
     public Vector3 _spacecraftGoalPos;
     public Vector3 _passengerGoalPos;
-    public Vector3 _enemytNexusPos;
     public RespawnPositionType _respawnPositionType;
 }
 public enum SpacecraftState
@@ -31,24 +30,24 @@ public enum SpacecraftState
 [RequireComponent(typeof(Rigidbody))]
 public class SpacecraftController : PassengerController, ISelectableOwner
 {
-    #region ���� ������ �� ���¸ӽ�
+    #region State 데이터
     private BezierCurveStatData _curveStatData = new();
-    [Header("���� ž�¿� �ʿ��� ������")]
+    [Header("탑승시킬때 필요한 데이터")]
     [SerializeField]
     private BoardingStatData _boardingStatData;
-    [Header("SurroundPos�� �ʿ��� ������")]
+    [Header("SurroundPos 데이터")]
     [SerializeField]
     private SurroundPosStatData _surroundPosStatData;
-    [Header("���̾� Ÿ�� ������")]
+    [Header("행성, 우주 레이어 전환 데이터")]
     [SerializeField]
     private LayerTargetStatData _layerTargetStatData;
-    [Header("Die ���� ������")]
+    [Header("Die 데이터")]
     [SerializeField]
     private DieStatData _dieStatData;
     private StateMachine<SpacecraftState, SpacecraftController> _stateMachine;
     public StateMachine<SpacecraftState, SpacecraftController> StateMachine => _stateMachine;
     #endregion
-    #region Physics ������
+    #region Physics 데이터
     [SerializeField]
     private float gravity = -9.81f;
     [HideInInspector]
@@ -58,7 +57,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     private Rigidbody _rigidbody;
     private BoxCollider _collider;
     #endregion
-    #region AttackMark ������
+    #region AttackMark 데이터
     public event Action<GameObject> OnReturnAttackMark;
     private GameObject _attackMark;
     #endregion
@@ -133,25 +132,21 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         _rigidbody.velocity += gravity * Time.fixedDeltaTime * Vector3.up;
     }
 
-    public void SetGoal(Vector3 startPoint, Vector3 endPoint, Vector3 middlePoint, Goal goalData, Vector3 enemyNexusPos)
+    public void SetGoal(Vector3 startPoint, Vector3 endPoint, Vector3 middlePoint, Goal goalData)
     {
         Initialize();
+        _collider.isTrigger = true;
+        _rigidbody.isKinematic = false;
         _curveStatData._startPoint = startPoint;
         _curveStatData._endPoint = endPoint;
         _goalData = goalData;
         _goalData._spacecraftGoalPos.y = 5f;
-        _goalData._enemytNexusPos = enemyNexusPos;
         _curveStatData._middlePoint = middlePoint;
         _layerTargetStatData._layerTargetList.SetLayerList(gameObject, true, GameLayer.OutPlanetLayer);
         _stateMachine.ChangeState(SpacecraftState.Drive);
     }
 
-    public void AddPassenger(IPassenger passenger, int passengerCount)
-    {
-        AddPassengerInData(passenger, passengerCount);
-    }
-
-    #region AttackMark ����
+    #region AttackMark 데이터
     public void SetAttackMark(GameObject attckMark, Action<GameObject> returnAttackmark)
     {
         _attackMark = attckMark;
@@ -162,11 +157,6 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         creature.SetAttackMark(_attackMark, OnReturnAttackMark);
     }
     #endregion
-
-    public int GetPassengerCount(long id)
-    {
-        return GetPassengerCountInData(id);
-    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -180,11 +170,9 @@ public class SpacecraftController : PassengerController, ISelectableOwner
                     _stateMachine.ChangeState(SpacecraftState.Idle);
                 });
             }
-            _collider.isTrigger = false;
+             _collider.isTrigger = false;
             _rigidbody.isKinematic = true;
             _isGravity = false;
-            _stateMachine.ChangeState(SpacecraftState.GetOff);
-            ClearPassengerDatas();
         }
     }
     

@@ -19,8 +19,6 @@ public class BaseDriveButtonController : ModeButtonController
     [SerializeField] 
     private Transform _endPoint;
     #endregion
-    [Header("EnemyNexusTarget")] [SerializeField]
-    private Transform _enemyNexusTarget;
     [Space(10f)] [Header("MouseCursorScript")] [SerializeField]
     private MouseCursorController _mouseCursorController;
     [SerializeField] 
@@ -60,7 +58,7 @@ public class BaseDriveButtonController : ModeButtonController
         attackMark.transform.position = _goalData._passengerGoalPos;
 
 
-        List<PassengerData> passengerDatas = _vehicleUnit.GetPassengerDatas();
+        List<PassengerData> passengerDatas = _vehicleUnit.GetUnSpawnedPassengers();
         for (int i = 0; i < passengerDatas.Count; i++)
         {
             MPData unitMpData = passengerDatas[i].Passenger.UnitMPData;
@@ -129,26 +127,22 @@ public class BaseDriveButtonController : ModeButtonController
             {
                 case RespawnPositionType.RespawnForward:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData,
-                        _enemyNexusTarget.position);
+                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData);
                     break;
                 }
                 case RespawnPositionType.RespawnBackward:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData,
-                        _enemyNexusTarget.position);
+                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData);
                     break;
                 }
                 case RespawnPositionType.RespawnLeft:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _leftMiddlePoint.position,
-                        goalData, _enemyNexusTarget.position);
+                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _leftMiddlePoint.position,goalData);
                     break;
                 }
                 case RespawnPositionType.RespawnRight:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _rightMiddlePoint.position,
-                        goalData, _enemyNexusTarget.position);
+                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _rightMiddlePoint.position, goalData);
                     break;
                 }
             }

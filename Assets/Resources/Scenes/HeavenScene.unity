@@ -1233,6 +1233,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &49071196
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 49071197}
+  - component: {fileID: 49071198}
+  m_Layer: 0
+  m_Name: UnitSpawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &49071197
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49071196}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9195131527938548787}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &49071198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 49071196}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d0dfb309617b7d4ca097835106dacb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _baseSpawnPos: {x: 0, y: 5, z: 0}
 --- !u!1 &49651153
 GameObject:
   m_ObjectHideFlags: 0
@@ -6642,6 +6687,7 @@ MonoBehaviour:
   _clickCollider: {fileID: 305329995}
   _health: {fileID: 305329994}
   _unitInfo: {fileID: 305329998}
+  _unitMpDataComponent: {fileID: 0}
 --- !u!1 &320550483
 GameObject:
   m_ObjectHideFlags: 0
@@ -16397,8 +16443,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10, y: 1, z: 10}
-  m_Center: {x: 0, y: 0.5, z: 0}
+  m_Size: {x: 10, y: 0.3, z: 10}
+  m_Center: {x: 0, y: 0.15, z: 0}
 --- !u!114 &857984259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45471,6 +45517,7 @@ MonoBehaviour:
   _clickCollider: {fileID: 0}
   _health: {fileID: 1934449139}
   _unitInfo: {fileID: 1934449141}
+  _unitMpDataComponent: {fileID: 0}
 --- !u!1 &1940316393
 GameObject:
   m_ObjectHideFlags: 0
@@ -51661,6 +51708,7 @@ Transform:
   - {fileID: 519409222}
   - {fileID: 388803115}
   - {fileID: 1364187428}
+  - {fileID: 49071197}
   m_Father: {fileID: 1843437645195298259}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807

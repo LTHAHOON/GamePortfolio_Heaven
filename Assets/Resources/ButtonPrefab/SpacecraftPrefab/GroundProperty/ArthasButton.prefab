@@ -167,6 +167,8 @@ MonoBehaviour:
     Type: 1
     Property: 2
     ID: 30004
+  _statusDBType: 0
+  _sliderType: 1
 --- !u!114 &1228261967396330279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7fbc192880846c45a3b2302961080a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnHeightOffset: 1
+  _spawnHeightOffset: 1.5
 --- !u!114 &-3423808951622389921
 MonoBehaviour:
   m_ObjectHideFlags: 0

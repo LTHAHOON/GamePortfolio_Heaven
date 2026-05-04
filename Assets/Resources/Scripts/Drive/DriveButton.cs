@@ -26,7 +26,7 @@ public class DriveButton : MonoBehaviour, ICullingUI
     private DriveButtonData _driveButtonData;
     private PassengerController _owner;
 
-    private void Update()
+    private void LateUpdate()
     {
         if (!_owner)
             return;
@@ -58,7 +58,7 @@ public class DriveButton : MonoBehaviour, ICullingUI
     }
     public void RefreshModeButton(MPData totalMPData)
     {
-        List<PassengerData> passengerDatas = _owner.GetPassengerDatas();
+        List<PassengerData> passengerDatas = _owner.GetUnSpawnedPassengers();
         float passengerTotalMP = 0f;
         for (int i = 0; i < passengerDatas.Count; i++)
         {

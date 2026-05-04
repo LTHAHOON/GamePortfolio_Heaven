@@ -64,12 +64,15 @@ public class CreatureTraceState : State<CreatureState, CreatureController>
                 else
                 {
                     attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
-                    distanceToTarget = creature.GetDistanceTo(creature.EnemyNexusPos);
+                    Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
+                    distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
                 }                
 
-                if (currentWalkSpeed <= 0 && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance||
+                if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance||
                     navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
                 {
+                    if (navMeshAgent.hasPath && currentWalkSpeed > 0)
+                        return;
                     //목적지 도달 후 AttackDistance 체크
                     if (distanceToTarget <= (attackDistance * attackDistance))
                     {
@@ -92,7 +95,7 @@ public class CreatureTraceState : State<CreatureState, CreatureController>
                     navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
                 {
                     creature.ReleaseAttackMark();
-                    SurroundPosManager.ReleaseTargetPosition(creature.gameObject);
+                    SurroundPosManager.ReleaseTargetPosition(creature.gameObject,_surroundPosData._surroundPosGroup);
                     stateMachine.ChangeState(CreatureState.Idle);
                 }
             }

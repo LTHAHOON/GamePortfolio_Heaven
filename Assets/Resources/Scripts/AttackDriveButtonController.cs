@@ -3,6 +3,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.UI.CanvasScaler;
 
 public class AttackDriveButtonController : BaseDriveButtonController
 {
@@ -34,14 +35,15 @@ public class AttackDriveButtonController : BaseDriveButtonController
         attackMark.transform.position = _goalData._passengerGoalPos;
 
         vehicleUnit.transform.position = _startPos;
-        if (vehicleUnit.TryGetComponent(out SpacecraftController spacecraftController) &&
-            _selectedUnitPrefab.TryGetComponent(out CreatureController creature))
+        if (vehicleUnit is SpacecraftController spacecraftController) 
         {
             spacecraftController.GetCreateLoad().SetLoadReady(false);
-           // Transform creatureParent = GetSelectedUnitParentTransform(creature.UnitType);
-            spacecraftController.AddPassenger(creature, _createCountController.GetCurCreateCount());
             spacecraftController.SetAttackMark(attackMark, ReturnAttackMark);
-            Debug.Log(spacecraftController.GetPassengerCount(creature.ID) + "탑승");
+        }
+        if(vehicleUnit is PassengerController passengerController && _selectedUnitPrefab.TryGetComponent(out IPassenger passenger))
+        {
+            passengerController.AddUnSpawnedPassenger(passenger, _createCountController.GetCurCreateCount());
+            Debug.Log(passengerController.GetPassengerCountInData(_selectedUnitPrefab.ID) + "탑승");
         }
         //_unitMPData의 소모량만큼 MP 소모하기
         MPDataController.Instance.UseUpMP(_selectedUnitPrefab.UnitMPData, _createCountController.GetCurCreateCount());
