@@ -191,7 +191,7 @@ public class SurroundPosManager : MonoBehaviour
     {
         if(group == null)
             return;
-        int id = target.GetHashCode();
+        int id = target.GetInstanceID();
         if (group._dicAssignedPos.TryGetValue(id, out SurrondPos data))
         {
             group._assignedPosIndices.Remove(data._positionIndex);
@@ -204,7 +204,8 @@ public class SurroundPosManager : MonoBehaviour
     {
         if (group != null)
         {
-            if (group._dicAssignedPos.TryGetValue(target.GetHashCode(), out SurrondPos surrondPos))
+            int id = target.GetInstanceID();
+            if (group._dicAssignedPos.TryGetValue(id, out SurrondPos surrondPos))
             {
                 assigendPos = surrondPos._position;
                 return true;
@@ -222,7 +223,8 @@ public class SurroundPosManager : MonoBehaviour
     {
         if(group == null)
             return false;
-        return group._dicAssignedPos.ContainsKey(target.GetHashCode());
+        int id = target.GetInstanceID();
+        return group._dicAssignedPos.ContainsKey(id);
     }
 
     private static Vector3 ApplyRotationToVector(Vector3 vec, float angle)

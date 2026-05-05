@@ -4,21 +4,16 @@ using UnityEngine.UI;
 
 public class CreateCountController : MonoBehaviour
 {
-    private static TextMeshProUGUI _guideText;
-    private static TextMeshProUGUI _createCountText;
-
-    private static Image _createCountImage_L;
-    private static Image _createCountImage_R;
-    private static int _curCreateCount = 1;
-    private static int _maxCreateCount = 1;
-    void Awake()
-    {
-        _guideText = transform.Find("GuideText").GetComponent<TextMeshProUGUI>();
-        _createCountText = transform.Find("CreateCountText").GetComponent<TextMeshProUGUI>();
-        _createCountImage_L = transform.Find("CreateCountImage_L").GetComponent<Image>();
-        _createCountImage_R = transform.Find("CreateCountImage_R").GetComponent<Image>();
-    }
-
+    [SerializeField]
+    private  TextMeshProUGUI _guideText;
+    [SerializeField]
+    private TextMeshProUGUI _createCountText;
+    [SerializeField]
+    private Image _createCountImage_L;
+    [SerializeField]
+    private Image _createCountImage_R;
+    private int _curCreateCount = 1;
+    private int _maxCreateCount = 1;
     private readonly float delayBetweenInputs = 0.2f;
     private float time = 0;
     private void LateUpdate()

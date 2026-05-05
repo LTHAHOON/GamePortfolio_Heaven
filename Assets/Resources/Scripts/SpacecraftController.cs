@@ -175,6 +175,10 @@ public class SpacecraftController : PassengerController, ISelectableOwner
             _isGravity = false;
         }
     }
+    public void SetModeTypeForBoardingStaData(ModeType modeType)
+    {
+        _boardingStatData._modeTypeForDest = modeType;
+    }
     
     public int UnitTypeLayer => _unitTypeLayer;
     public Goal GoalData => _goalData;

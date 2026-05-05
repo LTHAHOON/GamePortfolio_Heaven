@@ -55,6 +55,7 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
 
         if (_bezierCurveStatData._curTime >= maxTime)
         {
+            _bezierCurveStatData._curTime = 0;
             //행성에 도착하면 착륙상태로 전환하게 된다.
             stateMachine.ChangeState(SpacecraftState.Landing);
         }

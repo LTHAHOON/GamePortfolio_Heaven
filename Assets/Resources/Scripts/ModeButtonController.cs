@@ -7,15 +7,11 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum ModeType
-{
-    AttackMode,
-    DefenseMode,
-    CreateMode,
-    NONE
-}
+
 public abstract class ModeButtonController : MonoBehaviour, IStrategy
 {
+    [SerializeField]
+    private ModeType _modeType;
     [SerializeField]
     protected Button _thisButton;
     [Space(10f)]
@@ -86,4 +82,6 @@ public abstract class ModeButtonController : MonoBehaviour, IStrategy
     public abstract void RefreshModeButton();
 
     public Button ThisButton => _thisButton;
+    protected void SetModeType(ModeType modeType) => _modeType = modeType;
+    public ModeType ModeType => _modeType;
 }

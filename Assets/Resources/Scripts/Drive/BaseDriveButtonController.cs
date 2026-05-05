@@ -26,7 +26,6 @@ public class BaseDriveButtonController : ModeButtonController
     [SerializeField] 
     protected Transform _mapMarkParent;
 
-    protected Vector3 _startPos = new(0f, 0f, -173.5f);
     protected MouseCursorData _cursorData;
 
     protected bool _bSetGoalProcess = false;
@@ -42,13 +41,22 @@ public class BaseDriveButtonController : ModeButtonController
 
     public override void OnEnter()
     {
+        if (ModeType == ModeType.AttackDriveMode)
+        {
+            CursorManager.Instance.SetCursor(CursorType.Attack);
+             _cursorData = CursorManager.GetCursorData(CursorType.Attack);
+            _planetButtonController.SetToggleIsOn(1, true);
+        }
+        else
+        {
+            CursorManager.Instance.SetCursor(CursorType.Defend);
+            _cursorData = CursorManager.GetCursorData(CursorType.Defend);
+            _planetButtonController.SetToggleIsOn(0, true);
+        }
         UIManager.Instance.SetActiveAllChild(_createCountController.gameObject, true);
         _createCountController.SetActiveCount(false);
-        CursorManager.Instance.SetCursor(CursorType.Attack);
-        CursorManager.SetSpriteRendererEnabled(CursorType.Attack, false);
-        _cursorData = CursorManager.GetCursorData(CursorType.Attack);
-        _planetButtonController.SetToggleIsOn(1, true);
-        UIManager.Instance.SetActiveAllChild(AttackSpawnTargetController.Instance.gameObject, true);
+        //CursorManager.SetSpriteRendererEnabled(CursorType.Attack, false);
+        SpawnPointsManager.Instance.SetActiveSpawPointsControl(true, ModeType);
     }
 
     public override void OnExecute()
@@ -87,7 +95,18 @@ public class BaseDriveButtonController : ModeButtonController
 
         if (_bSetGoalProcess)
         {
-            CursorManager.SetSpriteRendererEnabled(CursorType.Attack, true);
+            if (ModeType == ModeType.AttackDriveMode)
+            {
+                _startPos = _startPoint.position;
+                _endPos = _endPoint.position;
+                CursorManager.SetSpriteRendererEnabled(CursorType.Attack, true);
+            }
+            else
+            {
+                _startPos = _endPoint.position;
+                _endPos = _startPoint.position;
+                CursorManager.SetSpriteRendererEnabled(CursorType.Defend, true);
+            }
             CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
             if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
             {
@@ -100,8 +119,15 @@ public class BaseDriveButtonController : ModeButtonController
     {
         base.OnExit(bExitCompletely);
         _bSetGoalProcess = false;
-        _planetButtonController.SetToggleIsOn(1, false);
-        UIManager.Instance.SetActiveAllChild(AttackSpawnTargetController.Instance.gameObject, false);
+        if (ModeType == ModeType.AttackDriveMode)
+        {
+            _planetButtonController.SetToggleIsOn(1, false);
+        }
+        else
+        {
+            _planetButtonController.SetToggleIsOn(0, false);
+        }
+        SpawnPointsManager.Instance.SetActiveSpawPointsControl(false, ModeType);
         _cursorData = null;
     }
 
@@ -110,7 +136,7 @@ public class BaseDriveButtonController : ModeButtonController
     public virtual void SetGoalProcess(Vector3 spacecraftGoalPosition, RespawnPositionType respawnPositionType)
     {
         _createCountController.ChangeGuideText(_guideText_Next);
-        UIManager.Instance.SetActiveAllChild(AttackSpawnTargetController.Instance.gameObject, false);
+        SpawnPointsManager.Instance.SetActiveSpawPointsControl(false, ModeType);
         _goalData = new()
         {
             _spacecraftGoalPos = spacecraftGoalPosition,
@@ -119,30 +145,34 @@ public class BaseDriveButtonController : ModeButtonController
         _bSetGoalProcess = true;
     }
 
+    protected Vector3 _startPos;
+    private Vector3 _endPos;
     protected void SetGoal(GameObject spacecraftPrefab, Goal goalData)
     {
+
+        
         if (spacecraftPrefab.TryGetComponent(out SpacecraftController spacecraftController))
         {
             switch (goalData._respawnPositionType)
             {
                 case RespawnPositionType.RespawnForward:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData);
+                    spacecraftController.SetGoal(_startPos,_endPos, Vector3.zero, goalData);
                     break;
                 }
                 case RespawnPositionType.RespawnBackward:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, Vector3.zero, goalData);
+                    spacecraftController.SetGoal(_startPos, _endPos, Vector3.zero, goalData);
                     break;
                 }
                 case RespawnPositionType.RespawnLeft:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _leftMiddlePoint.position,goalData);
+                    spacecraftController.SetGoal(_startPos, _endPos, _leftMiddlePoint.position,goalData);
                     break;
                 }
                 case RespawnPositionType.RespawnRight:
                 {
-                    spacecraftController.SetGoal(_startPoint.position, _endPoint.position, _rightMiddlePoint.position, goalData);
+                    spacecraftController.SetGoal(_startPos,_endPos, _rightMiddlePoint.position, goalData);
                     break;
                 }
             }

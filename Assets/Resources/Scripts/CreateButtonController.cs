@@ -52,21 +52,26 @@ public class CreateButtonController : ModeButtonController
     {
         base.OnExecute();
 
+        #region PlacementSystem에 Collider 정보 추가(꼭짓점 위치로 Bound에 포함이 되는지 비교하기 위함)
         if (_curSpawnedUnit.TryGetComponent(out BoxCollider boxCollider))
         {
             _placementSystem.AddPlaceUnitBoxCollider(boxCollider);
         }
+        #endregion
+
+        #region PlacementSystem 초기화
         GridIndicatorController.SetIsCreatableUnit(false);
-
-
         _placementSystem.SetUnitIndicator(null);
+        #endregion
 
-        if (_curSpawnedUnit.TryGetComponent(out SpacecraftController spacecraftControl))
+        if (_curSpawnedUnit is SpacecraftController spacecraftControl)
         {
             spacecraftControl._isGravity = true;
+            //DenfenseDriveMode로 바꾸기 (즉, 상대가 아닌 본인 행성에 있다는 걸 알기 위함)
+            spacecraftControl.SetModeTypeForBoardingStaData(ModeType.DefenseDirveMode);
             spacecraftControl.GetCreateLoad().SetLoadReady(true);
         }
-        else if (_curSpawnedUnit.TryGetComponent(out HomeController homeControl))
+        else if (_curSpawnedUnit is HomeController homeControl)
         {
             homeControl._isGravity = true;
             homeControl.GetCreateLoad().SetLoadReady(true);

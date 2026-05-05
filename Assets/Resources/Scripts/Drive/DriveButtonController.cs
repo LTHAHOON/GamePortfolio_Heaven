@@ -19,12 +19,13 @@ public class DriveButtonController : BaseDriveButtonController
         _pcDriveButton = PoolManager.Instance.GetPool(ThisButton.gameObject);
     }
 
-    public void AddDriveButton(PassengerController owner, int maxCount)
+    public void AddDriveButton(PassengerController owner, ModeType modeType, int maxCount)
     {
         GameObject driveButtonObj = _pcDriveButton.PopPoolObject();
         if (!driveButtonObj.TryGetComponent(out DriveButton driveButton))
             return;
         driveButton.SetOwner(owner);
+        driveButton.SetModeType(modeType);
         driveButton.SetOnClickDriveEvent(OnClickDrive);
         driveButton.SetDriveCount(0, maxCount);
         _dicDriveButton.Add(owner, driveButton);
@@ -33,7 +34,7 @@ public class DriveButtonController : BaseDriveButtonController
     }
     public void RemoveDriveButton(PassengerController owner)
     {
-        ObjectVisbilitySystem.Instance.RemoveToList(_dicDriveButton[owner]);
+        ObjectVisbilitySystem.Instance.RemoveToList(_dicDriveButton[owner], false);
         ModeButtonManager.Instance.RemoveListenerModeButton(this, _dicDriveButton[owner].ThisButton);
         _pcDriveButton.ReturnPoolObject(_dicDriveButton[owner].gameObject);
         if (_dicDriveButton.ContainsKey(owner))
@@ -47,6 +48,8 @@ public class DriveButtonController : BaseDriveButtonController
     }
     private void OnClickDrive(PassengerController owner)
     {
+        DriveButton driveButton = GetDriveButton(owner);
+        SetModeType(driveButton.ModeType);
         SetVehicleUnit(owner);
     }
     public override void OnExecute()

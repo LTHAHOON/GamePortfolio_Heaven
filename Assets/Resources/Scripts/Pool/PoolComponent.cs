@@ -17,7 +17,7 @@ public class PoolComponent
         _initialPoolSize = initalPoolSize;
         _maxPoolSize = maxPoolSize;
         _poolParent = parent;
-        if (parent != null )
+        if (parent)
         {
             SetUpPool();
         }
@@ -47,7 +47,7 @@ public class PoolComponent
 
     public void ReturnPoolObject(GameObject poolObject, float delayTime)
     {
-        if (poolObject == null) return;
+        if (!poolObject) return;
         if (delayTime > 0)
         {
             PoolManager.Instance.DelayReturnPoolObject(ReturnPoolObject, poolObject, delayTime);
@@ -59,11 +59,12 @@ public class PoolComponent
     }
     public void ReturnPoolObject(GameObject poolObject)
     {
-        if (poolObject == null) return;
+        if (!poolObject) return;
+        if (_poolStack.Contains(poolObject)) return;
         if (_poolStack.Count < _maxPoolSize)
         {
-            poolObject.SetActive(false);
             _poolStack.Push(poolObject);
+            poolObject.SetActive(false);
         }
         else
         {

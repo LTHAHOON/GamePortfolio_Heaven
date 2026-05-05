@@ -222,7 +222,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public void ReleaseAttackMark()
     {
         OnReturnAttackMark?.Invoke(_attackMark);
-        _attackMark = null;
+       // _attackMark = null;
         OnReturnAttackMark = null;
     }
 
@@ -404,11 +404,9 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public bool IsEnemyColliderExist => _enemyCollider;
     public Collider EnemyCollider => _enemyCollider;
     public Collider EnemyNexusCollider => _enemyNexusCollider;
-    public bool IsAttackMarkExist => _attackMark;
+    public bool IsAttackMarkExist => OnReturnAttackMark != null;
     public void SetDestination(Vector3 targetPosition)
     {
-                Debug.Log(targetPosition);
-        
         _destination = targetPosition;
     }
     public void SetSurroundPosGroup(SurroundPosGroup group)

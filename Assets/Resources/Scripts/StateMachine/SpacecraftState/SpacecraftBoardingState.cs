@@ -54,8 +54,16 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         CreatureSelection.Instance.ClearSelectedList();
         if (isPathValid)
         {
-            DriveButtonController.Instance.AddDriveButton(owner, _boardingStatData._finalMaxCount);
-            _boardingStatData.driveButton = DriveButtonController.Instance.GetDriveButton(stateMachine.GetOwner());
+            if (_boardingStatData._modeTypeForDest == ModeType.AttackDriveMode)
+            {
+                _boardingStatData._modeTypeForDest = ModeType.DefenseDirveMode;
+            }
+            else
+            {
+                _boardingStatData._modeTypeForDest = ModeType.AttackDriveMode;
+            }
+            DriveButtonController.Instance.AddDriveButton(owner, _boardingStatData._modeTypeForDest, _boardingStatData._finalMaxCount);
+            _boardingStatData.driveButton = DriveButtonController.Instance.GetDriveButton(owner);
         }
         else
         {

@@ -4,6 +4,15 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum ModeType
+{
+    AttackDriveMode,
+    DefenseDirveMode,
+    DefenseMode,
+    CreateMode,
+    None,
+}
+
 public class ModeButtonManager : Singleton<ModeButtonManager>
 {
     [SerializeField]
@@ -52,6 +61,8 @@ public class ModeButtonManager : Singleton<ModeButtonManager>
     private void OnClickModeButton(IStrategy strategy)
     {
         if (strategy == null)
+            return;
+        if (strategy is not ModeButtonController modeButtonController)
             return;
         _curStrategy = strategy;
         _curStrategy.OnEnter();

@@ -36,12 +36,15 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
             _dicTargetObj.Add(cullingUI, cullingUI.ColliderForCulling);
         }
     }
-    public void RemoveToList(ICullingUI loadingText)
+    public void RemoveToList(ICullingUI loadingText, bool doDestroy = true)
     {
         if (_cullingUIList.Contains(loadingText))
         {
             _cullingUIList.Remove(loadingText);
-            Destroy(loadingText.ThisGameObject);
+            if (doDestroy)
+            {
+                Destroy(loadingText.ThisGameObject);
+            }
             _dicTargetObj.Remove(loadingText);
         }
     }

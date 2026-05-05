@@ -90,7 +90,6 @@ public class CreatureTraceState : State<CreatureState, CreatureController>
             //AttackMark가 존재할 경우(AttackDistance를 사용하지 않음)
             else
             {
-                Debug.Log("CreatureTraceState :Trace AttackMode or AttackTarget");
                 if (currentWalkSpeed <= 0 && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance||
                     navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
                 {

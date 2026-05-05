@@ -38,6 +38,7 @@ public class AttackDriveButtonController : BaseDriveButtonController
         if (vehicleUnit is SpacecraftController spacecraftController) 
         {
             spacecraftController.GetCreateLoad().SetLoadReady(false);
+            spacecraftController.SetModeTypeForBoardingStaData(ModeType.AttackDriveMode);
             spacecraftController.SetAttackMark(attackMark, ReturnAttackMark);
         }
         if(vehicleUnit is PassengerController passengerController && _selectedUnitPrefab.TryGetComponent(out IPassenger passenger))
