@@ -177,7 +177,6 @@ MonoBehaviour:
   _unitMpDataComponent: {fileID: 3893955883631265625}
   _boardingStatData:
     _maxCount: 7
-    _boardingCreatureList: []
     driveButton: {fileID: 0}
     _finalMaxCount: 0
     _curCount: 0
@@ -207,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ef9e9495a140744db005f985c7f58e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _createTime: 10
+  _createTime: 3
   _loadingDelayTime: 0.5
   _loadingTextComponent: {fileID: 3125371142351634973, guid: 3ee327c058f69164f8d1e95e43f59cad,
     type: 3}

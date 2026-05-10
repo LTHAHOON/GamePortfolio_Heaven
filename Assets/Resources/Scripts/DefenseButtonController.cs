@@ -35,10 +35,6 @@ public class DefenseButtonController : ModeButtonController
     public override void OnExecute()
     {
         base.OnExecute();
-        if (_curSpawnedUnit.TryGetComponent(out CreatureController creature))
-        {
-            creature.SetIsAttackMode(false);
-        }
 
         MouseCursorData data = CursorManager.GetCursorData(CursorType.Defend);
         _curSpawnedUnit.transform.position = data.GetFollwingSpriteRenderer().transform.position;

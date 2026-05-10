@@ -30,38 +30,41 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
 
     public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
-        CreatureController creatureController = stateMachine.GetOwner();
+        CreatureController creature = stateMachine.GetOwner();
         NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
         _animatorStatData._animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
-        Vector3 origin = creatureController.transform.position;
+        Vector3 origin = creature.transform.position;
         origin.y += 30f;
-        if (creatureController.IsAttackMode || creatureController.IsAttackTarget) //����� ��ġ�� �̵��ؾ��� ���
+        if (creature.IsCustomTarget)
         {
-            //AttackMode 처음 들어갈때(AttackMark가 있을 경우)
-            if (SurroundPosManager.IsContainTargetPos(creatureController.gameObject, _surroundPosData._surroundPosGroup) && creatureController.IsAttackMarkExist)
+
+        }
+
+        else if ((SurroundPosManager.IsContainTargetPos(creature.gameObject, _surroundPosData._surroundPosGroup) && creature.IsDestMarkExist))
+        {
+            creature.GetClickCollider().enabled = true;
+            stateMachine.ChangeState(CreatureState.Trace);
+        }
+        //넥서스 타겟 결정하기 전 주변 Enemy 체크
+        else if (creature.TryGetAroundEnemy(out RaycastHit enemy,
+                     _navMeshStatData._navmeshAgentData._traceRaidus)) //�ֺ� Ž��(����� ��ġ ���� ��)
+        {
+            SurroundPosManager.ReleaseTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
+            creature.SetDestination(enemy.transform.position);
+            stateMachine.ChangeState(CreatureState.Trace);
+        }
+        //넥서스 타겟 위치 할당
+        else if (!SurroundPosManager.IsContainTargetPos(creature.gameObject, _surroundPosData._surroundPosGroup) && creature.CurrentModeType == ModeType.AttackMode)
+        {
+            navMeshAgent.stoppingDistance = 0.5f;
+            _surroundPosData._surroundPosGroup = NexusManager.Instance.GetNexusSurroundPosGroup(Fraction.Enemy);
+            SurroundPosManager.AssignTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
+            if (SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject, _surroundPosData._surroundPosGroup, out Vector3 assigendPos))
             {
-                stateMachine.ChangeState(CreatureState.Trace);
+                creature.SetDestination(assigendPos);
             }
-            //넥서스 타겟 결정하기 전 주변 Enemy 체크
-            else if (creatureController.TryGetAroundEnemy(out RaycastHit enemy,
-                         _navMeshStatData._navmeshAgentData._traceRaidus)) //�ֺ� Ž��(����� ��ġ ���� ��)
-            {
-                creatureController.SetDestination(enemy.transform.position);
-                stateMachine.ChangeState(CreatureState.Trace);
-            }
-            //넥서스 타겟 위치 할당
-            else if(!SurroundPosManager.IsContainTargetPos(creatureController.gameObject, _surroundPosData._surroundPosGroup))
-            {
-                navMeshAgent.stoppingDistance = 0.5f;
-                _surroundPosData._surroundPosGroup = NexusManager.Instance.GetNexusSurroundPosGroup(Fraction.Enemy);
-                SurroundPosManager.AssignTargetPosition(creatureController.gameObject,_surroundPosData._surroundPosGroup);
-                if (SurroundPosManager.TryGetAssignedTargetPositionAround(creatureController.gameObject, _surroundPosData._surroundPosGroup ,out Vector3 assigendPos))
-                {
-                    creatureController.SetDestination(assigendPos);
-                }
-                stateMachine.ChangeState(CreatureState.Trace);
-            }
+            stateMachine.ChangeState(CreatureState.Trace);
         }
 
     }

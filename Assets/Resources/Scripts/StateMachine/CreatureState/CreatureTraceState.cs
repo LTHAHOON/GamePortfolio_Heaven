@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class CreatureTraceState : State<CreatureState, CreatureController>
 {
@@ -33,77 +34,75 @@ public class CreatureTraceState : State<CreatureState, CreatureController>
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
         if (!navMeshAgent.enabled) return;
 
-        if (creature.IsAttackMode || creature.IsAttackTarget)
-        {
-            
-            creature.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator);
-            if (navMeshAgent.pathPending) return;
-          
-            //AttackMark가 존재하지 않을 경우(즉, 넥서스 타겟 또는 Enemy 타겟 이라는 뜻)
-            if (!creature.IsAttackMarkExist)
-            {
-                float attackDistance = 0f;
-                float distanceToTarget = 0f;
-                //Enemy 타겟일 경우
-                if (creature.IsEnemyColliderExist)
-                {
-                    attackDistance = creature.GetEnemyAttackDistance(navMeshAgentStatData);
-                    distanceToTarget = creature.GetDistanceTo(creature.EnemyCollider.transform.position);
-                    if (distanceToTarget > (navMeshAgentStatData._traceDistance * navMeshAgentStatData._traceDistance))
-                    {
-                        stateMachine.ChangeState(CreatureState.Idle);
-                    }
-                }
-                //이동중 주변 Enemy 탐색
-                else if (creature.TryGetAroundEnemy(out RaycastHit enemy,
-                             _navMeshStatData._navmeshAgentData._traceRaidus))
-                {
-                    creature.SetDestination(enemy.transform.position);
-                }
-                //Nexus 타겟일 경우
-                else
-                {
-                    attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
-                    Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
-                    distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
-                }                
 
-                if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance||
-                    navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+        creature.MoveToDestination(out float currentWalkSpeed, navMeshAgent, _animatorStatData._animator);
+        if (navMeshAgent.pathPending) return;
+
+        if(creature.IsCustomTarget)
+        {
+
+        }
+        //DestMark가 존재하지 않을 경우(즉, 넥서스 타겟 또는 Enemy 타겟 이라는 뜻)
+        else if (!creature.IsDestMarkExist)
+        {
+            float attackDistance = 0f;
+            float distanceToTarget = 0f;
+            //Enemy 타겟일 경우
+            if (creature.IsEnemyColliderExist)
+            {
+                attackDistance = creature.GetEnemyAttackDistance(navMeshAgentStatData);
+                distanceToTarget = creature.GetDistanceTo(creature.EnemyCollider.transform.position);
+                if (distanceToTarget > (navMeshAgentStatData._traceDistance * navMeshAgentStatData._traceDistance))
                 {
-                    if (navMeshAgent.hasPath && currentWalkSpeed > 0)
-                        return;
-                    //목적지 도달 후 AttackDistance 체크
-                    if (distanceToTarget <= (attackDistance * attackDistance))
-                    {
-                        navMeshAgent.ResetPath();
-                        creature.SetIsAttackTarget(false);
-                        stateMachine.ChangeState(CreatureState.Attack);
-                    }
-                    //AttackDistance보다 멀면 Idle
-                    else
-                    {
-                        stateMachine.ChangeState(CreatureState.Idle);
-                    }
+                    stateMachine.ChangeState(CreatureState.Idle);
                 }
             }
-            //AttackMark가 존재할 경우(AttackDistance를 사용하지 않음)
-            else
+            //이동중 주변 Enemy 탐색
+            else if (creature.TryGetAroundEnemy(out RaycastHit enemy,
+                         _navMeshStatData._navmeshAgentData._traceRaidus))
             {
-                if (currentWalkSpeed <= 0 && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance||
-                    navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+                creature.SetDestination(enemy.transform.position);
+            }
+            //Nexus 타겟일 경우
+            else if(creature.CurrentModeType == ModeType.AttackMode)
+            {
+                attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
+                Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
+                distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
+            }
+
+            if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance ||
+                navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+            {
+                if (navMeshAgent.hasPath && currentWalkSpeed > 0)
+                    return;
+                //목적지 도달 후 AttackDistance 체크
+                if (distanceToTarget <= (attackDistance * attackDistance))
                 {
-                    creature.ReleaseAttackMark();
-                    SurroundPosManager.ReleaseTargetPosition(creature.gameObject,_surroundPosData._surroundPosGroup);
+                    navMeshAgent.ResetPath();
+                    creature.SetIsAttackTarget(false);
+                    stateMachine.ChangeState(CreatureState.Attack);
+                }
+                //AttackDistance보다 멀면 Idle
+                else
+                {
                     stateMachine.ChangeState(CreatureState.Idle);
                 }
             }
         }
+        //DestMark가 존재할 경우(AttackDistance를 사용하지 않음)
         else
         {
-            stateMachine.ChangeState(CreatureState.Idle);
+            if (currentWalkSpeed <= 0 && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance ||
+                navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+            {
+                creature.ReleaseDestMark();
+                SurroundPosManager.ReleaseTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
+                stateMachine.ChangeState(CreatureState.Idle);
+            }
         }
     }
+    
 
     public override void ExitState(StateMachine<CreatureState, CreatureController> stateMachine)
     {

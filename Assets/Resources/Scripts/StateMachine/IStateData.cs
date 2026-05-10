@@ -23,7 +23,7 @@ public class BoardingStatData : IStateData<BoardingStatData>
     [HideInInspector]
     public DriveButton driveButton;
 
-    public ModeType _modeTypeForDest = ModeType.AttackDriveMode;
+
     // 길이 막혀서 탑승 못하는 생명체를 제외한 최종 탑승 가능한 생명체 수
     [HideInInspector]
     public int _finalMaxCount = 0;

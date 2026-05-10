@@ -18,15 +18,6 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {
         SpacecraftController owner = stateMachine.GetOwner();
-     /*
-        int[] positionCountArray = SurroundPosManager.GetPositionCountArray(owner.AllPassengerCount,
-            _surroundPosData._firstRingCount);
-        float[] distancesArray = SurroundPosManager.DistanceArrayByCharacterCount(owner.AllPassengerCount,
-            _surroundPosData._distanceFromUnit,
-            _surroundPosData._radiusFromCenter, _surroundPosData._firstRingCount);
-        Vector3[] arrGoalPos = SurroundPosManager.GetTargetPositionsAround(owner.GoalData._passengerGoalPos,
-            distancesArray, positionCountArray);
-       */
         List<PassengerData> unSpawnedList = owner.GetUnSpawnedPassengers();
         List<Unit> spawnedList = owner.GetSpawnedPassengers();
         #region Spawn���� ���� Passenger�� ���� ���
@@ -39,10 +30,9 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                     continue;
                 for (int j = 0; j < unSpawnedList[i].PassengerCount; j++)
                 {
-                    Vector2 randomPoint = Random.insideUnitCircle;
-                    Vector3 offset = new Vector3(randomPoint.x, 0f, randomPoint.y);
-                    Vector3 searchPos = owner.GoalData._spacecraftGoalPos + offset;
-                    if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 5f, NavMesh.AllAreas))
+                    Vector3 searchPos = owner.transform.position;
+                    searchPos.y += 1f;
+                    if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
                     {
                         CreatureController creature = UnitSpawnManager.Instance.Spawn(creaturePrefab);
                         if (i == 0 && j == 0)
@@ -58,8 +48,9 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                         }
                         SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject, initalGroup, out Vector3 assigendPos);
                         creature.transform.position = hit.position;
+                        creature.SetModeType(owner.CurrentModeType);
                         creature.OnUnboard(assigendPos);
-                        owner.SetAttackMarkToCreature(creature);
+                        owner.SetDestMarkToCreature(creature);
                     }
                 }
             }
@@ -73,11 +64,9 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
             {
                 if (spawnedList[i] is not CreatureController creature)
                     continue;
-                Vector2 randomPoint = Random.insideUnitCircle;
-                Vector3 offset = new Vector3(randomPoint.x, 0f, randomPoint.y);
-                Vector3 searchPos = owner.GoalData._spacecraftGoalPos + offset;
-                if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit,
-                            5f, NavMesh.AllAreas))
+                Vector3 searchPos = owner.transform.position;
+                searchPos.y += 1f;
+                if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
                 {
                     if (i == 0)
                     {
@@ -94,8 +83,9 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                     SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject,initalGroup, out Vector3 assigendPos);
                     creature.transform.position = hit.position;
                     creature.gameObject.SetActive(true);
+                    creature.SetModeType(owner.CurrentModeType);
                     creature.OnUnboard(assigendPos);
-                    owner.SetAttackMarkToCreature(creature);
+                    owner.SetDestMarkToCreature(creature);
                 }
             }
         }

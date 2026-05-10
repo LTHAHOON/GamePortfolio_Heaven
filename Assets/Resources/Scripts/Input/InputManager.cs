@@ -13,12 +13,16 @@ public class InputManager : Singleton<InputManager>
     private Bounds _dragBounds;
     private void OnGUI()
     {
-        if (_isDragging && UIManager.Instance.IsSubCameraActive)
+        if (_isDragging && UIManager.Instance.IsSubCameraActive && !ModeButtonManager.Instance.IsUpdateMode)
         {
             Vector3 dragEndPosition = Input.mousePosition;
             var rect = Utils.GetScreenRect(_dragStartPosition, dragEndPosition);
             Utils.DrawScreenRect(rect, UIManager.Instance.GetColorOfDrawScreen());
             Utils.DrawScreenRectBorder(rect, 2, UIManager.Instance.GetColorOfDrawScreenBorder());
+        }
+        else if(_isDragging)
+        {
+            _isDragging = false;
         }
     }
 

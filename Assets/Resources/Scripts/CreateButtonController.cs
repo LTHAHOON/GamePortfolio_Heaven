@@ -67,8 +67,6 @@ public class CreateButtonController : ModeButtonController
         if (_curSpawnedUnit is SpacecraftController spacecraftControl)
         {
             spacecraftControl._isGravity = true;
-            //DenfenseDriveMode로 바꾸기 (즉, 상대가 아닌 본인 행성에 있다는 걸 알기 위함)
-            spacecraftControl.SetModeTypeForBoardingStaData(ModeType.DefenseDirveMode);
             spacecraftControl.GetCreateLoad().SetLoadReady(true);
         }
         else if (_curSpawnedUnit is HomeController homeControl)

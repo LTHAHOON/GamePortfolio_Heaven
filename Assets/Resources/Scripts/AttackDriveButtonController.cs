@@ -15,7 +15,7 @@ public class AttackDriveButtonController : BaseDriveButtonController
     {
         SetVehicleUnit(_spacecraftPrefab);
         PoolManager.Instance.AddPool(_attackMark, 3, 5, _mapMarkParent);
-        _pcAttackMark = PoolManager.Instance.GetPool(_attackMark);
+        _pcDestMark = PoolManager.Instance.GetPool(_attackMark);
     }
 
     public override void OnEnter()
@@ -28,18 +28,23 @@ public class AttackDriveButtonController : BaseDriveButtonController
 
     public override void OnExecute()
     {
+        GameObject destMark = _pcDestMark.PopPoolObject();
+        if (!destMark) return;
+        if (destMark.TryGetComponent(out ParticleColorSystem particleColorSystem))
+        {
+            Color color = UIManager.Instance.GetDestMarkColor(ModeType.AttackMode);
+            particleColorSystem.ChangeParticleColor(color);
+        }
+        _goalData._passengerGoalPos = _cursorData.GetFollwingSpriteRenderer().transform.position;
+        destMark.transform.position = _goalData._passengerGoalPos;
+
         Unit vehicleUnit = UnitSpawnManager.Instance.Spawn(_vehicleUnit);
         InitCreateCount(vehicleUnit.UnitMPData, _selectedUnitPrefab.UnitMPData); //MPData로 생성 카운트 세팅(MPData 필요)
-        _goalData._passengerGoalPos = _cursorData.GetFollwingSpriteRenderer().transform.position;
-        GameObject attackMark = _pcAttackMark.PopPoolObject();
-        attackMark.transform.position = _goalData._passengerGoalPos;
-
         vehicleUnit.transform.position = _startPos;
         if (vehicleUnit is SpacecraftController spacecraftController) 
         {
             spacecraftController.GetCreateLoad().SetLoadReady(false);
-            spacecraftController.SetModeTypeForBoardingStaData(ModeType.AttackDriveMode);
-            spacecraftController.SetAttackMark(attackMark, ReturnAttackMark);
+            spacecraftController.SetDestMark(destMark, ReturnDestMark);
         }
         if(vehicleUnit is PassengerController passengerController && _selectedUnitPrefab.TryGetComponent(out IPassenger passenger))
         {
@@ -81,9 +86,9 @@ public class AttackDriveButtonController : BaseDriveButtonController
             ref _buttonText);
     }
 
-    public override void SetGoalProcess(Vector3 spacecraftGoalPosition, RespawnPositionType respawnPositionType)
+    public override void SetGoalProcess(LandingPointData respawnPosData)
     {
-        base.SetGoalProcess(spacecraftGoalPosition, respawnPositionType);
+        base.SetGoalProcess(respawnPosData);
         _createCountController.SetActiveCount(true);
     }
 

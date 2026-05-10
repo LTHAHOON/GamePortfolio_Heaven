@@ -13,7 +13,11 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
     {
         stateMachine.TryGetStateData(out _bezierCurveStatData);
     }
-    public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine) { }
+    public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine) 
+    {
+        SpacecraftController owner = stateMachine.GetOwner();
+        owner.SetModeType(owner.OppositeModeType);
+    }
 
     public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {

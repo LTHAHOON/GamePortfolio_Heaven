@@ -53,7 +53,7 @@ public class MouseCursorController : MonoBehaviour
             Debug.DrawRay(camera.transform.position, ray.direction * mousePosition.z, Color.red);
             Vector3 point = hit.point;
 
-            point.y += 2f;
+            point.y += 0.3f;
             spriteRenderer.transform.position = point;
         }
     }

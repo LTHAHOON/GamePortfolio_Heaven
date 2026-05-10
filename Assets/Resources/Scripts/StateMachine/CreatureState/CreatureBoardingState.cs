@@ -31,6 +31,7 @@ public class CreatureBoardingState : State<CreatureState, CreatureController>
         {
             Health health = creature.GetHealth();
             health.HealthBar.SetForceHideUI(true);
+            creature.GetClickCollider().enabled = false;
             creature.OnBoard();
             creature.StateMachine.ChangeState(CreatureState.Idle);
         }

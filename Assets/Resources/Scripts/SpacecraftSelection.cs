@@ -23,6 +23,11 @@ public class SpacecraftSelection : Selection<SpacecraftController>
             ProcessOnSelected();
         }
     }
+    public override void AddToSelectedList(ISelectableOwner selectedTarget)
+    {
+        ClearSelectedList();
+        base.AddToSelectedList(selectedTarget);
+    }
     private Coroutine _boadingCoroutine;
     public void ProcessOnSelected()
     {
@@ -34,6 +39,7 @@ public class SpacecraftSelection : Selection<SpacecraftController>
                 if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main,
                                                                             _clickColliderLayer, UnitType.Spacecraft, out GameObject target, true))
                 {
+                    Debug.Log("Click");
                     if (!target.TryGetComponent(out SpacecraftController spacecraftController))
                         return;
                     _target = spacecraftController;

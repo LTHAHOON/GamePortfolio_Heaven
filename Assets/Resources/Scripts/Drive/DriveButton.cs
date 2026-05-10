@@ -25,7 +25,6 @@ public class DriveButton : MonoBehaviour, ICullingUI
     [SerializeField]
     private DriveButtonData _driveButtonData;
     private PassengerController _owner;
-    private ModeType _modeType;
     private void LateUpdate()
     {
         if (!_owner)
@@ -75,9 +74,7 @@ public class DriveButton : MonoBehaviour, ICullingUI
     public Collider ColliderForCulling => _owner.GetClickCollider();
     public bool IsForceHideUI => false;
     public Button ThisButton => _driveButton;
-    public ModeType ModeType => _modeType;
     public void SetOnClickDriveEvent(UnityAction<PassengerController> action) => _driveButton.onClick.AddListener(() => action?.Invoke(_owner));
     public void SetForceHideUI(bool isForceHide){}
     public void SetOwner(PassengerController owner) => _owner = owner;
-    public void SetModeType(ModeType modeType) => _modeType = modeType;
 }

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public abstract class ModeButtonController : MonoBehaviour, IStrategy
 {
     [SerializeField]
-    private ModeType _modeType;
+    private ModeType _modeButtonType;
     [SerializeField]
     protected Button _thisButton;
     [Space(10f)]
@@ -82,6 +82,6 @@ public abstract class ModeButtonController : MonoBehaviour, IStrategy
     public abstract void RefreshModeButton();
 
     public Button ThisButton => _thisButton;
-    protected void SetModeType(ModeType modeType) => _modeType = modeType;
-    public ModeType ModeType => _modeType;
+    public void SetModeButtonType(ModeType modeType) => _modeButtonType = modeType;
+    public ModeType ModeButtonType => _modeButtonType;
 }

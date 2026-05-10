@@ -6,10 +6,8 @@ using UnityEngine.UI;
 
 public enum ModeType
 {
-    AttackDriveMode,
-    DefenseDirveMode,
+    AttackMode,
     DefenseMode,
-    CreateMode,
     None,
 }
 

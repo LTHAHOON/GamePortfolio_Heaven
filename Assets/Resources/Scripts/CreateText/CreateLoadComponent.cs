@@ -34,6 +34,7 @@ public class CreateLoadComponent : LoadingTextComponent<CreateLoad>, ICullingUI
 
     private void OnDestroy()
     {
+        CreateLoadController.Instance.RemoveCreateLoadComponent(this);
         ObjectVisbilitySystem.Instance.RemoveToList(this);
     }
 }

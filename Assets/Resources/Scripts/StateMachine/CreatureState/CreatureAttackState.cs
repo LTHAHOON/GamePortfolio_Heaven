@@ -29,42 +29,39 @@ public class CreatureAttackState : State<CreatureState, CreatureController>
         CreatureController creature = stateMachine.GetOwner();
         NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-        if (creature.IsAttackMode || creature.IsAttackTarget)
+        Vector3 lookDirection;
+        float attackDistance;
+        float distanceToTarget ;
+        if (creature.IsEnemyColliderExist)
         {
-            Vector3 lookDirection;
-            float attackDistance;
-            float distanceToTarget;
-            if (creature.IsEnemyColliderExist)
-            {
-                attackDistance = creature.GetEnemyAttackDistance(navMeshAgentStatData);
-                lookDirection = creature.GetLookDirection(creature.EnemyCollider.transform.position);
-                distanceToTarget = creature.GetDistanceTo(creature.EnemyCollider.transform.position);
-            }
-            else
-            {
-                attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
-                Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
-                lookDirection = creature.GetLookDirection(enemyNexusPos);
-                distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
-            }
-            
-            if (distanceToTarget > (attackDistance * attackDistance))
-            {
-                stateMachine.ChangeState(CreatureState.Trace);
-                return;
-            }
-
-            Quaternion newRotation = Quaternion.LookRotation(lookDirection);
-            navMeshAgent.transform.rotation =
-                Quaternion.Slerp(navMeshAgent.transform.rotation, newRotation, Time.deltaTime * 10f);
-            if (creature._isChoice)
-            {
-                creature.StartCoroutine(creature.IEAttackChoose(_animatorStatData, _attackActivationStatData));
-            }
+            attackDistance = creature.GetEnemyAttackDistance(navMeshAgentStatData);
+            lookDirection = creature.GetLookDirection(creature.EnemyCollider.transform.position);
+            distanceToTarget = creature.GetDistanceTo(creature.EnemyCollider.transform.position);
+        }
+        else if(creature.CurrentModeType == ModeType.AttackMode)
+        {
+            attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
+            Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
+            lookDirection = creature.GetLookDirection(enemyNexusPos);
+            distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
         }
         else
         {
-            stateMachine.ChangeState(CreatureState.Idle);
+            stateMachine.ChangeState(CreatureState.Trace);
+            return;
+        }
+
+        if (distanceToTarget > (attackDistance * attackDistance))
+        {
+            stateMachine.ChangeState(CreatureState.Trace);
+            return;
+        }
+        Quaternion newRotation = Quaternion.LookRotation(lookDirection);
+        navMeshAgent.transform.rotation =
+            Quaternion.Slerp(navMeshAgent.transform.rotation, newRotation, Time.deltaTime * 10f);
+        if (creature.IsChoiseAttack)
+        {
+            creature.StartCoroutine(creature.IEAttackChoose(_animatorStatData, _attackActivationStatData));
         }
     }
 

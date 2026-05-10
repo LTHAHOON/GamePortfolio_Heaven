@@ -1,9 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+public struct Goal
+{
+    public LandingPointData _vehicleGoalPosData;
+    public Vector3 _passengerGoalPos;
+}
 
 public class PassengerController : Unit
 {
+    protected Goal _goalData;
     //인스턴스 중심의 Passengers 데이터(Spawn된 상태)
     private List<Unit> _spawnedPassengerList = new();
     //Passenger Count 중심의 Passengers 데이터(Spawn되지 않은 상태)
@@ -76,4 +82,5 @@ public class PassengerController : Unit
     }
     public int AllPassengerCount => _dicUnSpawnedPassenger.Values.Sum(v => v.PassengerCount) + _spawnedPassengerList.Count;
     public bool HasPassenger => _dicUnSpawnedPassenger.Count > 0 ||_spawnedPassengerList.Count > 0;
+    public Goal GoalData => _goalData;
 }

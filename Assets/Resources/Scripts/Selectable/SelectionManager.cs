@@ -42,7 +42,7 @@ public abstract class Selection<T> : Singleton<Selection<T>>, ISelection where T
             }
         }
     }
-    public void AddToSelectedList(ISelectableOwner selectedTarget)
+    public virtual void AddToSelectedList(ISelectableOwner selectedTarget)
     {
         if (selectedTarget.Owner.CompareTag(GameTags.Ally))
         {
@@ -77,9 +77,16 @@ public class SelectionManager : Singleton<SelectionManager>
     private readonly List<ISelection> _selectionList = new();
     private void Update()
     {
-        if (!MiniMapController.IsPointerOverMiniMap && !CreateCountController.IsActive())
+        if(UIManager.Instance.IsSubCameraActive)
         {
-            SelectionProcess();
+            if (!MiniMapController.IsPointerOverMiniMap && !ModeButtonManager.Instance.IsUpdateMode)
+            {
+                SelectionProcess();
+            }
+        }
+        else
+        {
+            ClearAllSelectedList();
         }
     }
     public void SelectionProcess()
@@ -94,8 +101,7 @@ public class SelectionManager : Singleton<SelectionManager>
         }
         else if (bOnClick)
         {
-            Debug.Log("Clicked on empty space");
-            ClearAllSelection();
+            ClearAllSelectedList();
         }
         List<ISelection> selectionList = InputManager.Instance.TryDragSelectionByUnitType(out bool bOnDrag, Camera.main, UnitType.Creature);
         bSelected = bOnDrag && selectionList != null && selectionList.Count > 0;
@@ -140,7 +146,7 @@ public class SelectionManager : Singleton<SelectionManager>
         return null;
     }
 
-    public void ClearAllSelection()
+    public void ClearAllSelectedList()
     {
         for (int i = 0; i < _selectionList.Count; i++)
         {

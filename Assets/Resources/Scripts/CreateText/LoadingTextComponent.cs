@@ -33,15 +33,17 @@ public class LoadingTextComponent<TLoad> : MonoBehaviour where TLoad : Component
     private int _curIndex = 0;
     private bool _bChangeLoadingText = false;
     private LoadingTask _loadingTask;
-    public virtual void Update()
+
+
+    public void UpdateLoadingText()
     {
         if (_loadingTask == null) return;
         if (_loadingTask._curLoadingTime <= 0) return;
         if (!_loadingTask.IsDoneLoading && _bChangeLoadingText)
         {
-            StartCoroutine(IEUpdateLoadingText());
+            UIManager.Instance.StartCoroutine(IEUpdateLoadingText());
         }
-        else if(_loadingTask.IsDoneLoading)
+        else if (_loadingTask.IsDoneLoading)
         {
             _loadingTask._curLoadingTime = 0;
             _loadingTask.OnDoneLoadingTask?.Invoke();

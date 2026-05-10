@@ -16,7 +16,7 @@ public class SpacecraftLandingState : State<SpacecraftState, SpacecraftControlle
     {
         SpacecraftController owner = stateMachine.GetOwner();
         owner.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-        owner.transform.position = owner.GoalData._spacecraftGoalPos;
+        owner.transform.position = owner.GoalData._vehicleGoalPosData.Data.position;
         _layerTargetStatData._layerTargetList.SetLayerList(owner.gameObject, true, owner.UnitTypeLayer);
         //Gravity로 인해 착륙하게 되고 바닥에 닿은 순간 Idle상태로 전환하게 된다.
         owner._isGravity = true;

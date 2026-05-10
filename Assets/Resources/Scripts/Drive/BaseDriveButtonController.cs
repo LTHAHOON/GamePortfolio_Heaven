@@ -30,7 +30,7 @@ public class BaseDriveButtonController : ModeButtonController
 
     protected bool _bSetGoalProcess = false;
     protected Goal _goalData;
-    protected static PoolComponent _pcAttackMark;
+    protected static PoolComponent _pcDestMark;
     protected PassengerController _vehicleUnit;
     protected MPData _totalMPData = new();
 
@@ -41,30 +41,42 @@ public class BaseDriveButtonController : ModeButtonController
 
     public override void OnEnter()
     {
-        if (ModeType == ModeType.AttackDriveMode)
+        if (ModeButtonType == ModeType.AttackMode)
         {
+            _startPos = _startPoint.position;
+            _endPos = _endPoint.position;
             CursorManager.Instance.SetCursor(CursorType.Attack);
-             _cursorData = CursorManager.GetCursorData(CursorType.Attack);
+            CursorManager.SetSpriteRendererEnabled(CursorType.Attack, false);
+            _cursorData = CursorManager.GetCursorData(CursorType.Attack);
             _planetButtonController.SetToggleIsOn(1, true);
         }
-        else
+        else 
         {
+            _startPos = _endPoint.position;
+            _endPos = _startPoint.position;
             CursorManager.Instance.SetCursor(CursorType.Defend);
+            CursorManager.SetSpriteRendererEnabled(CursorType.Defend, false);
             _cursorData = CursorManager.GetCursorData(CursorType.Defend);
             _planetButtonController.SetToggleIsOn(0, true);
+            LandingPointButtonsManager.Instance.SetActiveLandingPointButtons(true, ModeType.DefenseMode);
         }
+        LandingPointButtonsManager.Instance.SetActiveLandingPointButtons(true, _vehicleUnit.OppositeModeType);
         UIManager.Instance.SetActiveAllChild(_createCountController.gameObject, true);
         _createCountController.SetActiveCount(false);
-        //CursorManager.SetSpriteRendererEnabled(CursorType.Attack, false);
-        SpawnPointsManager.Instance.SetActiveSpawPointsControl(true, ModeType);
     }
 
     public override void OnExecute()
     {
-        _goalData._passengerGoalPos = _cursorData.GetFollwingSpriteRenderer().transform.position;
-        GameObject attackMark = _pcAttackMark.PopPoolObject();
-        attackMark.transform.position = _goalData._passengerGoalPos;
+        GameObject destMark = _pcDestMark.PopPoolObject();
+        if (!destMark) return;
 
+        if(destMark.TryGetComponent(out ParticleColorSystem particleColorSystem))
+        {
+            Color color = UIManager.Instance.GetDestMarkColor(ModeButtonType);
+            particleColorSystem.ChangeParticleColor(color);
+        }
+        _goalData._passengerGoalPos = _cursorData.GetFollwingSpriteRenderer().transform.position;
+        destMark.transform.position = _goalData._passengerGoalPos;
 
         List<PassengerData> passengerDatas = _vehicleUnit.GetUnSpawnedPassengers();
         for (int i = 0; i < passengerDatas.Count; i++)
@@ -77,8 +89,13 @@ public class BaseDriveButtonController : ModeButtonController
         _vehicleUnit.transform.position = _startPos;
         if (_vehicleUnit.TryGetComponent(out SpacecraftController spacecraftController))
         {
+            if(spacecraftController.GoalData._vehicleGoalPosData != null)
+            {
+                LandingPointDatasController landingPointDatasControl = spacecraftController.GoalData._vehicleGoalPosData.Owner;
+                landingPointDatasControl.ReturnLandingPosition(spacecraftController.GoalData._vehicleGoalPosData);
+            }
             spacecraftController.GetCreateLoad().SetLoadReady(false);
-            spacecraftController.SetAttackMark(attackMark, ReturnAttackMark);
+            spacecraftController.SetDestMark(destMark, ReturnDestMark);
         }
 
         _bSetGoalProcess = false;
@@ -95,16 +112,12 @@ public class BaseDriveButtonController : ModeButtonController
 
         if (_bSetGoalProcess)
         {
-            if (ModeType == ModeType.AttackDriveMode)
+            if (ModeButtonType == ModeType.AttackMode)
             {
-                _startPos = _startPoint.position;
-                _endPos = _endPoint.position;
                 CursorManager.SetSpriteRendererEnabled(CursorType.Attack, true);
             }
             else
             {
-                _startPos = _endPoint.position;
-                _endPos = _startPoint.position;
                 CursorManager.SetSpriteRendererEnabled(CursorType.Defend, true);
             }
             CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
@@ -118,8 +131,13 @@ public class BaseDriveButtonController : ModeButtonController
     public override void OnExit(bool bExitCompletely)
     {
         base.OnExit(bExitCompletely);
+        if(!bExitCompletely)
+        {
+            LandingPointDatasController landingPointDatasContrl = _goalData._vehicleGoalPosData.Owner;
+            landingPointDatasContrl.ReturnLandingPosition(_goalData._vehicleGoalPosData);
+        }
         _bSetGoalProcess = false;
-        if (ModeType == ModeType.AttackDriveMode)
+        if (ModeButtonType == ModeType.AttackMode)
         {
             _planetButtonController.SetToggleIsOn(1, false);
         }
@@ -127,20 +145,19 @@ public class BaseDriveButtonController : ModeButtonController
         {
             _planetButtonController.SetToggleIsOn(0, false);
         }
-        SpawnPointsManager.Instance.SetActiveSpawPointsControl(false, ModeType);
+        LandingPointButtonsManager.Instance.SetActiveLandingPointButtons(false, ModeButtonType);
         _cursorData = null;
     }
 
     public override void RefreshModeButton(){ }
 
-    public virtual void SetGoalProcess(Vector3 spacecraftGoalPosition, RespawnPositionType respawnPositionType)
+    public virtual void SetGoalProcess(LandingPointData respawnPosData)
     {
         _createCountController.ChangeGuideText(_guideText_Next);
-        SpawnPointsManager.Instance.SetActiveSpawPointsControl(false, ModeType);
+        LandingPointButtonsManager.Instance.SetActiveLandingPointButtons(false, ModeButtonType);
         _goalData = new()
         {
-            _spacecraftGoalPos = spacecraftGoalPosition,
-            _respawnPositionType = respawnPositionType
+            _vehicleGoalPosData = respawnPosData,
         };
         _bSetGoalProcess = true;
     }
@@ -153,24 +170,24 @@ public class BaseDriveButtonController : ModeButtonController
         
         if (spacecraftPrefab.TryGetComponent(out SpacecraftController spacecraftController))
         {
-            switch (goalData._respawnPositionType)
+            switch (goalData._vehicleGoalPosData.Owner.RespawnPositionType)
             {
-                case RespawnPositionType.RespawnForward:
+                case LadingPointType.LandingForward:
                 {
                     spacecraftController.SetGoal(_startPos,_endPos, Vector3.zero, goalData);
                     break;
                 }
-                case RespawnPositionType.RespawnBackward:
+                case LadingPointType.LandingBackward:
                 {
                     spacecraftController.SetGoal(_startPos, _endPos, Vector3.zero, goalData);
                     break;
                 }
-                case RespawnPositionType.RespawnLeft:
+                case LadingPointType.LandingLeft:
                 {
                     spacecraftController.SetGoal(_startPos, _endPos, _leftMiddlePoint.position,goalData);
                     break;
                 }
-                case RespawnPositionType.RespawnRight:
+                case LadingPointType.LandingRight:
                 {
                     spacecraftController.SetGoal(_startPos,_endPos, _rightMiddlePoint.position, goalData);
                     break;
@@ -179,8 +196,8 @@ public class BaseDriveButtonController : ModeButtonController
         }
     }
 
-    protected void ReturnAttackMark(GameObject attackMark)
+    protected void ReturnDestMark(GameObject destMark)
     {
-        _pcAttackMark.ReturnPoolObject(attackMark);
+        _pcDestMark.ReturnPoolObject(destMark);
     }
 }

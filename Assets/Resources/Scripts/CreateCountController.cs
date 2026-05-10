@@ -104,17 +104,13 @@ public class CreateCountController : MonoBehaviour
 
         _createCountText.text = $"{_curCreateCount} / {_maxCreateCount}";
     }
-    private static bool _isActive = false;
     public void SetActiveCount(bool active)
     {
         _createCountText.gameObject.SetActive(active);
         _createCountImage_L.gameObject.SetActive(active);
         _createCountImage_R.gameObject.SetActive(active);
     }
-    public static bool IsActive()
-    {
-        return _isActive;
-    }
+
 
     private const int _initialValue = 1;
     public void SetCreateCount(int button, int maxCreateCount)

@@ -6,17 +6,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
-using static UnityEngine.UI.GridLayoutGroup;
-using Random = UnityEngine.Random;
-public struct Goal
-{
-    public Vector3 _spacecraftGoalPos;
-    public Vector3 _passengerGoalPos;
-    public RespawnPositionType _respawnPositionType;
-}
+
 public enum SpacecraftState
 {
     Idle,
@@ -58,13 +48,13 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     private BoxCollider _collider;
     #endregion
     #region AttackMark 데이터
-    public event Action<GameObject> OnReturnAttackMark;
+    public event Action<GameObject> OnReturnDestMark;
     private GameObject _attackMark;
     #endregion
 
     [SerializeField]
     private CreateLoad _createLoad;
-    private Goal _goalData;
+
     private int _unitTypeLayer;
     public MonoBehaviour Owner => this;
     #region 이벤트 함수
@@ -140,21 +130,20 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         _curveStatData._startPoint = startPoint;
         _curveStatData._endPoint = endPoint;
         _goalData = goalData;
-        _goalData._spacecraftGoalPos.y = 5f;
         _curveStatData._middlePoint = middlePoint;
         _layerTargetStatData._layerTargetList.SetLayerList(gameObject, true, GameLayer.OutPlanetLayer);
         _stateMachine.ChangeState(SpacecraftState.Drive);
     }
 
-    #region AttackMark 데이터
-    public void SetAttackMark(GameObject attckMark, Action<GameObject> returnAttackmark)
+    #region Set DestMark
+    public void SetDestMark(GameObject destMark, Action<GameObject> returnDestMark)
     {
-        _attackMark = attckMark;
-        OnReturnAttackMark += returnAttackmark;
+        _attackMark = destMark;
+        OnReturnDestMark += returnDestMark;
     }
-    public void SetAttackMarkToCreature(CreatureController creature)
+    public void SetDestMarkToCreature(CreatureController creature)
     {
-        creature.SetAttackMark(_attackMark, OnReturnAttackMark);
+        creature.SetDestMark(_attackMark, OnReturnDestMark);
     }
     #endregion
 
@@ -175,12 +164,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
             _isGravity = false;
         }
     }
-    public void SetModeTypeForBoardingStaData(ModeType modeType)
-    {
-        _boardingStatData._modeTypeForDest = modeType;
-    }
-    
+
     public int UnitTypeLayer => _unitTypeLayer;
-    public Goal GoalData => _goalData;
     public CreateLoad GetCreateLoad() => _createLoad;
 }

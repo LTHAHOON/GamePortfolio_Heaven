@@ -25,7 +25,6 @@ public class DriveButtonController : BaseDriveButtonController
         if (!driveButtonObj.TryGetComponent(out DriveButton driveButton))
             return;
         driveButton.SetOwner(owner);
-        driveButton.SetModeType(modeType);
         driveButton.SetOnClickDriveEvent(OnClickDrive);
         driveButton.SetDriveCount(0, maxCount);
         _dicDriveButton.Add(owner, driveButton);
@@ -49,8 +48,8 @@ public class DriveButtonController : BaseDriveButtonController
     private void OnClickDrive(PassengerController owner)
     {
         DriveButton driveButton = GetDriveButton(owner);
-        SetModeType(driveButton.ModeType);
         SetVehicleUnit(owner);
+        SetModeButtonType(_vehicleUnit.OppositeModeType);
     }
     public override void OnExecute()
     {

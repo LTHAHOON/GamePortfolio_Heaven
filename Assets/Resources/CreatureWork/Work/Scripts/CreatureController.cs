@@ -59,8 +59,8 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     #endregion
 
     #region 공격마크 데이터
-    private event Action<GameObject> OnReturnAttackMark;
-    private GameObject _attackMark;
+    private event Action<GameObject> OnReturnDestMark;
+    private GameObject _destMark;
     #endregion
 
     [SerializeField]
@@ -68,10 +68,8 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
 
     private bool _successBoard = false;
     public bool SuccessBoard => _successBoard;
-    private bool _isAttackMode = false;
-    private bool _isAttackTarget = false;
-    [HideInInspector] 
-    public bool _isChoice = true;
+    private bool _isCustomTarget = false;
+    private bool _isChoiseAttack = true;
     public MonoBehaviour Owner => this;
 
     #region 유니티 이벤트 함수
@@ -140,10 +138,10 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         if (!CheckGround()) return;
         _stateMachine.UpdateCurrentState();
     }
-    public void SetAttackMark(GameObject attackMark, Action<GameObject> returnAttackmark)
+    public void SetDestMark(GameObject destMark, Action<GameObject> returnDestmark)
     {
-        _attackMark = attackMark;
-        OnReturnAttackMark += returnAttackmark;
+        _destMark = destMark;
+        OnReturnDestMark += returnDestmark;
     }
     
     #region 주변 적 구하는 함수
@@ -219,11 +217,10 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
 
     #endregion
 
-    public void ReleaseAttackMark()
+    public void ReleaseDestMark()
     {
-        OnReturnAttackMark?.Invoke(_attackMark);
-       // _attackMark = null;
-        OnReturnAttackMark = null;
+        OnReturnDestMark?.Invoke(_destMark);
+        OnReturnDestMark = null;
     }
 
     #region 데미지 및 힐될 때 호출되는 함수
@@ -268,14 +265,14 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public IEnumerator IEAttackChoose(AnimatorStatData animatorStatData,
         AttackActivationStatData attackActivationStatData)
     {
-        _isChoice = false;
+        _isChoiseAttack = false;
         int animatorHash =
             attackActivationStatData._attackRandomProb.Choose<int>(attackActivationStatData._dicAttackActivationRate);
         animatorStatData._animator.ResetTrigger(animatorHash); //연속 Trigger 보완
         animatorStatData._animator.SetTrigger(animatorHash);
         var state = animatorStatData._animator.GetCurrentAnimatorStateInfo(1);
         yield return new WaitForSeconds(state.length);
-        _isChoice = true;
+        _isChoiseAttack = true;
     }
 
     #endregion
@@ -322,8 +319,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public void ResetTargetAndState()
     {
         _enemyCollider = null;
-        _isChoice = true;
-        _stateMachine.ChangeState(CreatureState.Idle);
+        _isChoiseAttack = true;
     }
     public void OnBoard()
     {
@@ -332,7 +328,6 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public void OnUnboard(Vector3 targetPosition)
     {
         SetDestination(targetPosition);
-        SetIsAttackMode(true);
     }
     
     #region NavMeshAgent, NavMeshObstacle Enable 컨트롤
@@ -397,14 +392,13 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     
     #region 데이터 반환 함수
 
-    public bool IsAttackMode => _isAttackMode;
-    public bool IsAttackTarget => _isAttackTarget;
+    public bool IsCustomTarget => _isCustomTarget;
     public int GetAnimParameterHash(AnimParameter animParameter) =>
         _animatorStatData._dicAnimParameterHash[animParameter];
     public bool IsEnemyColliderExist => _enemyCollider;
     public Collider EnemyCollider => _enemyCollider;
     public Collider EnemyNexusCollider => _enemyNexusCollider;
-    public bool IsAttackMarkExist => OnReturnAttackMark != null;
+    public bool IsDestMarkExist => OnReturnDestMark != null;
     public void SetDestination(Vector3 targetPosition)
     {
         _destination = targetPosition;
@@ -413,12 +407,12 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     {
         _surroundPosData._surroundPosGroup = group;
     }
-    
+
+    public bool IsChoiseAttack => _isChoiseAttack;
     public float GetEnemyAttackDistance(NavMeshAgentStatData data) =>
         _enemyCollider ? _enemyCollider.bounds.extents.magnitude : -1f;
     public float GetNexusAttackDistance(NavMeshAgentStatData data)=> data._nexusAttackDistance;
-    public void SetIsAttackMode(bool isAttackMode) => _isAttackMode = isAttackMode;
-    public void SetIsAttackTarget(bool isAttackTarget) => _isAttackTarget = isAttackTarget;
+    public void SetIsAttackTarget(bool isAttackTarget) => _isCustomTarget = isAttackTarget;
     public Animator GetAnimator() => _animatorStatData._animator;
     public NavMeshAgent GetNavMeshAgent() => _navMeshStatData._navmeshAgentData._navMeshAgent;
     public SurroundPosGroup GetSurroundPosGroup() => _surroundPosData._surroundPosGroup;

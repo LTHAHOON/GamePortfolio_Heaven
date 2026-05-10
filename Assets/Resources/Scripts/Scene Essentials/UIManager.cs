@@ -29,7 +29,7 @@ public class UIManager : Singleton<UIManager>
 
     [SerializeField]
     private FactionColoringMode _factionColorMode;
-
+    
     [SerializeField]
     [ColorUsage(true,true)]
     private Color _factionPlayerColor = Color.green;
@@ -55,6 +55,16 @@ public class UIManager : Singleton<UIManager>
     private Color _drawScreenBorderColor = Color.green;
     [Space]
 
+    [Header("목적지 표시 컬러(Attack Or Defense Color)")]
+    [SerializeField]
+    private Color _destMarkColor_Defense = Color.blue;
+    [SerializeField]
+    private Color _destMarkColor_Attack = Color.red;
+    [Header("Move 표시 컬러")]
+    [SerializeField]
+    private Color _moveMarkColor = Color.green;
+    [Space]
+
     [SerializeField]
     public Color _buttonDisableColor = Color.white;
     [SerializeField]
@@ -67,13 +77,6 @@ public class UIManager : Singleton<UIManager>
     {
         LoadButtonColor();
         LoadFactionColorMode();
-    }
-
-
-    void Update()
-    {
-        
-
     }
 
     private void LoadButtonColor()
@@ -125,7 +128,21 @@ public class UIManager : Singleton<UIManager>
         return _drawScreenBorderColor;
     }
 
-    //HASH기법인 ID로 바꿔서 저장하면 정수형이기 때문에 최적화에 유용하다.
+    public Color GetDestMarkColor(ModeType modeType)
+    {
+        return modeType switch
+        {
+            ModeType.AttackMode => _destMarkColor_Attack,
+            ModeType.DefenseMode => _destMarkColor_Defense,
+            _ => _destMarkColor_Defense,
+        };
+    }
+    public Color GetMoveMarkColor()
+    {
+        return _moveMarkColor;
+    }
+
+    //Shader.PropertyToID는 쉐이더 전용 ID 해쉬값으로 구해주기 때문에 최적화에 유용하다.
     private static readonly int _outlineColorID = Shader.PropertyToID("_Outline_Color");
     private static readonly int _nexusColorID = Shader.PropertyToID("_Color");
     private void SetColorOfFaction()
@@ -176,7 +193,8 @@ public class UIManager : Singleton<UIManager>
         return new Vector3(x, y, 0f);
         
     }
-        */
+    */
+
     public void SetActiveAllChild(GameObject obj, bool active)
     {
         for (int i = 0; i < obj.transform.childCount; i++)

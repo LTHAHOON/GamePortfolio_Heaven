@@ -29,15 +29,12 @@ public class CreatureDeSelectionState : State<CreatureState, CreatureController>
         {
             creature.StopToMove(navMeshAgent, _animatorStatData._animator);
             CreatureCommandManager.RemoveTargetPos(creature);
-         
-            if(!creature.IsAttackMode)
-            {
-                creature.ResetTargetAndState();
-            }
+
+            creature.ResetTargetAndState();
             creature.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
             stateMachine.ChangeState(CreatureState.Idle);
         }
     }
     public override void ExitState(StateMachine<CreatureState, CreatureController> stateMachine) { }
-    
+
 }

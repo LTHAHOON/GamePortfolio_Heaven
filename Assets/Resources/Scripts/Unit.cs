@@ -16,7 +16,7 @@ public abstract class Unit : MonoBehaviour
     [SerializeField]
     //MP 초기 데이터
     private UnitMPDataComponent _unitMpDataComponent;
-
+    private ModeType _curModeType = ModeType.DefenseMode;
     private DragSelectable _dragSelectable;
     private Selectable _selectable;
 
@@ -37,6 +37,12 @@ public abstract class Unit : MonoBehaviour
         _health.InitHealth(_unitInfo.Status);
     }
 
+    public void SetModeType(ModeType modeType)
+    {
+        _curModeType = modeType;
+    }
+    public ModeType CurrentModeType => _curModeType;
+    public ModeType OppositeModeType => _curModeType == ModeType.AttackMode ? ModeType.DefenseMode : ModeType.AttackMode;
     public MPData UnitMPData => _unitMpDataComponent.UnitMPData;
     public DragSelectable DragSelectable => _dragSelectable;
     public Selectable Selectable => _selectable;
