@@ -15,7 +15,7 @@ public class DefenseButtonController : ModeButtonController
         _cursorData = CursorManager.GetCursorData(CursorType.Defend);
         _planetButtonController.SetToggleIsOn(0, true);
         _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_selectedUnitPrefab);
-        InitCreateCount(_curSpawnedUnit.UnitMPData); //MPData로 생성 카운트 세팅(MPData 필요)
+        InitCreateCount(_curSpawnedUnit.UnitMPInitData); //MPData로 생성 카운트 세팅(MPData 필요)
         _curSpawnedUnit.gameObject.SetActive(false);
     }
 
@@ -24,7 +24,7 @@ public class DefenseButtonController : ModeButtonController
         base.OnUpdate();
         if (!_curSpawnedUnit || _cursorData == null)
             return;
-        _createCountController.RefreshCreateCount(_curSpawnedUnit.UnitMPData);
+        _createCountController.RefreshCreateCount(_curSpawnedUnit.UnitMPInitData);
         CursorManager.Instance.SpriteFollowMouse(_cursorData.GetFollwingSpriteRenderer());
         if (Input.GetMouseButtonDown(0) && _cursorData.GetFollwingSpriteRenderer().enabled)
         {
@@ -39,7 +39,7 @@ public class DefenseButtonController : ModeButtonController
         MouseCursorData data = CursorManager.GetCursorData(CursorType.Defend);
         _curSpawnedUnit.transform.position = data.GetFollwingSpriteRenderer().transform.position;
         _curSpawnedUnit.gameObject.SetActive(true);
-        MPDataController.Instance.UseUpMP(_curSpawnedUnit.UnitMPData, 1); //MPҸ
+        MPDataController.Instance.UseUpMP(_curSpawnedUnit.UnitMPInitData, 1); //MPҸ
 
         _createCountController.ConsumeCurCreateCount(1);
         _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_curSpawnedUnit);

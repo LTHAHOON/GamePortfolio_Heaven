@@ -15,9 +15,9 @@ public static class GameLayer
 {
     private static int _outPlanetLayerCache = -1;
     private static int _enemyTargetLayerCache = -1;
+
     public static int OutPlanetLayer => _outPlanetLayerCache.GetLayer(GameLayerManager.Instance._outPlanetLayer);
     public static int EnemyTargetLayer => _enemyTargetLayerCache.GetLayer(GameLayerManager.Instance._enemyTargetLayer);
-
     public static int GetLayer(this ref int layerCache, LayerMask layerMask)
     {
         if(layerCache < 0)

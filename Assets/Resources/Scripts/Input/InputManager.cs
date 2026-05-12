@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -157,21 +158,41 @@ public class InputManager : Singleton<InputManager>
         return null;
     }
 
-    public GameObject SelectBySphereCast(Camera camera, LayerMask targetLayerMask)
+    private readonly Collider[] _hitResults = new Collider[500]; 
+    public Collider[] GetByOverlapCast(out int count,Camera camera, Vector3 position, float radius, LayerMask targetLayerMask)
+    {
+        count = Physics.OverlapSphereNonAlloc(position, radius, _hitResults, targetLayerMask);
+        if (count > 0)
+        {
+            return _hitResults;
+        }
+        return null;
+    }
+    public bool TryGetByRaycast(out RaycastHit targetHit, Camera camera, Ray ray, LayerMask targetLayerMask)
+    {
+        return Physics.Raycast(ray, out targetHit, camera.farClipPlane, targetLayerMask);
+    }
+    public RaycastHit GetBySphereCastUsingMouse(Camera camera, LayerMask targetLayerMask)
     {
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        return GetBySphereCast(camera, ray, targetLayerMask);
+    }
+
+    public RaycastHit GetBySphereCast(Camera camera, Ray ray, LayerMask targetLayerMask)
+    {
         Debug.DrawRay(ray.origin, ray.direction * camera.farClipPlane, Color.red);
         if (Physics.SphereCast(ray, 1.2f, out RaycastHit hit, camera.farClipPlane, targetLayerMask))
         {
-            return hit.collider.gameObject;
+            return hit;
         }
-        return null;
+        return default;
     }
     public GameObject SelectBySphereCast(KeyCode keyCode, Camera camera, LayerMask targetLayerMask)
     {
         if (Input.GetKeyDown(keyCode))
         {
-            return SelectBySphereCast(camera, targetLayerMask);
+            RaycastHit hit = GetBySphereCastUsingMouse(camera, targetLayerMask);
+            return hit.collider.gameObject;
         }
         return null;
     }
@@ -214,7 +235,11 @@ public class InputManager : Singleton<InputManager>
         if (Input.GetMouseButtonUp(mouseButton))
         {
             bOnClick = true;
-            return SelectBySphereCast(camera, targetLayerMask);
+            RaycastHit hit = GetBySphereCastUsingMouse(camera, targetLayerMask);
+            if (hit.collider)
+            {
+                return hit.collider.gameObject;
+            }
         }
         bOnClick = false;
         return null;

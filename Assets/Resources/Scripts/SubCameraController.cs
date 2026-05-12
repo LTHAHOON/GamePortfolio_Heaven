@@ -62,8 +62,8 @@ public class SubCameraController : MonoBehaviour
 
     private void CameraMove()
     {
-        float mouseX = Input.GetAxis("Mouse X") * _cameraMoveSpeed * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * -_cameraMoveSpeed * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * _cameraMoveSpeed;
+        float mouseY = Input.GetAxis("Mouse Y") * -_cameraMoveSpeed;
         if (Input.GetMouseButton(2))
         {
             transform.position += new Vector3(mouseY, 0, mouseX);
@@ -75,7 +75,7 @@ public class SubCameraController : MonoBehaviour
     private void CameraScroll()
     {
         
-        float scroll = Input.GetAxisRaw("Mouse ScrollWheel") * -_cameraZoomSize * Time.deltaTime;
+        float scroll = Input.GetAxisRaw("Mouse ScrollWheel") * -_cameraZoomSize;
         _curCameraZoomSpeed = Mathf.Lerp(_curCameraZoomSpeed, scroll, Time.deltaTime * _cameraZoomSpeed);
         if (Mathf.Approximately(_curCameraZoomSpeed, scroll))
         {

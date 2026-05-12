@@ -30,7 +30,7 @@ public class CreateButtonController : ModeButtonController
         base.OnEnter();
         _planetButtonController.SetToggleIsOn(0, true);
         _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_selectedUnitPrefab);
-        InitCreateCount(_curSpawnedUnit.UnitMPData); //MPData로 생성 카운트 세팅(MPData 필요)
+        InitCreateCount(_curSpawnedUnit.UnitMPInitData); //MPData로 생성 카운트 세팅(MPData 필요)
         TransparentMaterialControl.SetQpaqueOrTransparentControl(_curSpawnedUnit.gameObject, _curSpawnedUnit.UnitType, _transparentType, changedColor);
         //TODO: GridBuildingContainer 열기
         ButtonSystem.buttonInvoker.PressButton(ButtonIdentifier.Open, _gridBuildingContainer);
@@ -41,7 +41,7 @@ public class CreateButtonController : ModeButtonController
         if (!_curSpawnedUnit)
             return;
 
-        _createCountController.RefreshCreateCount(_curSpawnedUnit.UnitMPData);
+        _createCountController.RefreshCreateCount(_curSpawnedUnit.UnitMPInitData);
         _isCreatableByPointerPos = _placementSystem.FollowUnitPrefabByMouse(_curSpawnedUnit);
         if (Input.GetMouseButtonDown(0) && GridIndicatorController.IsCreatableUnit && _isCreatableByPointerPos)
         {
@@ -80,7 +80,7 @@ public class CreateButtonController : ModeButtonController
         }
 
         //TODO: _unitMPData의 소모량만큼 MP 소모하기
-        MPDataController.Instance.UseUpMP(_curSpawnedUnit.UnitMPData, 1);
+        MPDataController.Instance.UseUpMP(_curSpawnedUnit.UnitMPInitData, 1);
 
         //TODO: 현재 생성할 갯수 하나 소모하기
         _createCountController.ConsumeCurCreateCount(1);

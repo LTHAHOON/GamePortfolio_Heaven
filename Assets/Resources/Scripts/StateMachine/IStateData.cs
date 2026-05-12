@@ -64,6 +64,7 @@ public class BezierCurveStatData : IStateData<BezierCurveStatData>
 [Serializable]
 public class SurroundPosStatData : IStateData<SurroundPosStatData>
 {
+    //직렬화 안에서는 참조가 안되며 복사가 되어버립니다.
     public SurroundPosGroup _surroundPosGroup;
     public float _distanceFromUnit = 6;
     public float _radiusFromCenter = 6.5f;

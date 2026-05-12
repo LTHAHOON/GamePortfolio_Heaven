@@ -63,10 +63,10 @@ public class DriveButton : MonoBehaviour, ICullingUI
         float passengerTotalMP = 0f;
         for (int i = 0; i < passengerDatas.Count; i++)
         {
-            MPData unitMpData = passengerDatas[i].Passenger.UnitMPData;
+            MPData unitMpData = passengerDatas[i].Passenger.UnitMPInitData;
             passengerTotalMP += unitMpData.MP_ConsValue * passengerDatas[i].PassengerCount;
         }
-        totalMPData.SetMPConsValue(_owner.UnitMPData.MP_ConsValue + passengerTotalMP);
+        totalMPData.SetMPConsValue(_owner.UnitMPInitData.MP_ConsValue + passengerTotalMP);
         
         MPDataController.Instance.UpdateButtonToMPData(totalMPData, ref _driveButton);
     }

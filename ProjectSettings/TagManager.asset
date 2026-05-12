@@ -19,11 +19,12 @@ TagManager:
   - Enemy
   - Ally
   - ObstacleUI
+  - RespawnRight
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Environment
   - Water
   - UI
   - Planet
@@ -32,7 +33,7 @@ TagManager:
   - MiniMapIcon_Space
   - MiniMapIcon_Planet
   - 
-  - 
+  - Roof
   - Creature
   - Spacecraft
   - Home

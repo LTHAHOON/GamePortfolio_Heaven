@@ -39,7 +39,7 @@ public class AttackDriveButtonController : BaseDriveButtonController
         destMark.transform.position = _goalData._passengerGoalPos;
 
         Unit vehicleUnit = UnitSpawnManager.Instance.Spawn(_vehicleUnit);
-        InitCreateCount(vehicleUnit.UnitMPData, _selectedUnitPrefab.UnitMPData); //MPData로 생성 카운트 세팅(MPData 필요)
+        InitCreateCount(vehicleUnit.UnitMPInitData, _selectedUnitPrefab.UnitMPInitData); //MPData로 생성 카운트 세팅(MPData 필요)
         vehicleUnit.transform.position = _startPos;
         if (vehicleUnit is SpacecraftController spacecraftController) 
         {
@@ -52,8 +52,8 @@ public class AttackDriveButtonController : BaseDriveButtonController
             Debug.Log(passengerController.GetPassengerCountInData(_selectedUnitPrefab.ID) + "탑승");
         }
         //_unitMPData의 소모량만큼 MP 소모하기
-        MPDataController.Instance.UseUpMP(_selectedUnitPrefab.UnitMPData, _createCountController.GetCurCreateCount());
-        MPDataController.Instance.UseUpMP(vehicleUnit.UnitMPData, 1);
+        MPDataController.Instance.UseUpMP(_selectedUnitPrefab.UnitMPInitData, _createCountController.GetCurCreateCount());
+        MPDataController.Instance.UseUpMP(vehicleUnit.UnitMPInitData, 1);
 
 
         StatusManager.Instance.TryAddStatusData(vehicleUnit.UnitInfo);
@@ -68,7 +68,7 @@ public class AttackDriveButtonController : BaseDriveButtonController
         base.OnUpdate();
         if (!_vehicleUnit || _cursorData == null) 
             return;
-        _createCountController.RefreshCreateCount(_vehicleUnit.UnitMPData, _selectedUnitPrefab.UnitMPData);
+        _createCountController.RefreshCreateCount(_vehicleUnit.UnitMPInitData, _selectedUnitPrefab.UnitMPInitData);
     }
 
 
@@ -81,7 +81,7 @@ public class AttackDriveButtonController : BaseDriveButtonController
         MPData mpData = MPDataManager.Instance.FindUnitMPData(selectedUnitPrefab.ID);
         if(mpData == null)
             return;
-        _totalMPData.SetMPConsValue(_vehicleUnit.UnitMPData.MP_ConsValue + mpData.MP_ConsValue);
+        _totalMPData.SetMPConsValue(_vehicleUnit.UnitMPInitData.MP_ConsValue + mpData.MP_ConsValue);
         MPDataController.Instance.UpdateButtonToMPData(_totalMPData, ref _thisButton, ref _buttonImage,
             ref _buttonText);
     }

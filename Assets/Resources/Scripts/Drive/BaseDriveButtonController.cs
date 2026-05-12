@@ -81,10 +81,10 @@ public class BaseDriveButtonController : ModeButtonController
         List<PassengerData> passengerDatas = _vehicleUnit.GetUnSpawnedPassengers();
         for (int i = 0; i < passengerDatas.Count; i++)
         {
-            MPData unitMpData = passengerDatas[i].Passenger.UnitMPData;
+            MPData unitMpData = passengerDatas[i].Passenger.UnitMPInitData;
             MPDataController.Instance.UseUpMP(unitMpData, passengerDatas[i].PassengerCount);
         }
-        MPDataController.Instance.UseUpMP(_vehicleUnit.UnitMPData, 1);
+        MPDataController.Instance.UseUpMP(_vehicleUnit.UnitMPInitData, 1);
         
         _vehicleUnit.transform.position = _startPos;
         if (_vehicleUnit.TryGetComponent(out SpacecraftController spacecraftController))

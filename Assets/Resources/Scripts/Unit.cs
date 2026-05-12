@@ -10,7 +10,6 @@ public abstract class Unit : MonoBehaviour
     protected Collider _clickCollider;
     [SerializeField]
     protected Health _health;
-    //전체 공유 데이터
     [SerializeField]
     private UnitInfo _unitInfo;
     [SerializeField]
@@ -43,7 +42,7 @@ public abstract class Unit : MonoBehaviour
     }
     public ModeType CurrentModeType => _curModeType;
     public ModeType OppositeModeType => _curModeType == ModeType.AttackMode ? ModeType.DefenseMode : ModeType.AttackMode;
-    public MPData UnitMPData => _unitMpDataComponent.UnitMPData;
+    public MPData UnitMPInitData => _unitMpDataComponent.UnitMPData;
     public DragSelectable DragSelectable => _dragSelectable;
     public Selectable Selectable => _selectable;
     public RuntimeUnitStatus Status =>  _unitInfo.Status;

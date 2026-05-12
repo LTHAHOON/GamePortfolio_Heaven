@@ -39,7 +39,7 @@ public class UnitButtonController : MonoBehaviour
            return;
         UnitSpawnManager.Instance.TryAddSpawnHeightOffset(_selectedUnitPrefab.ID, _unitSpawnComponent.SpawnHeightOffset);
         //TODO: MPData 추가하기(false 반환시 이미 추가된 상태)
-        MPDataManager.Instance.TryAddMPData(_selectedUnitPrefab.ID, _selectedUnitPrefab.UnitMPData);
+        MPDataManager.Instance.TryAddMPData(_selectedUnitPrefab.ID, _selectedUnitPrefab.UnitMPInitData);
         //TODO: StatusData 추가하기(false 반환시 이미 추가된 상태)
         StatusManager.Instance.TryAddStatusData(_selectedUnitPrefab.UnitInfo);
         //TODO: StatusSliderController 객체 가져오기
