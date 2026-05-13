@@ -124,25 +124,25 @@ public class AttackActivationStatData : IStateData<AttackActivationStatData>
 
 #region 애니메이터 데이터
 [Serializable]
-public class AnimatorStatData : IStateData<AnimatorStatData>
+public class CreatureAnimatorStatData : IStateData<CreatureAnimatorStatData>
 {
     public Animator _animator;
     [Header("애니메이션 속도 보완값")]
     public float _animatorSpeedMultiplier = 0.2f;
-    public readonly Dictionary<AnimParameter, int> _dicAnimParameterHash = new()
+    public readonly Dictionary<CreatureAnimParameter, int> _dicAnimParameterHash = new()
     {
-        { AnimParameter.IsWalk, Animator.StringToHash(AnimParameter.IsWalk.ToString())},
-        { AnimParameter.NormalAttack, Animator.StringToHash(AnimParameter.NormalAttack.ToString())},
-        { AnimParameter.WalkSpeed, Animator.StringToHash(AnimParameter.WalkSpeed.ToString())},
-        { AnimParameter.GetHit, Animator.StringToHash(AnimParameter.GetHit.ToString())},
-        { AnimParameter.Die, Animator.StringToHash(AnimParameter.Die.ToString())}
+        { CreatureAnimParameter.IsWalk, Animator.StringToHash(CreatureAnimParameter.IsWalk.ToString())},
+        { CreatureAnimParameter.NormalAttack, Animator.StringToHash(CreatureAnimParameter.NormalAttack.ToString())},
+        { CreatureAnimParameter.WalkSpeed, Animator.StringToHash(CreatureAnimParameter.WalkSpeed.ToString())},
+        { CreatureAnimParameter.GetHit, Animator.StringToHash(CreatureAnimParameter.GetHit.ToString())},
+        { CreatureAnimParameter.Die, Animator.StringToHash(CreatureAnimParameter.Die.ToString())}
     };
-    public AnimatorStatData GetData()
+    public CreatureAnimatorStatData GetData()
     {
         return this;
     }
 }
-public enum AnimParameter
+public enum CreatureAnimParameter
 {
     IsWalk,
     WalkSpeed,

@@ -23,7 +23,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     private NavMeshStatData _navMeshStatData;
     
     [Header("애니메이터 데이터")] [SerializeField] 
-    private AnimatorStatData _animatorStatData;
+    private CreatureAnimatorStatData _animatorStatData;
 
     [Header("SurroundPos에 필요한 데이터")] [SerializeField]
     private SurroundPosStatData _surroundPosData;
@@ -102,7 +102,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
 
         #region 공격 발동 확률 데이터 초기화
         _attackActivationStatData._dicAttackActivationRate.TryAdd(
-            _animatorStatData._dicAnimParameterHash[AnimParameter.NormalAttack],
+            _animatorStatData._dicAnimParameterHash[CreatureAnimParameter.NormalAttack],
             _attackActivationStatData._normalAttackActivationRate);
         for (int i = 0; i < _skillDatas.Length; ++i)
         {
@@ -172,7 +172,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public bool TryGetAroundEnemy(out RaycastHit enemy, float radius)
     {
         int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemies, 0,
-            GameLayer.EnemyTargetLayer);
+            GameLayerMask.EnemyCreatureLayerMask);
         if (enemyCount > 0)
         {
             enemy = MinDistanceEnemy(_enemies, enemyCount);
@@ -200,15 +200,15 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         navMeshAgent.destination = destination;
         navMeshAgent.speed = Status.DEX * 1.5f;
         currentWalkSpeed = navMeshAgent.desiredVelocity.magnitude;
-        animator.SetFloat(_animatorStatData._dicAnimParameterHash[AnimParameter.WalkSpeed],
+        animator.SetFloat(_animatorStatData._dicAnimParameterHash[CreatureAnimParameter.WalkSpeed],
             currentWalkSpeed * _animatorStatData._animatorSpeedMultiplier);
-        animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], true);
+        animator.SetBool(_animatorStatData._dicAnimParameterHash[CreatureAnimParameter.IsWalk], true);
     }
 
     public void StopToMove(NavMeshAgent navMeshAgent, Animator animator)
     {
         //TargetPosition = null;
-        animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
+        animator.SetBool(_animatorStatData._dicAnimParameterHash[CreatureAnimParameter.IsWalk], false);
         if (navMeshAgent.enabled)
         {
             navMeshAgent.ResetPath();
@@ -231,11 +231,11 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         {
             StartCoroutine(_health.HealthBar.IEShowUI());
             _hpMaterialInstance.ChangeHP(_health.CurrentHealth, _health.MaxHealth);
-            _animatorStatData._animator.SetTrigger(_animatorStatData._dicAnimParameterHash[AnimParameter.GetHit]);
+            _animatorStatData._animator.SetTrigger(_animatorStatData._dicAnimParameterHash[CreatureAnimParameter.GetHit]);
         }
         else
         {
-            _animatorStatData._animator.ResetTrigger(_animatorStatData._dicAnimParameterHash[AnimParameter.GetHit]);
+            _animatorStatData._animator.ResetTrigger(_animatorStatData._dicAnimParameterHash[CreatureAnimParameter.GetHit]);
         }
     }
 
@@ -262,7 +262,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
 
     #region 확률에 의한 랜덤 공격 함수
 
-    public IEnumerator IEAttackChoose(AnimatorStatData animatorStatData,
+    public IEnumerator IEAttackChoose(CreatureAnimatorStatData animatorStatData,
         AttackActivationStatData attackActivationStatData)
     {
         _isChoiseAttack = false;
@@ -349,11 +349,11 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
         }
     }
 
-    public void SetEnableNavMeshObstacle(NavMeshStatData navMeshStatData, AnimatorStatData animatorStatData)
+    public void SetEnableNavMeshObstacle(NavMeshStatData navMeshStatData, CreatureAnimatorStatData animatorStatData)
     {
         if (!navMeshStatData._navMeshObstacle.enabled)
         {
-            animatorStatData._animator.SetBool(animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
+            animatorStatData._animator.SetBool(animatorStatData._dicAnimParameterHash[CreatureAnimParameter.IsWalk], false);
             navMeshStatData._navmeshAgentData._navMeshAgent.enabled = false;
             navMeshStatData._navMeshObstacle.enabled = true;
             navMeshStatData._navMeshObstacle.carving = true;
@@ -393,7 +393,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     #region 데이터 반환 함수
 
     public bool IsCustomTarget => _isCustomTarget;
-    public int GetAnimParameterHash(AnimParameter animParameter) =>
+    public int GetAnimParameterHash(CreatureAnimParameter animParameter) =>
         _animatorStatData._dicAnimParameterHash[animParameter];
     public bool IsEnemyColliderExist => _enemyCollider;
     public Collider EnemyCollider => _enemyCollider;

@@ -6,7 +6,7 @@ using UnityEngine.AI;
 public class CreatureBoardingState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
-    private AnimatorStatData _animatorStatData;
+    private CreatureAnimatorStatData _animatorStatData;
 
     public override CreatureState EState => CreatureState.Boarding;
     public override void InitState(StateMachine<CreatureState, CreatureController> stateMachine)

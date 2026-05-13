@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class CreatureDieState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
-    private AnimatorStatData _animatorStatData;
+    private CreatureAnimatorStatData _animatorStatData;
     private DieStatData _dieStatData;
     public override CreatureState EState => CreatureState.Die;
     public override void InitState(StateMachine<CreatureState, CreatureController> stateMachine)

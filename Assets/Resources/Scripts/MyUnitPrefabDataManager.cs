@@ -35,13 +35,13 @@ public class MyUnitPrefabDataManager : Singleton<MyUnitPrefabDataManager>
             unitList.Add(unitprefab);
         }
     }
-    public void RemoveUnitPrefabToList(UnitType unitType, Unit unitprefab, float dieDelayTime = 0f, AnimatorStatData animatorStatData = null)
+    public void RemoveUnitPrefabToList(UnitType unitType, Unit unitprefab, float dieDelayTime = 0f, CreatureAnimatorStatData animatorStatData = null)
     {
         if (ContainsUnitPrefab(unitprefab, unitType))
         {
             _dicUnitStorage[unitType]._unitList.Remove(unitprefab);
             unitprefab.GetClickCollider().enabled = false;
-            animatorStatData?._animator.SetTrigger(animatorStatData._dicAnimParameterHash[AnimParameter.Die]);
+            animatorStatData?._animator.SetTrigger(animatorStatData._dicAnimParameterHash[CreatureAnimParameter.Die]);
             StartCoroutine(IEDestroyUnit(unitprefab, dieDelayTime));
         }
 

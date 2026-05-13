@@ -7,7 +7,7 @@ using UnityEngine.AI;
 public class CreatureAttackState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
-    private AnimatorStatData _animatorStatData;
+    private CreatureAnimatorStatData _animatorStatData;
     private AttackActivationStatData _attackActivationStatData;
     public override CreatureState EState => CreatureState.Attack;
 

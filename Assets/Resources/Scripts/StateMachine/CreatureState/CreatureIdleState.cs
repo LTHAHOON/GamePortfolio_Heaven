@@ -10,7 +10,7 @@ using static UnityEngine.UI.GridLayoutGroup;
 public class CreatureIdleState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
-    private AnimatorStatData _animatorStatData;
+    private CreatureAnimatorStatData _animatorStatData;
     private SurroundPosStatData _surroundPosData;
 
     public override CreatureState EState => CreatureState.Idle;
@@ -25,7 +25,7 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
     public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
         CreatureController creatureController = stateMachine.GetOwner();
-        creatureController.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
+        //creatureController.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
     }
 
     public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
@@ -33,7 +33,7 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
         CreatureController creature = stateMachine.GetOwner();
         NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-        _animatorStatData._animator.SetBool(_animatorStatData._dicAnimParameterHash[AnimParameter.IsWalk], false);
+        _animatorStatData._animator.SetBool(_animatorStatData._dicAnimParameterHash[CreatureAnimParameter.IsWalk], false);
         Vector3 origin = creature.transform.position;
         origin.y += 30f;
         if (creature.IsCustomTarget)

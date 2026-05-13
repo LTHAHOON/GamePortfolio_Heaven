@@ -112,6 +112,10 @@ public class SelectionManager : Singleton<SelectionManager>
                 selectionList[i].OnSelectOrClearSelection(bSelected);
             }
         }
+        else if (bOnDrag)
+        {
+            ClearAllSelectedList();
+        }
     }
 
     public void AddSelection(ISelection selection)

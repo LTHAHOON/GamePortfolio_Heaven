@@ -38,21 +38,21 @@ TagManager:
   - Spacecraft
   - Home
   - Obstacle
-  - InPlanet
+  - OutPlanet_Enemy
   - OutPlanet
   - ClickCollider
   - NexusSphere
-  - Rock
-  - NexusTop
+  - Creature_Enemy
+  - Spacecraft_Enemy
   - RespawnBoxes
-  - Lamp
+  - Home_Enemy
   - Ground
   - Stairs
   - Nexus
-  - Enemy
+  - 
   - Notice
   - FollwingCursor
-  - BackGround
+  - 
   m_SortingLayers:
   - name: Default
     uniqueID: 0

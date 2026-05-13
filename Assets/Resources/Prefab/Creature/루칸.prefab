@@ -1323,7 +1323,6 @@ MonoBehaviour:
   _skillDatas:
   - {fileID: 11400000, guid: 249a93768c8c15a4fbe23776cc88e96f, type: 2}
   _characterController: {fileID: 425025699822928217}
-  _isChoice: 1
 --- !u!114 &7539079264029945472
 MonoBehaviour:
   m_ObjectHideFlags: 0

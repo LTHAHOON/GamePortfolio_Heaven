@@ -116,7 +116,7 @@ MonoBehaviour:
   m_AssetVersion: 2
   m_OpaqueLayerMask:
     serializedVersion: 2
-    m_Bits: 4293392383
+    m_Bits: 4194301943
   m_TransparentLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -128,7 +128,7 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
-  m_RenderingMode: 1
+  m_RenderingMode: 2
   m_DepthPrimingMode: 0
   m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
@@ -148,12 +148,12 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: StencilMaskWriter
-    Event: 300
+    Event: 150
     filterSettings:
       RenderQueueType: 0
       LayerMask:
         serializedVersion: 2
-        m_Bits: 3891267574
+        m_Bits: 3891267582
       PassNames: []
     overrideMaterial: {fileID: 0}
     overrideMaterialPassIndex: 0

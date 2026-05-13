@@ -42,7 +42,7 @@ Material:
     - _Color_Threshold: 1
     - _Normal_Threshold: 3.5
     - _OVERLAY: 0
-    - _Outline_Thickness: 1.5
+    - _Outline_Thickness: 2
     - _QueueControl: 0
     - _QueueOffset: 0
     - _USECOLR: 1

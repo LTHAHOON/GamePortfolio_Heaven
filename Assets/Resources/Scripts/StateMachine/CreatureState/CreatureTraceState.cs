@@ -9,7 +9,7 @@ using static UnityEngine.UI.GridLayoutGroup;
 public class CreatureTraceState : State<CreatureState, CreatureController>
 {
     private NavMeshStatData _navMeshStatData;
-    private AnimatorStatData _animatorStatData;
+    private CreatureAnimatorStatData _animatorStatData;
     private SurroundPosStatData _surroundPosData;
 
     public override CreatureState EState => CreatureState.Trace;
