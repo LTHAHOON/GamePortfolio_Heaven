@@ -65,7 +65,7 @@ public abstract class ModeButtonController : MonoBehaviour, IStrategy
     public virtual void OnExecute() { }
 
     //CloseData
-    public virtual void OnExit(bool bExitCompletely)
+    public virtual void OnExit()
     {
         CursorManager.Instance.SetCursor(CursorType.Origin);
         if (_createCountController)
@@ -73,10 +73,7 @@ public abstract class ModeButtonController : MonoBehaviour, IStrategy
             UIManager.Instance.SetActiveAllChild(_createCountController.gameObject, false);
         }
         _selectedUnitPrefab = null;
-        if(bExitCompletely)
-        {
-            OnExitCompletely?.Invoke();
-        }
+        OnExitCompletely?.Invoke();
     }
 
     public abstract void RefreshModeButton();

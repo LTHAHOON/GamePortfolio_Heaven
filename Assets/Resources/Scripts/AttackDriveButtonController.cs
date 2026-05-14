@@ -60,7 +60,7 @@ public class AttackDriveButtonController : BaseDriveButtonController
         _bSetGoalProcess = false;
         //목표 설정하기
         SetGoal(vehicleUnit.gameObject, _goalData);
-        OnExit(true);
+        OnExit();
     }
     
     public override void OnUpdate()

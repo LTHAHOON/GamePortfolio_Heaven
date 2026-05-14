@@ -46,13 +46,13 @@ public class DefenseButtonController : ModeButtonController
         _curSpawnedUnit.gameObject.SetActive(false);
         if (_createCountController.GetCurCreateCount() <= 0)
         {
-            OnExit(true);
+            OnExit();
         }
     }
 
-    public override void OnExit(bool bExitCompletely)
+    public override void OnExit()
     {
-        base.OnExit(bExitCompletely);
+        base.OnExit();
         _planetButtonController.SetToggleIsOn(0, false);
         _cursorData = null;
         if (_curSpawnedUnit)

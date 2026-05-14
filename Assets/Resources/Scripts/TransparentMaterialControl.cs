@@ -36,7 +36,7 @@ public class TransparentMaterialControl : MonoBehaviour
 
     private static void ChangeMaterialColor(MeshRenderer renderer, UnitType unitType)
     {
-        Material loadMaterial = Resources.Load<Material>($"Prefab/{unitType}/{_surface}Material/{renderer.sharedMaterial.name}");
+        Material loadMaterial = Resources.Load<Material>($"UnitPrefab/Prefab/{unitType}/{_surface}Material/{renderer.sharedMaterial.name}");
         loadMaterial.SetColor("_BaseColor", _changedColor);
 
         renderer.sharedMaterial = loadMaterial;

@@ -88,16 +88,15 @@ public class CreateButtonController : ModeButtonController
         TransparentMaterialControl.SetQpaqueOrTransparentControl(_curSpawnedUnit.gameObject, _curSpawnedUnit.UnitType, _transparentType, changedColor);
         if (_createCountController.GetCurCreateCount() <= 0)
         {
-            OnExit(true);
+            OnExit();
         }
 
     }
     
-    public override void OnExit(bool bExitCompletely)
+    public override void OnExit()
     {
-        base.OnExit(bExitCompletely);
+        base.OnExit();
         _planetButtonController.SetToggleIsOn(0, false);
-
         _placementSystem._isCellCalculate = false;
         _placementSystem.SetUnitIndicator(null);
         //TODO: GridBuildingContainer 닫기
@@ -107,7 +106,6 @@ public class CreateButtonController : ModeButtonController
         {
             ObjectVisbilitySystem.Instance.RemoveToList(_curSpawnedUnit.GetHealth().HealthBar);
             MyUnitPrefabDataManager.Instance.RemoveUnitPrefabToList(_curSpawnedUnit.UnitType, _curSpawnedUnit);
-
         }
     }
 

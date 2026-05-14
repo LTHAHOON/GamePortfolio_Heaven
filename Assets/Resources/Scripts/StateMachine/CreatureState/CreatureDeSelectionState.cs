@@ -28,7 +28,7 @@ public class CreatureDeSelectionState : State<CreatureState, CreatureController>
         if (currenntWalkSpeed < 0.3f || navMeshAgentStatData.IsNavPathInValid)
         {
             creature.StopToMove(navMeshAgent, _animatorStatData._animator);
-            CreatureCommandManager.RemoveTargetPos(creature);
+            CreatureCommandControl.RemoveTargetPos(creature);
 
             creature.ResetTargetAndState();
             creature.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);

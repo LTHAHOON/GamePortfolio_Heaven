@@ -38,7 +38,7 @@ public class PlanetInternalPopController : MonoBehaviour
 
     void Update()
     {
-        //´Ý±â ´ÜÃàÅ° °ãÄ§ ¹æÁö
+        //ï¿½Ý±ï¿½ ï¿½ï¿½ï¿½ï¿½Å° ï¿½ï¿½Ä§ ï¿½ï¿½ï¿½ï¿½
         if (ModeButtonManager.Instance.IsUpdateMode)
             return;
 
@@ -93,13 +93,16 @@ public class PlanetInternalPopController : MonoBehaviour
     }
     public void OnClickPlanetCloseButton()
     {
-        _spaceHUDMask.enabled = false;
-        CullingMaskExtension.ChangeVirtualCamera(_subVcam, _mainVcam);
-        _isDoorOpened = false;
-        _miniMap_Space.SetActive(true);
-        _planetCloseButton.gameObject.SetActive(false);
-        _planetOpenButton.gameObject.SetActive(true);
-        _planetInternal.gameObject.SetActive(false);
+        if (UIManager.Instance.IsSubCameraActive)
+        {
+            _spaceHUDMask.enabled = false;
+            CullingMaskExtension.ChangeVirtualCamera(_subVcam, _mainVcam);
+            _isDoorOpened = false;
+            _miniMap_Space.SetActive(true);
+            _planetCloseButton.gameObject.SetActive(false);
+            _planetOpenButton.gameObject.SetActive(true);
+            _planetInternal.gameObject.SetActive(false);
+        }
     }
 
 }
