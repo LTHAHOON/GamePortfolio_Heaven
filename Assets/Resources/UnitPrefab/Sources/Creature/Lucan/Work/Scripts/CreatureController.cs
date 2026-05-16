@@ -77,6 +77,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     protected override void Awake()
     {
         base.Awake();
+
         #region StateMachine 초기화
 
         _stateMachine = new(this, new IStateData[]
@@ -88,7 +89,6 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
             _dieStatData,
         });
         #endregion
-
         #region State 추가
         _stateMachine.AddState(new CreatureIdleState());
         _stateMachine.AddState(new CreatureTraceState());
@@ -121,6 +121,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     }
     private void Update()
     {
+        Debug.Log(transform.position);
         UpdateState();
     }
     private void FixedUpdate()
@@ -130,6 +131,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
             GravityMove();
         }
     }
+
     #endregion
     
     //생물체 FSM

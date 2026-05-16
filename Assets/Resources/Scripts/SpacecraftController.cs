@@ -10,10 +10,12 @@ using UnityEngine;
 public enum SpacecraftState
 {
     Idle,
-    Landing,
-    Drive,
-    GetOff,
     Boarding,
+    Drive,
+    Trace,
+    Attack,
+    Landing,
+    GetOff,
 }
 
 [RequireComponent(typeof(BoxCollider))]

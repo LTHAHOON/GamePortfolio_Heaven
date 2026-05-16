@@ -41,7 +41,7 @@ public class CreatureAttackState : State<CreatureState, CreatureController>
         else if(creature.CurrentModeType == ModeType.AttackMode)
         {
             attackDistance = creature.GetNexusAttackDistance(navMeshAgentStatData);
-            Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
+            Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Faction.Enemy);
             lookDirection = creature.GetLookDirection(enemyNexusPos);
             distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
         }

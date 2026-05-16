@@ -30,19 +30,28 @@ public class UnitSpawnManager : Singleton<UnitSpawnManager>
         }
         return spawnedUnitList;
     }
-    public T Spawn<T>(T unit) where T : Unit
+    public T Spawn<T>(T unit, Vector3? pos = null, Vector3? direction = null) where T : Unit
     {
-        MyUnitPrefabDataManager.Instance.TryGetChild(out GameObject instantiateParentObj, unit.UnitType);
-        T spawnedUnit = Instantiate(unit, instantiateParentObj.transform);
-        MyUnitPrefabDataManager.Instance.AddUnitPrefabToList(spawnedUnit.UnitType, spawnedUnit);
+        UnitStorageManager.Instance.TryGetChild(out GameObject instantiateParentObj, Faction.Ally,unit.UnitType);
+        if(!pos.HasValue)
+        {
+            pos = Vector3.zero;
+        }    
+        
+        T spawnedUnit = Instantiate(unit, pos.Value, Quaternion.identity, instantiateParentObj.transform);
+        if (direction.HasValue)
+        {
+            spawnedUnit.transform.rotation = Quaternion.LookRotation(direction.Value);
+        }
+        UnitStorageManager.Instance.AddUnitToStorageList(Faction.Ally, spawnedUnit.UnitType, spawnedUnit);
         bool bGetPos = _dicSpawnPos.TryGetValue(unit.ID, out Vector3 spawnPos);
         if (bGetPos)
         {
-            spawnedUnit.transform.position = spawnPos;
+            spawnedUnit.transform.position += spawnPos;
         }
         else
         {
-            spawnedUnit.transform.position = _baseSpawnPos;
+            spawnedUnit.transform.position += _baseSpawnPos;
         }
         return spawnedUnit;
     }

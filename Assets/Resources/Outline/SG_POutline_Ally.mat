@@ -7,14 +7,15 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SG_POutline_Player
+  m_Name: SG_POutline_Ally
   m_Shader: {fileID: -6465566751694194690, guid: 3751c2216d6981c4ca6ae554160892de,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _USECOLR
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _EMISSION
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -40,13 +41,14 @@ Material:
     m_Ints: []
     m_Floats:
     - _Color_Threshold: 1
-    - _Normal_Threshold: 3.5
+    - _Normal_Threshold: 30
     - _OVERLAY: 0
-    - _Outline_Thickness: 2
+    - _Outline_Thickness: 1.5
     - _QueueControl: 0
     - _QueueOffset: 0
     - _USECOLR: 1
     m_Colors:
     - _Enemy_Outline_Color: {r: 0.7886792, g: 0.0144221, b: 0, a: 1}
-    - _Outline_Color: {r: 0, g: 1, b: 0, a: 1}
+    - _Global_Outline_Color_Ally: {r: 0.08627451, g: 0.7490196, b: 0, a: 1}
+    - _Outline_Color: {r: 0.039215688, g: 0.4509804, b: 0, a: 1}
   m_BuildTextureStacks: []

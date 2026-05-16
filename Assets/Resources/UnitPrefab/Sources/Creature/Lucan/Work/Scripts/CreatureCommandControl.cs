@@ -62,27 +62,21 @@ public class CreatureCommandControl : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && CreatureSelection.Instance.GetSelectionCharactersCount() > 0)
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            bool bGetHit = InputManager.Instance.TryGetByRaycast(out RaycastHit hit, ray,_camera, GameLayerMask.EnvironmentLayerMask);
-            if (!bGetHit)
+            bool bGetHit = InputManager.Instance.TryGetByRaycast(out RaycastHit hit, ray, _camera.farClipPlane, GameLayerMask.EnvironmentLayerMask);
+            if (bGetHit)
             {
-                _isMoving = false;
-                return;
-            }
-
-            int hitLayer = hit.collider.gameObject.layer;
-            if (hitLayer== GameLayer.RoofLayer || hitLayer == GameLayer.WallLayer)
-            {
+                int hitLayer = hit.collider.gameObject.layer;
                 if (hitLayer == GameLayer.RoofLayer)
                 {
                     if (!RoofFadeController.ContainFadeRoof(hit.collider))
                     {
                         return;
                     }
-                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, ray,_camera, GameLayerMask.EnvironmentLayerMask, hitLayer);
+                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, ray, _camera.farClipPlane, GameLayerMask.EnvironmentLayerMask, hitLayer);
                 }
-                else
+                else if (hitLayer == GameLayer.WallLayer)
                 {
-                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, hit.point, hit.transform.up * -1,_camera, GameLayerMask.EnvironmentLayerMask, hitLayer);
+                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, hit.point, hit.transform.up * -1, _camera.farClipPlane, GameLayerMask.EnvironmentLayerMask, hitLayer);
                 }
                 if (!bGetHit)
                 {
@@ -90,7 +84,11 @@ public class CreatureCommandControl : MonoBehaviour
                     return;
                 }
             }
-            
+            else
+            {
+                _isMoving = false;
+                return;
+            }
             Vector3 targetPosition = hit.point;
             List<CreatureController> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<CreatureController>();
             float[] distancesArray = SurroundPosManager.DistanceArrayByCharacterCount(selectedCreatures.Count, _distanceFromUnit, _radiusFromCenter, _firstRingCount);

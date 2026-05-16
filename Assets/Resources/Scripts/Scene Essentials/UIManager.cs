@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,13 +30,21 @@ public class UIManager : Singleton<UIManager>
 
     [SerializeField]
     private FactionColoringMode _factionColorMode;
-    
+    [Range(0f, 3f)]
+    [SerializeField]
+    private float _factionColorIntensity = 1.5f;
     [SerializeField]
     [ColorUsage(true,true)]
-    private Color _factionPlayerColor = Color.green;
+    private Color _factionAllyColor = Color.green;
     [SerializeField]
     [ColorUsage(true, true)]
     private Color _factionEnemyColor = Color.red;
+    [SerializeField]
+    [ColorUsage(true,true)]
+    private Color _factionAllyPlanetColor = Color.blue;
+    [SerializeField]
+    [ColorUsage(true, true)]
+    private Color _factionPlanetEnemyColor = Color.red;
     [Space]
 
     [SerializeField]
@@ -76,9 +85,12 @@ public class UIManager : Singleton<UIManager>
     void Awake()
     {
         LoadButtonColor();
+    }
+    private void OnValidate()
+    {
         LoadFactionColorMode();
     }
-
+    
     private void LoadButtonColor()
     {
         string hex = ((int)UIHexadecimal.ButtonDisableHex).ToString("X6");
@@ -94,7 +106,7 @@ public class UIManager : Singleton<UIManager>
             case FactionColoringMode.BasicPlayerColor:
                 {
                     string hex = ((int)UIHexadecimal.BasicFactionPlayerHex).ToString("X6");
-                    ColorUtility.TryParseHtmlString("#" + hex, out _factionPlayerColor);
+                    ColorUtility.TryParseHtmlString("#" + hex, out _factionAllyColor);
                     hex = ((int)UIHexadecimal.BasicFactionEnemyHex).ToString("X6");
                     ColorUtility.TryParseHtmlString("#" + hex, out _factionEnemyColor);
                     break;
@@ -102,7 +114,7 @@ public class UIManager : Singleton<UIManager>
             case FactionColoringMode.TeamColor:
                 {
                     string hex = ((int)UIHexadecimal.FactionPlayerTeamHex).ToString("X6");
-                    ColorUtility.TryParseHtmlString("#" + hex, out _factionPlayerColor);
+                    ColorUtility.TryParseHtmlString("#" + hex, out _factionAllyColor);
                     hex = ((int)UIHexadecimal.FactionEnemyTeamHex).ToString("X6");
                     ColorUtility.TryParseHtmlString("#" + hex, out _factionEnemyColor);
                     break;
@@ -110,12 +122,14 @@ public class UIManager : Singleton<UIManager>
             case FactionColoringMode.FriendTeamColor:
                 {
                     string hex = ((int)UIHexadecimal.FactionFriendTeamHex).ToString("X6");
-                    ColorUtility.TryParseHtmlString("#" + hex, out _factionPlayerColor);
+                    ColorUtility.TryParseHtmlString("#" + hex, out _factionAllyColor);
                     hex = ((int)UIHexadecimal.FactionEnemyTeamHex).ToString("X6");
                     ColorUtility.TryParseHtmlString("#" + hex, out _factionEnemyColor);
                     break;
                 }
         }
+        _factionAllyColor *= _factionColorIntensity;
+        _factionEnemyColor *= _factionColorIntensity;
         SetColorOfFaction();
     }
 
@@ -143,24 +157,25 @@ public class UIManager : Singleton<UIManager>
     }
 
     //Shader.PropertyToID는 쉐이더 전용 ID 해쉬값으로 구해주기 때문에 최적화에 유용하다.
-    private static readonly int _outlineColorID = Shader.PropertyToID("_Outline_Color");
-    private static readonly int _nexusColorID = Shader.PropertyToID("_Color");
+    private static readonly int _allyOutlineColorID = Shader.PropertyToID("_Global_Outline_Color_Ally");
+    private static readonly int _enemyOutlineColorID = Shader.PropertyToID("_Global_Outline_Color_Enemy");
+    private readonly int _nexusColorID = Shader.PropertyToID("_Color");
     private void SetColorOfFaction()
     {
-        if(_playerOutLineMaterial.GetColor(_outlineColorID) != _factionPlayerColor)
+        if(Shader.GetGlobalColor(_allyOutlineColorID) != _factionAllyColor)
         {
-            _playerOutLineMaterial.SetColor(_outlineColorID, _factionPlayerColor);
-            _playerNexusMaterial.SetColor(_nexusColorID, _factionPlayerColor);
+            Shader.SetGlobalColor(_allyOutlineColorID, _factionAllyColor);
+            _playerNexusMaterial.SetColor(_nexusColorID, _factionAllyColor);
         }
-        if (_playerOutLineMaterial.GetColor(_outlineColorID) != _factionEnemyColor)
+        if (Shader.GetGlobalColor(_enemyOutlineColorID) != _factionEnemyColor)
         {
-            _enemyOutLineMaterial.SetColor(_outlineColorID, _factionEnemyColor);
+            Shader.SetGlobalColor(_enemyOutlineColorID, _factionEnemyColor);
             _enemyNexusMaterial.SetColor(_nexusColorID, _factionEnemyColor);
         }
     }
     
-    public Color GetFactionPlayerColor() => _factionPlayerColor;
-    public Color GetFactionEnemyColor() => _factionEnemyColor;
+    public Color FactionPlayerColor => _factionAllyColor;
+    public Color FactionEnemyColor => _factionEnemyColor;
 
     public Color ChangeToImageDisableColor()
     {
@@ -170,11 +185,6 @@ public class UIManager : Singleton<UIManager>
     {
         return _buttonBaseColor;
 
-    }
-
-    private void OnValidate()
-    {
-        SetColorOfFaction();
     }
 
     /*

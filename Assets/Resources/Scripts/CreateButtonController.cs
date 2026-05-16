@@ -105,7 +105,7 @@ public class CreateButtonController : ModeButtonController
         if (_curSpawnedUnit)
         {
             ObjectVisbilitySystem.Instance.RemoveToList(_curSpawnedUnit.GetHealth().HealthBar);
-            MyUnitPrefabDataManager.Instance.RemoveUnitPrefabToList(_curSpawnedUnit.UnitType, _curSpawnedUnit);
+            UnitStorageManager.Instance.RemoveUnitToStorageList(Faction.Ally, _curSpawnedUnit.UnitType, _curSpawnedUnit);
         }
     }
 

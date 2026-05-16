@@ -20,7 +20,7 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
         SpacecraftController owner = stateMachine.GetOwner();
         List<PassengerData> unSpawnedList = owner.GetUnSpawnedPassengers();
         List<Unit> spawnedList = owner.GetSpawnedPassengers();
-        #region Spawn���� ���� Passenger�� ���� ���
+        #region Spawn이 아직 되지않은 Passenger일 경우
         if (unSpawnedList.Count > 0)
         {
             SurroundPosGroup initalGroup = null;
@@ -31,10 +31,9 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                 for (int j = 0; j < unSpawnedList[i].PassengerCount; j++)
                 {
                     Vector3 searchPos = owner.transform.position;
-                    searchPos.y += 1f;
                     if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
                     {
-                        CreatureController creature = UnitSpawnManager.Instance.Spawn(creaturePrefab);
+                        CreatureController creature = UnitSpawnManager.Instance.Spawn(creaturePrefab, hit.position);
                         if (i == 0 && j == 0)
                         {
                             creature.SetSurroundPosGroup(SurroundPosManager.AssignCenterTargetPosition(creature.gameObject, owner.GoalData._passengerGoalPos,
@@ -47,8 +46,9 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                             SurroundPosManager.AssignTargetPosition(creature.gameObject, initalGroup);
                         }
                         SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject, initalGroup, out Vector3 assigendPos);
-                        creature.transform.position = hit.position;
+                        //상대 행성에 있는지 본인 행성에 있는 세팅
                         creature.SetModeType(owner.CurrentModeType);
+                        //우주선에서 내리기
                         creature.OnUnboard(assigendPos);
                         owner.SetDestMarkToCreature(creature);
                     }
@@ -56,7 +56,7 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
             }
         }
         #endregion
-        #region Spawn�� Passenger�� ���� ���
+        #region Spawn이 이미 되어있는 Passenger일 경우
         if (spawnedList.Count > 0)
         {
             SurroundPosGroup initalGroup = null;
@@ -65,8 +65,7 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                 if (spawnedList[i] is not CreatureController creature)
                     continue;
                 Vector3 searchPos = owner.transform.position;
-                searchPos.y += 1f;
-                if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
+               // if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
                 {
                     if (i == 0)
                     {
@@ -81,7 +80,7 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                     }
                     
                     SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject,initalGroup, out Vector3 assigendPos);
-                    creature.transform.position = hit.position;
+                    creature.transform.position = searchPos;
                     creature.gameObject.SetActive(true);
                     creature.SetModeType(owner.CurrentModeType);
                     creature.OnUnboard(assigendPos);

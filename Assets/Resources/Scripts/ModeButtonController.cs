@@ -45,7 +45,7 @@ public abstract class ModeButtonController : MonoBehaviour, IStrategy
     
     protected Transform GetSelectedUnitParentTransform(UnitType unitType)
     {
-        MyUnitPrefabDataManager.Instance.TryGetChild(out GameObject instantiateParentObj, unitType);
+        UnitStorageManager.Instance.TryGetChild(out GameObject instantiateParentObj, Faction.Ally,unitType);
         return instantiateParentObj.transform;
     }
     

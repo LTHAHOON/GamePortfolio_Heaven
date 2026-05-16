@@ -36,10 +36,12 @@ public class AttackDriveButtonController : BaseDriveButtonController
             particleColorSystem.ChangeParticleColor(color);
         }
         _goalData._passengerGoalPos = _cursorData.GetFollwingSpriteRenderer().transform.position;
+        _goalData._passengerGoalPos.y += 1.5f;
         destMark.transform.position = _goalData._passengerGoalPos;
 
         Unit vehicleUnit = UnitSpawnManager.Instance.Spawn(_vehicleUnit);
-        InitCreateCount(vehicleUnit.UnitMPInitData, _selectedUnitPrefab.UnitMPInitData); //MPData로 생성 카운트 세팅(MPData 필요)
+        //MPData로 생성 카운트 세팅(MPData 필요)
+        InitCreateCount(vehicleUnit.UnitMPInitData, _selectedUnitPrefab.UnitMPInitData);
         vehicleUnit.transform.position = _startPos;
         if (vehicleUnit is SpacecraftController spacecraftController) 
         {

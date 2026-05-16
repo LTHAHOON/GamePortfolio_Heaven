@@ -24,7 +24,7 @@ public class CreatureDieState : State<CreatureState, CreatureController>
         _navMeshStatData._navMeshObstacle.enabled = false;
 
         CreatureSelection.Instance.RemoveToSelectedCharacters(creatureController);
-        MyUnitPrefabDataManager.Instance.RemoveUnitPrefabToList(UnitType.Creature, creatureController, _dieStatData._dieDelayTime, _animatorStatData);
+        UnitStorageManager.Instance.RemoveUnitToStorageList(Faction.Ally, UnitType.Creature, creatureController, _dieStatData._dieDelayTime, _animatorStatData);
         _bOnceEnter = true;
     }
     public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine) { }

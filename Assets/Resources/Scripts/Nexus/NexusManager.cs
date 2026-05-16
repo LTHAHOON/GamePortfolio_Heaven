@@ -13,21 +13,21 @@ public class NexusManager : Singleton<NexusManager>
     {
         for (int i = 0; i < _nexusList.Count; i++)
         {
-            _nexusDictionary.Add((int)_nexusList[i].Fraction, _nexusList[i]);
+            _nexusDictionary.Add((int)_nexusList[i].faction, _nexusList[i]);
         }
     }
     
-    public SurroundPosGroup GetNexusSurroundPosGroup(Fraction fraction)
+    public SurroundPosGroup GetNexusSurroundPosGroup(Faction faction)
     {
-        return _nexusDictionary[(int)fraction].NexusSurroundPosGroup;
+        return _nexusDictionary[(int)faction].NexusSurroundPosGroup;
     }
     
-    public NexusController GetNexusByFraction(Fraction fraction)
+    public NexusController GetNexusByFraction(Faction faction)
     {
-        return _nexusDictionary[(int)fraction];
+        return _nexusDictionary[(int)faction];
     }
-    public Vector3 GetNexusPosByFraction(Fraction fraction)
+    public Vector3 GetNexusPosByFraction(Faction faction)
     {
-        return _nexusDictionary[(int)fraction].NexusTransform.position;
+        return _nexusDictionary[(int)faction].NexusTransform.position;
     }
 }

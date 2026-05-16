@@ -16,7 +16,10 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine) 
     {
         SpacecraftController owner = stateMachine.GetOwner();
-        owner.SetModeType(owner.OppositeModeType);
+        if(owner.CurrentModeType == ModeType.DefenseMode)
+        {
+            owner.SetModeType(owner.OppositeModeType);
+        }
     }
 
     public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
@@ -35,9 +38,15 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
         }
         else
         {
-            Vector3 e = ((1 - _bezierCurveStatData._curTime / maxTime) * startPoint) + (_bezierCurveStatData._curTime / maxTime * middlePoint);
-            Vector3 f = ((1 - _bezierCurveStatData._curTime / maxTime) * startPoint) + (_bezierCurveStatData._curTime / maxTime * endPoint);
-            Vector3 p = ((1 - _bezierCurveStatData._curTime / maxTime) * e) + (_bezierCurveStatData._curTime / maxTime * f);
+            //Vector3 e = ((1 - _bezierCurveStatData._curTime / maxTime) * startPoint) + (_bezierCurveStatData._curTime / maxTime * middlePoint);
+            Vector3 e = Vector3.Lerp(startPoint, middlePoint, _bezierCurveStatData._curTime / maxTime);
+
+            //Vector3 f = ((1 - _bezierCurveStatData._curTime / maxTime) * middlePoint) + (_bezierCurveStatData._curTime / maxTime * endPoint);
+            Vector3 f = Vector3.Lerp(middlePoint, endPoint, _bezierCurveStatData._curTime / maxTime);
+
+            //Vector3 p = ((1 - _bezierCurveStatData._curTime / maxTime) * e) + (_bezierCurveStatData._curTime / maxTime * f);
+            
+            Vector3 p = Vector3.Lerp(e, f, _bezierCurveStatData._curTime / maxTime);
             if (owner.Status != null)
             {
                 _bezierCurveStatData._curTime += Time.deltaTime * (owner.Status.DEX / 3f);

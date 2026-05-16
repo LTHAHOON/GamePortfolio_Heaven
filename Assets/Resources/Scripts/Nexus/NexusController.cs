@@ -5,7 +5,7 @@ using UnityEngine;
 public class NexusController : Unit
 {
     [SerializeField]
-    private Fraction _fraction;
+    private Faction _faction;
     [SerializeField]
     private Transform _nexusTransform;
     [SerializeField]
@@ -24,5 +24,5 @@ public class NexusController : Unit
     }
     public SurroundPosGroup NexusSurroundPosGroup => _surroundPosGroup;
     public Transform NexusTransform => _nexusTransform;
-    public Fraction Fraction => _fraction;
+    public Faction faction => _faction;
 }

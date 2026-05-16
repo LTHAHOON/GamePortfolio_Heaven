@@ -37,7 +37,7 @@ public class CreatureSelectionState : State<CreatureState, CreatureController>
         else
         {
             attackDistance = creature.GetNexusAttackDistance(_navMeshStatData._navmeshAgentData);
-            Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Fraction.Enemy);
+            Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Faction.Enemy);
             distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
         } 
         if(distanceToTarget > (attackDistance * attackDistance))

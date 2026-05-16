@@ -8,7 +8,7 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     [SerializeField]
-    private Fraction fraction = Fraction.Ally;
+    private Faction faction = Faction.Ally;
     [SerializeField]
     private float _maxHealth = 100;
     [SerializeField]
@@ -16,7 +16,7 @@ public class Health : MonoBehaviour
     [SerializeField]
     private bool _autoInitHealth = true;
 
-    public static event Action<Health, Fraction> OnHealthAdded;
+    public static event Action<Health, Faction> OnHealthAdded;
     public static event Action<Health> OnHealthRemoved;
     public static event Func<Health, HealthBar> OnHealthFinder;
     public event Action OnDamageHit;
@@ -48,7 +48,7 @@ public class Health : MonoBehaviour
             _currentHealth = _maxHealth;
         }
 
-       OnHealthAdded(this, fraction);
+       OnHealthAdded(this, faction);
        _healthBar = OnHealthFinder?.Invoke(this);
        ObjectVisbilitySystem.Instance.AddToList(_healthBar);
     }

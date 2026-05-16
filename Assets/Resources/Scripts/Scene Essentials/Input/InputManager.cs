@@ -105,7 +105,7 @@ public class InputManager : Singleton<InputManager>
     //유닛 캐싱된 데이터로 Selection을 구하는 함수 
     public List<ISelection> TryDragSelectionByUnitType(out bool bOnDrag, Camera camera, UnitType unitType)
     {
-        if (MyUnitPrefabDataManager.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
+        if (UnitStorageManager.Instance.TryGetUnitList(out List<Unit> unitList, Faction.Ally, unitType))
         {
             List<ISelection> selection = TryDragSelection(out bOnDrag, unitList, camera);
             return selection;
@@ -221,7 +221,7 @@ public class InputManager : Singleton<InputManager>
 
     private readonly Collider[] _hitResults = new Collider[500];
 
-    public Collider[] GetByOverlapCast(out int count, Camera camera, Vector3 position, float radius,
+    public Collider[] GetByOverlapCast(out int count, Vector3 position, float radius,
         LayerMask targetLayerMask)
     {
         count = Physics.OverlapSphereNonAlloc(position, radius, _hitResults, targetLayerMask);
@@ -233,13 +233,13 @@ public class InputManager : Singleton<InputManager>
         return null;
     }
 
-    public bool TryGetByRaycast(out RaycastHit targetHit, Ray ray, Camera camera, LayerMask targetLayerMask,
+    public bool TryGetByRaycast(out RaycastHit targetHit, Ray ray, float maxDistance, LayerMask targetLayerMask,
         int exceptedLayer = -1)
     {
-        return TryGetByRaycast(out targetHit, ray.origin, ray.direction, camera, targetLayerMask, exceptedLayer);
+        return TryGetByRaycast(out targetHit, ray.origin, ray.direction, maxDistance, targetLayerMask, exceptedLayer);
     }
 
-    public bool TryGetByRaycast(out RaycastHit targetHit, Vector3 raycastStart, Vector3 raycastDirection, Camera camera,
+    public bool TryGetByRaycast(out RaycastHit targetHit, Vector3 raycastStart, Vector3 raycastDirection, float maxDistance,
         LayerMask targetLayerMask,
         int exceptedLayer = -1)
     {
@@ -248,7 +248,7 @@ public class InputManager : Singleton<InputManager>
             targetLayerMask = GameLayerManager.Instance.GetExceptedLayerMask(targetLayerMask, exceptedLayer);
         }
 
-        return Physics.Raycast(raycastStart, raycastDirection, out targetHit, camera.farClipPlane, targetLayerMask);
+        return Physics.Raycast(raycastStart, raycastDirection, out targetHit, maxDistance, targetLayerMask);
     }
 
     public RaycastHit GetBySphereCastUsingMouse(Camera camera, LayerMask targetLayerMask)
@@ -285,7 +285,7 @@ public class InputManager : Singleton<InputManager>
         target = SelectBySphereCast(keyCode, camera, targetLayerMask);
         if (target)
         {
-            if (MyUnitPrefabDataManager.Instance.TryGetUnitList(out List<Unit> unitList, unitType))
+            if (UnitStorageManager.Instance.TryGetUnitList(out List<Unit> unitList, Faction.Ally, unitType))
             {
                 if (bFindUsingTargetParent)
                 {

@@ -258,7 +258,7 @@ GameObject:
   - component: {fileID: 1733280090107131618}
   - component: {fileID: 8018198990959356948}
   - component: {fileID: 8409426575319781432}
-  m_Layer: 27
+  m_Layer: 28
   m_Name: EnemyNexus
   m_TagString: EnemyNexus
   m_Icon: {fileID: 0}
@@ -274,8 +274,8 @@ Transform:
   m_GameObject: {fileID: 958172981235103748}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0000028483, y: 0, z: 0}
-  m_LocalScale: {x: 0.4791734, y: 0.4791734, z: 0.4791734}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.45, y: 0.45, z: 0.45}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8801205344900980045}
@@ -804,7 +804,7 @@ GameObject:
   - component: {fileID: 7739383269546363612}
   - component: {fileID: 1801965323940571066}
   - component: {fileID: 7115184105761599454}
-  m_Layer: 16
+  m_Layer: 28
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}

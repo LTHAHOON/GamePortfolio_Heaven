@@ -25,7 +25,7 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
     public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
         CreatureController creatureController = stateMachine.GetOwner();
-        //creatureController.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
+        creatureController.SetEnableNavMeshObstacle(_navMeshStatData, _animatorStatData);
     }
 
     public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
@@ -58,7 +58,7 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
         else if (!SurroundPosManager.IsContainTargetPos(creature.gameObject, _surroundPosData._surroundPosGroup) && creature.CurrentModeType == ModeType.AttackMode)
         {
             navMeshAgent.stoppingDistance = 0.5f;
-            _surroundPosData._surroundPosGroup = NexusManager.Instance.GetNexusSurroundPosGroup(Fraction.Enemy);
+            _surroundPosData._surroundPosGroup = NexusManager.Instance.GetNexusSurroundPosGroup(Faction.Enemy);
             SurroundPosManager.AssignTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
             if (SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject, _surroundPosData._surroundPosGroup, out Vector3 assigendPos))
             {

@@ -16,7 +16,7 @@ public class HealthBarController : MonoBehaviour
         Health.OnHealthFinder += FindHealthBar;
     }
 
-    private void AddHealthBar(Health health, Fraction fraction)
+    private void AddHealthBar(Health health, Faction faction)
     {
         Debug.Log(health);
         for (int i = 0; i < _arrHealthBarPrefab.Length; i++)
@@ -26,14 +26,14 @@ public class HealthBarController : MonoBehaviour
                 if (health.gameObject.layer == _arrHealthBarPrefab[i].gameObject.layer)
                 {
                     HealthBar healthBar = Instantiate(_arrHealthBarPrefab[i], transform);
-                    if (fraction == Fraction.Ally)
+                    if (faction == Faction.Ally)
                     {
-                        healthBar.SetFillColor(UIManager.Instance.GetFactionPlayerColor());
+                        healthBar.SetFillColor(UIManager.Instance.FactionPlayerColor);
 
                     }
-                    else if(fraction == Fraction.Enemy)
+                    else if(faction == Faction.Enemy)
                     {
-                        healthBar.SetFillColor(UIManager.Instance.GetFactionEnemyColor());
+                        healthBar.SetFillColor(UIManager.Instance.FactionEnemyColor);
                     }
                     _healthBars.Add(health, healthBar);
                     healthBar.SetHealth(health);

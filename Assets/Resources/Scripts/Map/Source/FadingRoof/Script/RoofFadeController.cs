@@ -56,7 +56,7 @@ public class RoofFadeController : MonoBehaviour
 
         Vector3 raycastStart = _camera.transform.position;
         Vector3 raycastDirection = _camera.transform.forward;
-        bool bGetHit = InputManager.Instance.TryGetByRaycast(out _hit, raycastStart, raycastDirection, _camera, GameLayerMask.RoofLayerMask);
+        bool bGetHit = InputManager.Instance.TryGetByRaycast(out _hit, raycastStart, raycastDirection, _camera.farClipPlane, GameLayerMask.RoofLayerMask);
         if (!bGetHit)
         {
             //히트가 안될 경우 모든 Roof는 원래대로
@@ -78,7 +78,7 @@ public class RoofFadeController : MonoBehaviour
         }
         if (!_hit.collider) return;
 
-        _hitResults = InputManager.Instance.GetByOverlapCast(out int count, _camera, _hit.point, _radius, GameLayerMask.RoofLayerMask);
+        _hitResults = InputManager.Instance.GetByOverlapCast(out int count, _hit.point, _radius, GameLayerMask.RoofLayerMask);
         if (count <= 0) return;
 
         #region OverlapCast된 Roof를 Fade시키기(현재 Roof HashSet에 현재 Roof 추가하기)

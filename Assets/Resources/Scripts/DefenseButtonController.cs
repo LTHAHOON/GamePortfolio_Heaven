@@ -57,7 +57,7 @@ public class DefenseButtonController : ModeButtonController
         _cursorData = null;
         if (_curSpawnedUnit)
         {
-            MyUnitPrefabDataManager.Instance.RemoveUnitPrefabToList(_curSpawnedUnit.UnitType, _curSpawnedUnit);
+            UnitStorageManager.Instance.RemoveUnitToStorageList(Faction.Ally, _curSpawnedUnit.UnitType, _curSpawnedUnit);
         }
     }
 
