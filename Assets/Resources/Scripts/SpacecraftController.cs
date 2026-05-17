@@ -24,6 +24,9 @@ public class SpacecraftController : PassengerController, ISelectableOwner
 {
     #region State 데이터
     private BezierCurveStatData _curveStatData = new();
+    [Header("우주선 Attack/Trace Distance 데이터")]
+    [SerializeField]
+    private BaseFSMStatData _fsmStatData;
     [Header("탑승시킬때 필요한 데이터")]
     [SerializeField]
     private BoardingStatData _boardingStatData;
@@ -56,8 +59,6 @@ public class SpacecraftController : PassengerController, ISelectableOwner
 
     [SerializeField]
     private CreateLoad _createLoad;
-
-    private int _unitTypeLayer;
     public MonoBehaviour Owner => this;
     #region 이벤트 함수
     protected override void Awake()
@@ -71,8 +72,11 @@ public class SpacecraftController : PassengerController, ISelectableOwner
             _layerTargetStatData,
             _dieStatData,
             _curveStatData,
+            _fsmStatData,
         });
         _stateMachine.AddState(new SpacecraftIdleState());
+        _stateMachine.AddState(new SpacecraftTraceState());
+        _stateMachine.AddState(new SpacecraftAttackState());
         _stateMachine.AddState(new SpacecraftBoardingState());
         _stateMachine.AddState(new SpacecraftDriveState());
         _stateMachine.AddState(new SpacecraftLandingState());
@@ -80,7 +84,6 @@ public class SpacecraftController : PassengerController, ISelectableOwner
 
         #endregion
         _clickCollider.enabled = false;
-        _unitTypeLayer = LayerMask.NameToLayer(UnitType.Spacecraft.ToString());
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<BoxCollider>();
         colliderSizeData = _collider.size;
@@ -166,7 +169,6 @@ public class SpacecraftController : PassengerController, ISelectableOwner
             _isGravity = false;
         }
     }
-
-    public int UnitTypeLayer => _unitTypeLayer;
+    
     public CreateLoad GetCreateLoad() => _createLoad;
 }

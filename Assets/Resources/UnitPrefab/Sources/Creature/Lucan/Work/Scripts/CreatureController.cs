@@ -121,7 +121,6 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     }
     private void Update()
     {
-        Debug.Log(transform.position);
         UpdateState();
     }
     private void FixedUpdate()

@@ -41,6 +41,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Color_Threshold: 1
+    - _Detph_Threshold: 30
     - _Normal_Threshold: 30
     - _OVERLAY: 0
     - _Outline_Thickness: 1.5

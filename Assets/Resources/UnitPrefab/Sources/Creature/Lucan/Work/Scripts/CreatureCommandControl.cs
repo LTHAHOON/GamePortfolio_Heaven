@@ -21,10 +21,10 @@ public class CreatureCommandControl : MonoBehaviour
 
     private PoolComponent _pcMoveMark;
     private Camera _camera;
+    private bool _isMoving = false;
     public float _distanceFromUnit = 5f;
     public float _radiusFromCenter = 5f;
     public int _firstRingCount = 10;
-    public static bool _isMoving = false;
 
     private void OnDestroy()
     {

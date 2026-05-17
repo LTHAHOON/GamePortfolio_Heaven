@@ -10,7 +10,7 @@ public class StateMachine<TEnumState, TOwner>
     private readonly Dictionary<TEnumState, State<TEnumState, TOwner>> _dicState = new();
     private State<TEnumState, TOwner> _currentState;
     public State<TEnumState, TOwner> CurrentState => _currentState;
-    public StateMachineOwner<TOwner> _stateMachineOwner = new();
+    private readonly StateMachineOwner<TOwner> _stateMachineOwner = new();
 
     public StateMachine(TOwner owner, IStateData[] stateData)
     {
@@ -48,7 +48,7 @@ public class StateMachine<TEnumState, TOwner>
     }
     public bool TryGetStateData<T>(out T result)
     {
-        if (_stateMachineOwner._ownerStateData.TryGetValue(typeof(T), out var data) && data is IStateData<T> stateData)
+        if (_stateMachineOwner.OwnerStateData.TryGetValue(typeof(T), out var data) && data is IStateData<T> stateData)
         {
             result = stateData.GetData();
             return true;
@@ -64,11 +64,13 @@ public class StateMachine<TEnumState, TOwner>
 public class StateMachineOwner<TOwner>
 {
     public TOwner Owner { get; set; }
-    public Dictionary<Type, IStateData> _ownerStateData = new();
+    private readonly Dictionary<Type, IStateData> _ownerStateData = new();
 
     public void AddStateData(IStateData stateData)
     {
         _ownerStateData.Add(stateData.GetType(), stateData);
     }
+    
+    public Dictionary<Type, IStateData> OwnerStateData => _ownerStateData;
 }
 

@@ -76,6 +76,25 @@ public class SurroundPosStatData : IStateData<SurroundPosStatData>
 }
 #endregion
 
+[Serializable]
+public class BaseFSMStatData : IStateData<BaseFSMStatData>
+{
+    private Collider _targetCollider;
+    public float _traceDistance = 10f;
+    public float _attackDistance = 10f;
+    
+    public void SetTarget(Collider target)
+    {
+        _targetCollider = target;
+    }
+    public Collider TargetCollider => _targetCollider;
+    public Vector3 TargetPosition => _targetCollider.transform.position;
+    public BaseFSMStatData GetData()
+    {
+        return this;
+    }
+}
+
 #region NavMesh 데이터
 [Serializable]
 public class NavMeshStatData : IStateData<NavMeshStatData>

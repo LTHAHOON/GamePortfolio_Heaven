@@ -226,6 +226,9 @@ MonoBehaviour:
   _health: {fileID: 4639246461895064197}
   _unitInfo: {fileID: 6068686830223686512}
   _unitMpDataComponent: {fileID: 754315312147012691}
+  _fsmStatData:
+    _traceDistance: 60
+    _attackDistance: 80
   _boardingStatData:
     _maxCount: 7
     driveButton: {fileID: 0}
@@ -258,7 +261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45684bb1d0ec5ff419813a586a894792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fraction: 0
+  faction: 0
   _maxHealth: 1400
   _fixedHP: 100
   _autoInitHealth: 0

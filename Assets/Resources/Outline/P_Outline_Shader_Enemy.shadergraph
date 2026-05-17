@@ -1332,10 +1332,10 @@
     "m_Guid": {
         "m_GuidSerialized": "85b3e54b-f7a7-4f51-9974-8037046812e7"
     },
-    "m_Name": "Normal Threshold",
+    "m_Name": "Depth Threshold",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Normal Threshold",
-    "m_DefaultReferenceName": "_Normal_Threshold",
+    "m_RefNameGeneratedByDisplayName": "Depth Threshold",
+    "m_DefaultReferenceName": "_Depth_Threshold",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -3737,7 +3737,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "fb3edc88094d4c539b8857916a15f33b",
     "m_Id": 0,
-    "m_DisplayName": "Normal Threshold",
+    "m_DisplayName": "Depth Threshold",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",

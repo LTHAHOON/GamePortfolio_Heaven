@@ -5,12 +5,17 @@ using static UnityEngine.UI.GridLayoutGroup;
 
 public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
 {
+    private BaseFSMStatData _baseFsmStatData;
     private BezierCurveStatData _bezierCurveStatData;
-
+    private float _curSpeed = 1f;
+    private float _velocity = 0f;
+    private readonly float _baseSpeed = 1f;
+    private readonly float _smoothTime = 0.6f;
     public override SpacecraftState EState => SpacecraftState.Drive;
 
     public override void InitState(StateMachine<SpacecraftState, SpacecraftController> stateMachine) 
     {
+        stateMachine.TryGetStateData(out _baseFsmStatData);
         stateMachine.TryGetStateData(out _bezierCurveStatData);
     }
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine) 
@@ -49,7 +54,7 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
             Vector3 p = Vector3.Lerp(e, f, _bezierCurveStatData._curTime / maxTime);
             if (owner.Status != null)
             {
-                _bezierCurveStatData._curTime += Time.deltaTime * (owner.Status.DEX / 3f);
+                _bezierCurveStatData._curTime += Time.deltaTime * Mathf.Abs(_curSpeed) * (owner.Status.DEX / 3f);
             }
             else
             {
@@ -58,21 +63,26 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
 
             Vector3 dir = p - owner.transform.position;
             Quaternion rot = Quaternion.LookRotation(dir.normalized);
-            Vector3 changedEulerAngle = rot.eulerAngles;
-            Vector3 curEulerAngle = owner.transform.rotation.eulerAngles;
-            changedEulerAngle.x = curEulerAngle.x;
-            rot = Quaternion.Euler(changedEulerAngle);
-
-            owner.transform.SetPositionAndRotation(p, rot);
+            owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, rot, Time.deltaTime * 3f);
+            owner.transform.position = p;
         }
-
-        if (_bezierCurveStatData._curTime >= maxTime)
+        if(InputManager.Instance.TryGetByRaycast(out RaycastHit enemy, owner.transform.position, owner.transform.forward, 
+                    _baseFsmStatData._traceDistance ,GameLayerMask.EnemyOutPlanetLayerMask))
+        {
+            _curSpeed = Mathf.SmoothDamp(_curSpeed, -1f, ref _velocity, _smoothTime);
+            if (_curSpeed <= 0f)
+            {
+               stateMachine.ChangeState(SpacecraftState.Trace);
+               _curSpeed = _baseSpeed;
+            }
+                
+        }
+        else if (_bezierCurveStatData._curTime >= maxTime)
         {
             _bezierCurveStatData._curTime = 0;
             //행성에 도착하면 착륙상태로 전환하게 된다.
             stateMachine.ChangeState(SpacecraftState.Landing);
         }
-    
     }
     public override void ExitState(StateMachine<SpacecraftState, SpacecraftController> stateMachine) { }
 

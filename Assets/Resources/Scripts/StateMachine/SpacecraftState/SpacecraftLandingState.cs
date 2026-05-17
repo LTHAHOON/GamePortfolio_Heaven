@@ -17,8 +17,8 @@ public class SpacecraftLandingState : State<SpacecraftState, SpacecraftControlle
         SpacecraftController owner = stateMachine.GetOwner();
         owner.transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
         owner.transform.position = owner.GoalData._vehicleGoalPosData.Data.position;
-        _layerTargetStatData._layerTargetList.SetLayerList(owner.gameObject, true, owner.UnitTypeLayer);
-        //Gravity·Î ÀÎÇØ Âø·úÇÏ°Ô µÇ°í ¹Ù´Ú¿¡ ´êÀº ¼ø°£ Idle»óÅÂ·Î ÀüÈ¯ÇÏ°Ô µÈ´Ù.
+        _layerTargetStatData._layerTargetList.SetLayerList(owner.gameObject, true, GameLayer.SpacecraftLayer);
+        //Gravityï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ç°ï¿½ ï¿½Ù´Ú¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Idleï¿½ï¿½ï¿½Â·ï¿½ ï¿½ï¿½È¯ï¿½Ï°ï¿½ ï¿½È´ï¿½.
         owner._isGravity = true;
     }
     public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
