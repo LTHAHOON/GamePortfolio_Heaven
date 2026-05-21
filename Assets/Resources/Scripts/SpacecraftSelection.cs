@@ -36,7 +36,7 @@ public class SpacecraftSelection : Selection<SpacecraftController>
         {
             if(!_target)
             {
-                if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main,
+                if (InputManager.Instance.TrySelectUnitBySphereCast(KeyCode.F, Camera.main, 1.2f,
                                                                             _clickColliderLayer, UnitType.Spacecraft, out GameObject target, true))
                 {
                     Debug.Log("Click");

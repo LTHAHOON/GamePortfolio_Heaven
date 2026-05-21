@@ -32,7 +32,7 @@ public class UnitSpawnManager : Singleton<UnitSpawnManager>
     }
     public T Spawn<T>(T unit, Vector3? pos = null, Vector3? direction = null) where T : Unit
     {
-        UnitStorageManager.Instance.TryGetChild(out GameObject instantiateParentObj, Faction.Ally,unit.UnitType);
+        UnitStorageManager.Instance.TryGetUnitParent(out GameObject instantiateParentObj, Faction.Ally,unit.UnitType);
         if(!pos.HasValue)
         {
             pos = Vector3.zero;

@@ -76,6 +76,20 @@ public class SurroundPosStatData : IStateData<SurroundPosStatData>
 }
 #endregion
 
+#region 무기 데이터
+[Serializable]
+public class WeaponStatData : IStateData<WeaponStatData>
+{
+    [SerializeField]
+    private WeaponController _weaponController;
+    public WeaponStatData GetData()
+    {
+        return this;
+    }
+    public WeaponController WeaponController => _weaponController;
+}
+#endregion
+#region FSM 추적 및 공격거리, 타겟 데이터
 [Serializable]
 public class BaseFSMStatData : IStateData<BaseFSMStatData>
 {
@@ -94,6 +108,7 @@ public class BaseFSMStatData : IStateData<BaseFSMStatData>
         return this;
     }
 }
+#endregion
 
 #region NavMesh 데이터
 [Serializable]

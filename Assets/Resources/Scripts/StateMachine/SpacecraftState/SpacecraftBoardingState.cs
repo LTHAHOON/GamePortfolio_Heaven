@@ -10,10 +10,16 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
 {
     private BoardingStatData _boardingStatData;
     public override SpacecraftState EState => SpacecraftState.Boarding;
-
+    private NavMeshPath _path;
+    private NavMeshQueryFilter _filter;
+   
     public override void InitState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {
         stateMachine.TryGetStateData(out _boardingStatData);
+        _path = new();
+        _filter = new NavMeshQueryFilter();
+        _filter.agentTypeID = NavMesh.GetSettingsByIndex(1).agentTypeID;
+        _filter.areaMask = NavMesh.AllAreas;
     }
 
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
@@ -24,7 +30,6 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         List<CreatureController> boardingCreatureList = CreatureSelection.Instance.GetSelectionComponents<CreatureController>();
         int creatureMaxCount = Math.Clamp(boardingCreatureList.Count, 0, _boardingStatData._maxCount);
         _boardingStatData._finalMaxCount = creatureMaxCount;
-        NavMeshPath path = new();
         bool isPathValid = false;
         for (int i = 0; i < creatureMaxCount; i++)
         {
@@ -32,13 +37,9 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
                 return;
             if (NavMesh.SamplePosition(owner.transform.position, out NavMeshHit hit, 30f, NavMesh.AllAreas))
             {
-                NavMeshQueryFilter filter = new NavMeshQueryFilter();
-                filter.agentTypeID = NavMesh.GetSettingsByIndex(1).agentTypeID;
-                filter.areaMask = NavMesh.AllAreas;
-                NavMesh.CalculatePath(boardingCreatureList[i].transform.position, hit.position, filter, path);
-                if (path.status == NavMeshPathStatus.PathInvalid)
+                NavMesh.CalculatePath(boardingCreatureList[i].transform.position, hit.position, _filter, _path);
+                if (_path.status == NavMeshPathStatus.PathInvalid)
                 {
-                    Debug.Log($"creatureList[{i}] �� �������ϴ�");
                     --_boardingStatData._finalMaxCount;
                     continue;
                 }

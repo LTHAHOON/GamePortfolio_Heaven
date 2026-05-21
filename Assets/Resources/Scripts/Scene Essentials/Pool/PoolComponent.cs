@@ -4,14 +4,17 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PoolComponent 
+public interface IPoolComponent
+{
+}
+public class PoolComponent<T> : IPoolComponent where T : UnityEngine.Object 
 {
     private int _initialPoolSize = 5;
     private int _maxPoolSize = 10;
-    private GameObject _poolObjPrefab;
+    private T _poolObjPrefab;
     private Transform _poolParent;
-    private Stack<GameObject> _poolStack = new();
-    public PoolComponent(GameObject poolObjPrefab, Transform parent = null, int initalPoolSize = 5, int maxPoolSize = 10)
+    private Stack<T> _poolStack = new();
+    public PoolComponent(T poolObjPrefab, Transform parent = null, int initalPoolSize = 5, int maxPoolSize = 10)
     {
         _poolObjPrefab = poolObjPrefab;
         _initialPoolSize = initalPoolSize;
@@ -27,25 +30,38 @@ public class PoolComponent
     {
         for (int i = 0; i < _initialPoolSize; i++)
         {
-            GameObject poolObject = UnityEngine.Object.Instantiate(_poolObjPrefab, _poolParent);
-            poolObject.SetActive(false);
+            T poolObject = UnityEngine.Object.Instantiate(_poolObjPrefab, _poolParent);
             _poolStack.Push(poolObject);
+
+            SetActivePoolObject(poolObject, false);
+        }
+    }
+    
+    private void SetActivePoolObject(T poolObject, bool active)
+    {
+        if(poolObject is GameObject gameObj)
+        {
+            gameObj.SetActive(active);
+        }
+        else if(poolObject is MonoBehaviour monoObj)
+        {
+            monoObj.gameObject.SetActive(active);
         }
     }
 
-    public GameObject PopPoolObject()
+    public T PopPoolObject()
     {
-        if(_poolStack.Count <= 0)
+        if (_poolStack.Count <= 0)
         {
-            GameObject newPoolObject = UnityEngine.Object.Instantiate(_poolObjPrefab, _poolParent);
+            T newPoolObject = UnityEngine.Object.Instantiate(_poolObjPrefab, _poolParent);
             return newPoolObject;
         }
-        GameObject poolObject = _poolStack.Pop();
-        poolObject.SetActive(true);
+        T poolObject = _poolStack.Pop();
+        SetActivePoolObject(poolObject, true);
         return poolObject;
     }
 
-    public void ReturnPoolObject(GameObject poolObject, float delayTime)
+    public void ReturnPoolObject(T poolObject, float delayTime)
     {
         if (!poolObject) return;
         if (delayTime > 0)
@@ -57,20 +73,19 @@ public class PoolComponent
             ReturnPoolObject(poolObject);
         }
     }
-    public void ReturnPoolObject(GameObject poolObject)
+    public void ReturnPoolObject(T poolObject)
     {
         if (!poolObject) return;
         if (_poolStack.Contains(poolObject)) return;
         if (_poolStack.Count < _maxPoolSize)
         {
             _poolStack.Push(poolObject);
-            poolObject.SetActive(false);
+            SetActivePoolObject(poolObject, false);
         }
         else
         {
             UnityEngine.Object.Destroy(poolObject);
         }
     }
-
 
 }

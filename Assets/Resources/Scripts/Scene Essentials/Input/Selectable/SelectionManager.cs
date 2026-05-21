@@ -115,7 +115,7 @@ public class SelectionManager : Singleton<SelectionManager>
         }
         else if (bOnDrag)
         {
-        //    ClearAllSelectedList();
+            ClearAllSelectedList();
         }
     }
 

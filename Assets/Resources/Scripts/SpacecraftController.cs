@@ -18,12 +18,14 @@ public enum SpacecraftState
     GetOff,
 }
 
-[RequireComponent(typeof(BoxCollider))]
 [RequireComponent(typeof(Rigidbody))]
 public class SpacecraftController : PassengerController, ISelectableOwner
 {
     #region State 데이터
     private BezierCurveStatData _curveStatData = new();
+    [Header("무기 데이터")]
+    [SerializeField]
+    private WeaponStatData _weaponStatData;
     [Header("우주선 Attack/Trace Distance 데이터")]
     [SerializeField]
     private BaseFSMStatData _fsmStatData;
@@ -47,10 +49,8 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     private float gravity = -9.81f;
     [HideInInspector]
     public bool _isGravity = false;
-    [HideInInspector]
-    public Vector3 colliderSizeData;
     private Rigidbody _rigidbody;
-    private BoxCollider _collider;
+    private Collider _collider;
     #endregion
     #region AttackMark 데이터
     public event Action<GameObject> OnReturnDestMark;
@@ -73,6 +73,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
             _dieStatData,
             _curveStatData,
             _fsmStatData,
+            _weaponStatData,
         });
         _stateMachine.AddState(new SpacecraftIdleState());
         _stateMachine.AddState(new SpacecraftTraceState());
@@ -85,8 +86,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         #endregion
         _clickCollider.enabled = false;
         _rigidbody = GetComponent<Rigidbody>();
-        _collider = GetComponent<BoxCollider>();
-        colliderSizeData = _collider.size;
+        _collider = GetComponent<Collider>();
         _collider.isTrigger = true;
     }
     

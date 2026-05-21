@@ -23,6 +23,7 @@ public class RoofFadeController : MonoBehaviour
     private Collider[] _hitResults;
     private RaycastHit _hit;
     private Camera _camera;
+    private int _ditherPowerRefID = 0;
     private readonly HashSet<Collider> _curHitResults = new();
     private readonly HashSet<Collider> _prevHitResults = new();
     private readonly HashSet<Collider> _prevHitResultsCache = new();
@@ -30,6 +31,7 @@ public class RoofFadeController : MonoBehaviour
     private void Awake()
     {
         _camera = Camera.main;
+        _ditherPowerRefID = Shader.PropertyToID(_ditherPowerRef);
     }
 
     private void Update()
@@ -56,7 +58,7 @@ public class RoofFadeController : MonoBehaviour
 
         Vector3 raycastStart = _camera.transform.position;
         Vector3 raycastDirection = _camera.transform.forward;
-        bool bGetHit = InputManager.Instance.TryGetByRaycast(out _hit, raycastStart, raycastDirection, _camera.farClipPlane, GameLayerMask.RoofLayerMask);
+        bool bGetHit = InputManager.Instance.TryGetByRaycast(out _hit, raycastStart, raycastDirection, _camera.farClipPlane, GameLayerMask.RoofMask);
         if (!bGetHit)
         {
             //히트가 안될 경우 모든 Roof는 원래대로
@@ -71,14 +73,14 @@ public class RoofFadeController : MonoBehaviour
                 if (prevHitResult.gameObject.TryGetComponent(out Renderer renderer))
                 {
                     float curOpacity = MoveTowardsOpacity(prevHitResult, _maxOpacity);
-                    MPBPropertyControl.ChangeMaterialProperty<float>(renderer, _ditherPowerRef, curOpacity);
+                    MPBPropertyControl.ChangeMaterialProperty<float>(renderer, _ditherPowerRefID, curOpacity);
                 }
             }
             #endregion
         }
         if (!_hit.collider) return;
 
-        _hitResults = InputManager.Instance.GetByOverlapCast(out int count, _hit.point, _radius, GameLayerMask.RoofLayerMask);
+        _hitResults = InputManager.Instance.GetByOverlapCast(out int count, _hit.point, _radius, GameLayerMask.RoofMask);
         if (count <= 0) return;
 
         #region OverlapCast된 Roof를 Fade시키기(현재 Roof HashSet에 현재 Roof 추가하기)
@@ -97,7 +99,7 @@ public class RoofFadeController : MonoBehaviour
                 float dist = Vector3.Distance(_hitResults[i].transform.position, _hit.transform.position);
                 float targetOpacity = Mathf.Clamp(dist / _adjustmentValue, _minOpacity, _maxOpacity);
                 float curOpacity = MoveTowardsOpacity(_hitResults[i], targetOpacity);
-                MPBPropertyControl.ChangeMaterialProperty<float>(renderer, _ditherPowerRef, curOpacity);
+                MPBPropertyControl.ChangeMaterialProperty<float>(renderer, _ditherPowerRefID, curOpacity);
             }
         }
         #endregion
@@ -115,7 +117,7 @@ public class RoofFadeController : MonoBehaviour
                 if (!prevHitResult.gameObject.TryGetComponent(out Renderer renderer))
                     continue;
                 float curOpacity = MoveTowardsOpacity(prevHitResult, _maxOpacity);
-                MPBPropertyControl.ChangeMaterialProperty<float>(renderer, _ditherPowerRef, curOpacity);
+                MPBPropertyControl.ChangeMaterialProperty<float>(renderer, _ditherPowerRefID, curOpacity);
             }
         }
         #endregion

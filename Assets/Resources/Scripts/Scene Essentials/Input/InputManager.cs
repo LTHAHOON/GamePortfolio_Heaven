@@ -64,7 +64,7 @@ public class InputManager : Singleton<InputManager>
     {
         if (!CanDragSelection(_dragStartPosition, Input.mousePosition))
         {
-            if (TrySelectBySphereCast(out bOnClick, 0, camera, targetLayerMask, out GameObject target))
+            if (TrySelectBySphereCast(out bOnClick ,0 ,1.2f , camera,  targetLayerMask, out GameObject target))
             {
                 _isDragging = false;
                 _dragStartPosition = Vector3.zero;
@@ -128,18 +128,16 @@ public class InputManager : Singleton<InputManager>
     {
         if (Input.GetMouseButtonDown(0) && _isDragging == false)
         {
-            bOnDrag = true;
             _selectionList.Clear();
             _dragStartPosition = Input.mousePosition;
             _isDragging = true;
-            return null;
         }
 
         if (CanDragSelection(_dragStartPosition, Input.mousePosition))
         {
+            bOnDrag = true;
             if (Input.GetMouseButtonUp(0) && _isDragging)
             {
-                bOnDrag = true;
                 Vector3 dragEndPosition = Input.mousePosition;
                 Rect selectionRect = GetDragSelectionRect(_dragStartPosition, dragEndPosition);
                 _dragStartPosition = Vector3.zero;
@@ -240,27 +238,35 @@ public class InputManager : Singleton<InputManager>
     }
 
     public bool TryGetByRaycast(out RaycastHit targetHit, Vector3 raycastStart, Vector3 raycastDirection, float maxDistance,
-        LayerMask targetLayerMask,
-        int exceptedLayer = -1)
+        LayerMask targetLayerMask, int exceptedLayer = -1)
     {
         if (exceptedLayer > 0)
         {
             targetLayerMask = GameLayerManager.Instance.GetExceptedLayerMask(targetLayerMask, exceptedLayer);
         }
-
         return Physics.Raycast(raycastStart, raycastDirection, out targetHit, maxDistance, targetLayerMask);
     }
 
-    public RaycastHit GetBySphereCastUsingMouse(Camera camera, LayerMask targetLayerMask)
+    public RaycastHit GetBySphereCastUsingMouse(Camera camera, float radius, LayerMask targetLayerMask)
     {
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        return GetBySphereCast(camera, ray, targetLayerMask);
+        return GetBySphereCast(ray, radius, camera.farClipPlane, targetLayerMask);
     }
 
-    public RaycastHit GetBySphereCast(Camera camera, Ray ray, LayerMask targetLayerMask)
+    public RaycastHit GetBySphereCast(Ray ray, float radius, float maxDistance, LayerMask targetLayerMask)
     {
-        Debug.DrawRay(ray.origin, ray.direction * camera.farClipPlane, Color.red);
-        if (Physics.SphereCast(ray, 1.2f, out RaycastHit hit, camera.farClipPlane, targetLayerMask))
+        Debug.DrawRay(ray.origin, ray.direction * maxDistance, Color.red);
+        if (Physics.SphereCast(ray, 1.2f, out RaycastHit hit, maxDistance, targetLayerMask))
+        {
+            return hit;
+        }
+
+        return default;
+    }
+    public RaycastHit GetBySphereCast(Vector3 startPosition, Vector3 direction, float radius, float maxDistance, LayerMask targetLayerMask)
+    {
+        Debug.DrawRay(startPosition, direction * maxDistance, Color.red);
+        if (Physics.SphereCast(startPosition, radius, direction, out RaycastHit hit, maxDistance, targetLayerMask))
         {
             return hit;
         }
@@ -268,21 +274,21 @@ public class InputManager : Singleton<InputManager>
         return default;
     }
 
-    public GameObject SelectBySphereCast(KeyCode keyCode, Camera camera, LayerMask targetLayerMask)
+    public GameObject SelectBySphereCast(KeyCode keyCode, Camera camera, float radius, LayerMask targetLayerMask)
     {
         if (Input.GetKeyDown(keyCode))
         {
-            RaycastHit hit = GetBySphereCastUsingMouse(camera, targetLayerMask);
+            RaycastHit hit = GetBySphereCastUsingMouse(camera, radius, targetLayerMask);
             return hit.collider.gameObject;
         }
 
         return null;
     }
 
-    public bool TrySelectUnitBySphereCast(KeyCode keyCode, Camera camera, LayerMask targetLayerMask, UnitType unitType,
+    public bool TrySelectUnitBySphereCast(KeyCode keyCode, Camera camera, float radius, LayerMask targetLayerMask, UnitType unitType,
         out GameObject target, bool bFindUsingTargetParent = false)
     {
-        target = SelectBySphereCast(keyCode, camera, targetLayerMask);
+        target = SelectBySphereCast(keyCode, camera, radius, targetLayerMask);
         if (target)
         {
             if (UnitStorageManager.Instance.TryGetUnitList(out List<Unit> unitList, Faction.Ally, unitType))
@@ -305,9 +311,9 @@ public class InputManager : Singleton<InputManager>
         return false;
     }
 
-    public bool TrySelectBySphereCast(KeyCode keyCode, Camera camera, LayerMask targetLayerMask, out GameObject target)
+    public bool TrySelectBySphereCast(KeyCode keyCode, Camera camera, float radius, LayerMask targetLayerMask, out GameObject target)
     {
-        target = SelectBySphereCast(keyCode, camera, targetLayerMask);
+        target = SelectBySphereCast(keyCode, camera, radius, targetLayerMask);
         if (target != null)
         {
             return true;
@@ -316,12 +322,12 @@ public class InputManager : Singleton<InputManager>
         return false;
     }
 
-    public GameObject SelectBySphereCast(out bool bOnClick, int mouseButton, Camera camera, LayerMask targetLayerMask)
+    public GameObject SelectBySphereCast(out bool bOnClick, int mouseButton, float radius, Camera camera, LayerMask targetLayerMask)
     {
         if (Input.GetMouseButtonUp(mouseButton))
         {
             bOnClick = true;
-            RaycastHit hit = GetBySphereCastUsingMouse(camera, targetLayerMask);
+            RaycastHit hit = GetBySphereCastUsingMouse(camera, radius,targetLayerMask);
             if (hit.collider)
             {
                 return hit.collider.gameObject;
@@ -333,10 +339,10 @@ public class InputManager : Singleton<InputManager>
         return null;
     }
 
-    public bool TrySelectBySphereCast(out bool bOnClick, int mouseButton, Camera camera, LayerMask targetLayerMask,
+    public bool TrySelectBySphereCast(out bool bOnClick, int mouseButton, float radius, Camera camera, LayerMask targetLayerMask,
         out GameObject target)
     {
-        target = SelectBySphereCast(out bOnClick, mouseButton, camera, targetLayerMask);
+        target = SelectBySphereCast(out bOnClick, mouseButton, radius, camera, targetLayerMask);
         if (target != null)
         {
             return true;

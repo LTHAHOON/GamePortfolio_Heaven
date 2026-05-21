@@ -21,7 +21,8 @@ public class UnitStorageManager : Singleton<UnitStorageManager>
     [Header("생성된 상대 유닛 저장소")]
     [SerializeField]
     private StorageChild<Unit>[] _arrStorageUnit_Enemy;
-
+    [SerializeField]
+    private Transform _weaponPropParent;
     private readonly Dictionary<UnitType, StorageChild<Unit>> _dicUnitStorage = new();
     private readonly Dictionary<UnitType, StorageChild<Unit>> _dicUnitStorage_Enemy = new();
     private void Awake()
@@ -35,6 +36,7 @@ public class UnitStorageManager : Singleton<UnitStorageManager>
             _dicUnitStorage_Enemy.Add(_arrStorageUnit[i]._unitType, _arrStorageUnit_Enemy[i]);
         }
     }
+
 
     private Dictionary<UnitType, StorageChild<Unit>> GetDictionaryStorage(Faction faction)
     {
@@ -95,15 +97,17 @@ public class UnitStorageManager : Singleton<UnitStorageManager>
         return storage.ContainsKey(unitType);
     }
 
-    public bool TryGetChild(out GameObject child, Faction faction, UnitType unitType)
+    public Transform GetUnitWeaponPropParent() => _weaponPropParent;
+
+    public bool TryGetUnitParent(out GameObject parent, Faction faction, UnitType unitType)
     {
         if(ContainsUnitType(faction, unitType))
         {
             var storage = GetDictionaryStorage(faction);
-            child = storage[unitType]._child;
+            parent = storage[unitType]._child;
             return true;
         }
-        child = default;
+        parent = default;
         return false;
     }
 }

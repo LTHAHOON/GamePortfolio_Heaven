@@ -22,7 +22,7 @@ public class BaseDriveButtonController : ModeButtonController
     [Space(10f)] [Header("MouseCursorScript")] [SerializeField]
     private MouseCursorController _mouseCursorController;
     [SerializeField] 
-    protected GameObject _attackMark;
+    protected GameObject _destMark;
     [SerializeField] 
     protected Transform _mapMarkParent;
 
@@ -30,7 +30,7 @@ public class BaseDriveButtonController : ModeButtonController
 
     protected bool _bSetGoalProcess = false;
     protected Goal _goalData;
-    protected static PoolComponent _pcDestMark;
+    protected PoolComponent<GameObject> _pcDestMark;
     protected PassengerController _vehicleUnit;
     protected MPData _totalMPData = new();
 

@@ -14,25 +14,29 @@ public class SpacecraftTraceState : State<SpacecraftState, SpacecraftController>
 
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {
-        if(_baseFsmStatData == null)
-            return;
         
+    }
+    public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
+    {
+        if (_baseFsmStatData == null)
+            return;
+
         SpacecraftController owner = stateMachine.GetOwner();
         Vector3 raycastStart = owner.transform.position;
         Vector3 raycastDirection = owner.transform.forward;
-        bool bGetEnemy = InputManager.Instance.TryGetByRaycast(out RaycastHit enemy, raycastStart, raycastDirection, _baseFsmStatData._attackDistance ,GameLayerMask.EnemyOutPlanetLayerMask);
-        if(bGetEnemy)
+        bool bHit = InputManager.Instance.TryGetByRaycast(out RaycastHit hit, raycastStart, raycastDirection, _baseFsmStatData._attackDistance, GameLayerMask.AllOutPlanetMask);
+        if (bHit)
         {
-            _baseFsmStatData.SetTarget(enemy.collider);
-            stateMachine.ChangeState(SpacecraftState.Attack);
+            if (hit.collider.gameObject.layer == GameLayer.OutPlanetEnemyLayer)
+            {
+                _baseFsmStatData.SetTarget(hit.collider);
+                stateMachine.ChangeState(SpacecraftState.Attack);
+            }
         }
         else
         {
             stateMachine.ChangeState(SpacecraftState.Drive);
         }
-    }
-    public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
-    {
     }
     public override void ExitState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)
     {

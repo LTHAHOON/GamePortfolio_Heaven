@@ -33,7 +33,7 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
         if (_cullingUIList.Contains(cullingUI) == false)
         {
             _cullingUIList.Add(cullingUI);
-            _dicTargetObj.Add(cullingUI, cullingUI.ColliderForCulling);
+            _dicTargetObj.Add(cullingUI, cullingUI.CollidekarForCulling);
         }
     }
     public void RemoveToList(ICullingUI loadingText, bool doDestroy = true)
@@ -71,7 +71,7 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
             }
             else
             {
-                shouldActive = (collider.gameObject.layer == GameLayer.OutPlanetLayer)
+                shouldActive = (collider.gameObject.layer == GameLayer.OutPlanetLayer || collider.gameObject.layer == GameLayer.OutPlanetEnemyLayer)
                                && CheckFrustrum(collider, camera)
                                && CheckObjectVisible(camera, collider);
             }

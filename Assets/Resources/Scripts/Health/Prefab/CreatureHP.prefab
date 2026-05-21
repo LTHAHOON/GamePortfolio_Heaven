@@ -136,7 +136,7 @@ MonoBehaviour:
   _hpChipBarSlider: {fileID: 8400846324240884742}
   _healthTimeSpeed: 1
   _chipTimeSpeed: 1
-  _chipTimeDelay: 0.3
+  _chipTimeDelay: 1
   _isForceHideUI: 1
   _showDuration: 5
   _health: {fileID: 0}

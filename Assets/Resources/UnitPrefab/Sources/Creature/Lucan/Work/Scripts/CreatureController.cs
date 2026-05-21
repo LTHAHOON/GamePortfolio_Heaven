@@ -173,7 +173,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     public bool TryGetAroundEnemy(out RaycastHit enemy, float radius)
     {
         int enemyCount = Physics.SphereCastNonAlloc(transform.position, radius, transform.up, _enemies, 0,
-            GameLayerMask.EnemyCreatureLayerMask);
+            GameLayerMask.EnemyCreatureMask);
         if (enemyCount > 0)
         {
             enemy = MinDistanceEnemy(_enemies, enemyCount);

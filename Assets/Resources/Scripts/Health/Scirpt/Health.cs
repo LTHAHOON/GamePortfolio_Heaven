@@ -2,19 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 
 public class Health : MonoBehaviour
 {
     [SerializeField]
-    private Faction faction = Faction.Ally;
+    private Faction _faction = Faction.Ally;
     [SerializeField]
     private float _maxHealth = 100;
     [SerializeField]
     private float _fixedHP = 100f;
     [SerializeField]
     private bool _autoInitHealth = true;
+    [Header("체력이 낮을 경우의 이벤트")]
+    [SerializeField]
+    private UnityEvent OnLowHealth;
 
     public static event Action<Health, Faction> OnHealthAdded;
     public static event Action<Health> OnHealthRemoved;
@@ -22,7 +26,6 @@ public class Health : MonoBehaviour
     public event Action OnDamageHit;
     public event Action OnHealHit;
     public event Action OnDie;
-
     private RuntimeUnitStatus _status;
     private float _curStatusCON;
     public Collider _collider;
@@ -36,7 +39,11 @@ public class Health : MonoBehaviour
     {
         if (_autoInitHealth)
         {
-          //  InitHealth(GetComponent<StatusComponent>().GetStatus());
+            UnitInfo unitInfo = GetComponent<UnitInfo>();
+            StatusManager.Instance.TryAddStatusData(unitInfo);
+            unitInfo.Status = StatusManager.Instance.FindStatusData(unitInfo.ID);
+            InitHealth(unitInfo.Status);
+            gameObject.layer = GameLayer.OutPlanetEnemyLayer;
         }
     }
     public void InitHealth(RuntimeUnitStatus status)
@@ -48,7 +55,7 @@ public class Health : MonoBehaviour
             _currentHealth = _maxHealth;
         }
 
-       OnHealthAdded(this, faction);
+       OnHealthAdded(this, _faction);
        _healthBar = OnHealthFinder?.Invoke(this);
        ObjectVisbilitySystem.Instance.AddToList(_healthBar);
     }
@@ -131,6 +138,7 @@ public class Health : MonoBehaviour
         OnHealthRemoved?.Invoke(this);
     }
 
+    public Faction Faction => _faction;
     public HealthBar HealthBar => _healthBar;
     public float MaxHealth => _maxHealth;
     public float CurrentHealth => _currentHealth;

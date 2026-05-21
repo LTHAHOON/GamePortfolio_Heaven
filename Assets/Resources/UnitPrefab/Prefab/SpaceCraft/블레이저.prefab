@@ -85,6 +85,99 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &264871229868535576
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7667278809146352865}
+  m_Layer: 14
+  m_Name: RaserPoint_L
+  m_TagString: Untagged
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7667278809146352865
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 264871229868535576}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0672, y: 0.42437813, z: 0.9622}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6464206576591594850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4699177496449510057
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4071585749334156435}
+  m_Layer: 14
+  m_Name: RaserPoint_R
+  m_TagString: Untagged
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4071585749334156435
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4699177496449510057}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0737, y: 0.42437813, z: 0.9622}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6464206576591594850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4825543586153364219
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5074133380157320445}
+  m_Layer: 14
+  m_Name: RaserPoint_R (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5074133380157320445
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4825543586153364219}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.640727, y: 0.10444, z: 0.167}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6464206576591594850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6464206576591567170
 GameObject:
   m_ObjectHideFlags: 0
@@ -94,9 +187,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6464206576591594850}
-  - component: {fileID: 6464206576597278850}
   - component: {fileID: 2606695048307551015}
   - component: {fileID: 418019409460171227}
+  - component: {fileID: 5821467932064710170}
   - component: {fileID: 6068686830223686512}
   - component: {fileID: 1544915735445127345}
   - component: {fileID: 4639246461895064197}
@@ -127,23 +220,12 @@ Transform:
   - {fileID: 6138099084195214778}
   - {fileID: 7448869471162416482}
   - {fileID: 8627509051612271831}
+  - {fileID: 7667278809146352865}
+  - {fileID: 4071585749334156435}
+  - {fileID: 1506142535339006017}
+  - {fileID: 5074133380157320445}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!111 &6464206576597278850
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6464206576591567170}
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Animation: {fileID: 0}
-  m_Animations: []
-  m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
-  m_CullingType: 0
 --- !u!65 &2606695048307551015
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -192,6 +274,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 122
   m_CollisionDetection: 0
+--- !u!114 &5821467932064710170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6464206576591567170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee83f517f8469f34c89725ab4815e808, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _weaponPrefab: {fileID: 5100768910148064097, guid: d6ff0f1d5f7a446489f233b754a7a8b3,
+    type: 3}
+  _laserDelayPattern: 1
+  _laserPoints:
+  - {fileID: 7667278809146352865}
+  - {fileID: 4071585749334156435}
+  - {fileID: 1506142535339006017}
+  - {fileID: 5074133380157320445}
+  _owner: {fileID: 1544915735445127345}
 --- !u!114 &6068686830223686512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,9 +329,11 @@ MonoBehaviour:
   _health: {fileID: 4639246461895064197}
   _unitInfo: {fileID: 6068686830223686512}
   _unitMpDataComponent: {fileID: 754315312147012691}
+  _weaponStatData:
+    _weaponController: {fileID: 5821467932064710170}
   _fsmStatData:
-    _traceDistance: 60
-    _attackDistance: 80
+    _traceDistance: 100
+    _attackDistance: 50
   _boardingStatData:
     _maxCount: 7
     driveButton: {fileID: 0}
@@ -247,7 +352,6 @@ MonoBehaviour:
     _dieDelayTime: 4
   gravity: -9.81
   _isGravity: 0
-  colliderSizeData: {x: 1.681138, y: 0.6954612, z: 2.965279}
   _createLoad: {fileID: 1186304992142041858}
 --- !u!114 &4639246461895064197
 MonoBehaviour:
@@ -261,7 +365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45684bb1d0ec5ff419813a586a894792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  faction: 0
+  _faction: 0
   _maxHealth: 1400
   _fixedHP: 100
   _autoInitHealth: 0
@@ -312,6 +416,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mpData:
     MP_ConsValue: 1000
+--- !u!1 &7306093623640058426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1506142535339006017}
+  m_Layer: 14
+  m_Name: RaserPoint_R (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1506142535339006017
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7306093623640058426}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.640727, y: 0.10444, z: 0.134}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6464206576591594850}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8777580208163690496
 GameObject:
   m_ObjectHideFlags: 0

@@ -99,6 +99,7 @@ public class HealthBar : MonoBehaviour, ICullingUI
         else
         {
             _hpChipBarSlider.value = pct;
+            _curChipTime = 0;
             if (CheckDead(pct))
             {
                 ObjectVisbilitySystem.Instance.RemoveToList(this);
@@ -121,7 +122,7 @@ public class HealthBar : MonoBehaviour, ICullingUI
     private void HandleHealthPctChanged(float pct, bool useLerp)
     {
         _curPct = pct;
-        _curChipTime = 0;
+        //_curChipTime = 0;
         _bLerpHealthBar = useLerp;
         if(!_bLerpHealthBar)
         {

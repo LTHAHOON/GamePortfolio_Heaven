@@ -14,8 +14,8 @@ public class AttackDriveButtonController : BaseDriveButtonController
     protected void Awake()
     {
         SetVehicleUnit(_spacecraftPrefab);
-        PoolManager.Instance.AddPool(_attackMark, 3, 5, _mapMarkParent);
-        _pcDestMark = PoolManager.Instance.GetPool(_attackMark);
+        PoolManager.Instance.AddPool(_destMark, 3, 5, _mapMarkParent);
+        PoolManager.Instance.TryGetPool(_destMark, out _pcDestMark);
     }
 
     public override void OnEnter()
@@ -39,10 +39,9 @@ public class AttackDriveButtonController : BaseDriveButtonController
         _goalData._passengerGoalPos.y += 1.5f;
         destMark.transform.position = _goalData._passengerGoalPos;
 
-        Unit vehicleUnit = UnitSpawnManager.Instance.Spawn(_vehicleUnit);
+        Unit vehicleUnit = UnitSpawnManager.Instance.Spawn(_vehicleUnit, _startPos);
         //MPData로 생성 카운트 세팅(MPData 필요)
         InitCreateCount(vehicleUnit.UnitMPInitData, _selectedUnitPrefab.UnitMPInitData);
-        vehicleUnit.transform.position = _startPos;
         if (vehicleUnit is SpacecraftController spacecraftController) 
         {
             spacecraftController.GetCreateLoad().SetLoadReady(false);

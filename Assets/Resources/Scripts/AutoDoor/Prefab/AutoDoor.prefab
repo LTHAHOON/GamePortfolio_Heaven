@@ -233,6 +233,7 @@ GameObject:
   - component: {fileID: 227528999542911296}
   - component: {fileID: 6042545744480616788}
   - component: {fileID: 4574027629238453179}
+  - component: {fileID: 9142649719102233839}
   m_Layer: 3
   m_Name: Panel_Right
   m_TagString: Untagged
@@ -305,6 +306,22 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!208 &9142649719102233839
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5061905814964787835}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.25, y: 0.5, z: 0.020000001}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -0.25, y: 0.50100005, z: -0.45000002}
+  m_TimeToStationary: 0.5
 --- !u!1 &6137358136342235255
 GameObject:
   m_ObjectHideFlags: 0
@@ -316,6 +333,7 @@ GameObject:
   - component: {fileID: 8725507584238237661}
   - component: {fileID: 4382497122216340980}
   - component: {fileID: 495633049607981439}
+  - component: {fileID: 1527402779419767000}
   m_Layer: 3
   m_Name: Panel_Left
   m_TagString: Untagged
@@ -388,3 +406,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!208 &1527402779419767000
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6137358136342235255}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.25, y: 0.5, z: 0.020000001}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.25, y: 0.50100005, z: -0.45000002}
+  m_TimeToStationary: 0.5

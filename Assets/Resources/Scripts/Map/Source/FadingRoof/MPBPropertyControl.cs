@@ -6,7 +6,7 @@ public class MPBPropertyControl
 {
     private static MaterialPropertyBlock _mpb;
 
-    public static void ChangeMaterialProperty<T>(Renderer renderer, string propertyName, T value)
+    public static void ChangeMaterialProperty<T>(Renderer renderer, int propertyNameID, T value)
     {
         if(_mpb == null)
         {
@@ -17,19 +17,19 @@ public class MPBPropertyControl
         switch (value)
         {
             case float fValue:
-                _mpb.SetFloat(propertyName, fValue); 
+                _mpb.SetFloat(propertyNameID, fValue); 
                 break;
             case Color color:
-                _mpb.SetColor(propertyName, color);
+                _mpb.SetColor(propertyNameID, color);
                 break;
             case int iValue:
-                _mpb.SetInt(propertyName, iValue);
+                _mpb.SetInt(propertyNameID, iValue);
                 break;
-            case Vector3 vecValue:
-                _mpb.SetVector(propertyName, vecValue);
+            case Vector2 vecValue:
+                _mpb.SetVector(propertyNameID, vecValue);
                 break;
             case Texture texValue:
-                _mpb.SetTexture(propertyName, texValue);
+                _mpb.SetTexture(propertyNameID, texValue);
                 break;
             default:
                 return;

@@ -19,13 +19,15 @@ public class CreatureCommandControl : MonoBehaviour
     [SerializeField]
     private Transform _mapMarkParent;
 
-    private PoolComponent _pcMoveMark;
+    private PoolComponent<GameObject> _pcMoveMark;
     private Camera _camera;
     private bool _isMoving = false;
     public float _distanceFromUnit = 5f;
     public float _radiusFromCenter = 5f;
     public int _firstRingCount = 10;
-
+    private NavMeshPath _path;
+    private NavMeshQueryFilter _filter;
+    
     private void OnDestroy()
     {
         _dicTargetPosition.Clear();
@@ -34,20 +36,26 @@ public class CreatureCommandControl : MonoBehaviour
     private void Awake()
     {
         _camera = Camera.main;
+        _path = new NavMeshPath();
+        _filter = new NavMeshQueryFilter();
+        _filter.agentTypeID = NavMesh.GetSettingsByIndex(1).agentTypeID;
+        _filter.areaMask = NavMesh.AllAreas;
     }
 
     private void Start()
     {
         PoolManager.Instance.AddPool(_moveMarkPrefab, 3, 5, _mapMarkParent);
-        _pcMoveMark = PoolManager.Instance.GetPool(_moveMarkPrefab);
+        PoolManager.Instance.TryGetPool(_moveMarkPrefab, out _pcMoveMark);
+
     }
+   
     private void Update()
     {
         SetTarget();
         if (_isMoving)
         {
             SelectedCreatureLookAt();
-            SelectedCreatureMoveTo();
+            SelectedAllCreatureMoveTo();
         }
     }
 
@@ -62,7 +70,7 @@ public class CreatureCommandControl : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && CreatureSelection.Instance.GetSelectionCharactersCount() > 0)
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
-            bool bGetHit = InputManager.Instance.TryGetByRaycast(out RaycastHit hit, ray, _camera.farClipPlane, GameLayerMask.EnvironmentLayerMask);
+            bool bGetHit = InputManager.Instance.TryGetByRaycast(out RaycastHit hit, ray, _camera.farClipPlane, GameLayerMask.EnvironmentMask);
             if (bGetHit)
             {
                 int hitLayer = hit.collider.gameObject.layer;
@@ -72,11 +80,11 @@ public class CreatureCommandControl : MonoBehaviour
                     {
                         return;
                     }
-                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, ray, _camera.farClipPlane, GameLayerMask.EnvironmentLayerMask, hitLayer);
+                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, ray, _camera.farClipPlane, GameLayerMask.EnvironmentMask, hitLayer);
                 }
                 else if (hitLayer == GameLayer.WallLayer)
                 {
-                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, hit.point, hit.transform.up * -1, _camera.farClipPlane, GameLayerMask.EnvironmentLayerMask, hitLayer);
+                    bGetHit = InputManager.Instance.TryGetByRaycast(out hit, hit.point, hit.transform.up * -1, _camera.farClipPlane, GameLayerMask.EnvironmentMask, hitLayer);
                 }
                 if (!bGetHit)
                 {
@@ -97,26 +105,35 @@ public class CreatureCommandControl : MonoBehaviour
 
             for (int i = 0; i < selectedCreatures.Count; i++)
             {
-                if (SurroundPosManager.IsPositionWalkable(targetPositions[i], _obstacleCheckRadius, _obstacleLayerMask))
+                NavMesh.CalculatePath(selectedCreatures[i].transform.position, targetPositions[i], _filter, _path);
+                NavMeshAgent navMeshAgent = selectedCreatures[i].GetNavMeshAgent();
+                Animator animator = selectedCreatures[i].GetAnimator();
+                SelectedCreatureMoveStop(selectedCreatures[i], navMeshAgent, animator);
+                if (SurroundPosManager.IsPositionWalkable(targetPositions[i], _obstacleCheckRadius, _obstacleLayerMask)&& _path.status == NavMeshPathStatus.PathComplete)
                 {
-                    NavMeshAgent navMeshAgent = selectedCreatures[i].GetNavMeshAgent();
-                    Animator animator = selectedCreatures[i].GetAnimator();
-                    SelectedCreatureMoveStop(selectedCreatures[i], navMeshAgent, animator);
                     _dicTargetPosition[selectedCreatures[i]] = targetPositions[i];
+                }
+                else
+                {
+                    SelectedAllCreatureMoveStop();
+                    return;
                 }
             }
             if (_dicTargetPosition.Count > 0)
             {
                 _isMoving = true;
-                GameObject moveMark = _pcMoveMark.PopPoolObject();
-                Vector3 moveMarkPos = _dicTargetPosition[selectedCreatures[0]];
-                moveMarkPos.y += 1.5f;
-                moveMark.transform.position = moveMarkPos;
-                Vector3 raycastStart = moveMark.transform.position + Vector3.up;
-                Vector3 raycastDir = moveMark.transform.up * -1;
-                Vector3 slopeNormal = InputManager.Instance.GetNormalByRaycast(raycastStart, raycastDir);
-                moveMark.transform.rotation = Quaternion.FromToRotation(Vector3.up, slopeNormal);
-                _pcMoveMark.ReturnPoolObject(moveMark, 1.5f);
+                if(targetPositions != null && targetPositions.Length > 0)
+                {
+                    GameObject moveMark = _pcMoveMark.PopPoolObject();
+                    Vector3 moveMarkPos = targetPositions[0];
+                    moveMarkPos.y += 1.5f;
+                    moveMark.transform.position = moveMarkPos;
+                    Vector3 raycastStart = moveMark.transform.position + Vector3.up;
+                    Vector3 raycastDir = moveMark.transform.up * -1;
+                    Vector3 slopeNormal = InputManager.Instance.GetNormalByRaycast(raycastStart, raycastDir);
+                    moveMark.transform.rotation = Quaternion.FromToRotation(Vector3.up, slopeNormal);
+                    _pcMoveMark.ReturnPoolObject(moveMark, 1.5f);
+                }
             }
         }
         else if (_dicTargetPosition.Count <= 0)
@@ -125,11 +142,20 @@ public class CreatureCommandControl : MonoBehaviour
         }
     }
 
-
-
-
     private static readonly Dictionary<CreatureController, Vector3> _dicTargetPosition = new();
-    private void SelectedCreatureMoveTo()
+    private void SelectedAllCreatureMoveStop()
+    {
+        List<CreatureController> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<CreatureController>();
+        for (int i = 0; i < selectedCreatures.Count; i++)
+        {
+            CreatureController selectedCreatureController = selectedCreatures[i];
+            NavMeshAgent selectedNavMeshAgent = selectedCreatureController.GetNavMeshAgent();
+            Animator selectedAnimator = selectedCreatureController.GetAnimator();
+            SelectedCreatureMoveStop(selectedCreatureController, selectedNavMeshAgent, selectedAnimator);
+        }
+        _dicTargetPosition.Clear();
+    }
+    private void SelectedAllCreatureMoveTo()
     {
         List<CreatureController> selectedCreatures = CreatureSelection.Instance.GetSelectionComponents<CreatureController>();
         if (selectedCreatures == null) return;
@@ -144,7 +170,7 @@ public class CreatureCommandControl : MonoBehaviour
                 selectedCreatureController.MoveToDestination(out float currentWalkSpeed, selectedNavMeshAgent, selectedAnimator, targetPosition);
                 if (!selectedNavMeshAgent.enabled || !selectedAnimator || !selectedNavMeshAgent) continue;
                 if (selectedNavMeshAgent.pathPending) continue;
-                if (currentWalkSpeed < 0.3f && selectedNavMeshAgent.remainingDistance <= selectedNavMeshAgent.stoppingDistance)
+                if ((currentWalkSpeed < 0.3f && selectedNavMeshAgent.remainingDistance <= selectedNavMeshAgent.stoppingDistance))
                 {
                     RemoveTargetPos(selectedCreatureController);
                     SelectedCreatureMoveStop(selectedCreatureController, selectedNavMeshAgent, selectedAnimator);

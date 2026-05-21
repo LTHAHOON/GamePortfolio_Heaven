@@ -10,13 +10,13 @@ public class DriveButtonController : BaseDriveButtonController
     [SerializeField] 
     private Transform _driveButtonParent;
     private readonly Dictionary<PassengerController, DriveButton> _dicDriveButton = new();
-    private PoolComponent _pcDriveButton;
+    private PoolComponent<GameObject> _pcDriveButton;
     protected virtual void Awake()
     {
         Instance = this;
         ModeButtonManager.Instance.AddModeButtonControl(this);
         PoolManager.Instance.AddPool(ThisButton.gameObject, 10, 20, _driveButtonParent);
-        _pcDriveButton = PoolManager.Instance.GetPool(ThisButton.gameObject);
+        PoolManager.Instance.TryGetPool(ThisButton.gameObject, out _pcDriveButton);
     }
 
     public void AddDriveButton(PassengerController owner, ModeType modeType, int maxCount)

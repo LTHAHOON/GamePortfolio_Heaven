@@ -66,8 +66,10 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
             owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, rot, Time.deltaTime * 3f);
             owner.transform.position = p;
         }
+
+        //앞에 무언가(우주선) 있으면 Trace로 전환
         if(InputManager.Instance.TryGetByRaycast(out RaycastHit enemy, owner.transform.position, owner.transform.forward, 
-                    _baseFsmStatData._traceDistance ,GameLayerMask.EnemyOutPlanetLayerMask))
+                    _baseFsmStatData._traceDistance , GameLayerMask.AllOutPlanetMask))
         {
             _curSpeed = Mathf.SmoothDamp(_curSpeed, -1f, ref _velocity, _smoothTime);
             if (_curSpeed <= 0f)

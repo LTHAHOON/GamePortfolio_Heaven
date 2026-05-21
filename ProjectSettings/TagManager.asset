@@ -27,7 +27,7 @@ TagManager:
   - Environment
   - Water
   - UI
-  - Planet
+  - OutPlanet_Environment
   - Grid
   - GridIndicator
   - MiniMapIcon_Space
@@ -44,15 +44,15 @@ TagManager:
   - NexusSphere
   - Creature_Enemy
   - Spacecraft_Enemy
-  - RespawnBoxes
   - Home_Enemy
+  - 
   - Ground
   - Stairs
   - Nexus
   - Nexus_Enemy
   - Notice
   - FollwingCursor
-  - 
+  - DamagableCollider
   m_SortingLayers:
   - name: Default
     uniqueID: 0
