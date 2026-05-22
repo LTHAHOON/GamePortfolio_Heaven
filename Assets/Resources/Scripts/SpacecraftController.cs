@@ -110,10 +110,10 @@ public class SpacecraftController : PassengerController, ISelectableOwner
 
     public void Initialize()
     {
+        MasterMaterialMng.Instance.SetQpaqueOrTranslucent(this, SurfaceType.Opaque);
         SetUpUnit();
         _clickCollider.enabled = true;
         _health.SetActiveHealthBar(true);
-        TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, UnitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
     }
 
     public IEnumerator IEBoading(float elapsedTime)

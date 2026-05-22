@@ -208,6 +208,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaddbd28d6812784a8e1671ed1af2a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _renderers:
+  - {fileID: 5820308796582565537}
   _clickCollider: {fileID: 2179843097095081772}
   _health: {fileID: 5508778958628241092}
   _unitInfo: {fileID: 2558612126303910355}

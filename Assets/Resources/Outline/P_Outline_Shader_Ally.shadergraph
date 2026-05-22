@@ -113,9 +113,6 @@
             "m_Id": "04d04aadb9ae425d8ab261819898e075"
         },
         {
-            "m_Id": "8ed52e60fea24695962c128a0756df38"
-        },
-        {
             "m_Id": "58511042e8b948c89f63eea6a7de878b"
         },
         {
@@ -192,6 +189,9 @@
         },
         {
             "m_Id": "a544883f820745158d98da5ec8222611"
+        },
+        {
+            "m_Id": "7d7b28c6254443a093a265bf2b3f56a4"
         }
     ],
     "m_GroupDatas": [
@@ -1232,7 +1232,7 @@
                 "m_Id": "666ff3e7333846d29508150f252bf9e9"
             },
             {
-                "m_Id": "8ed52e60fea24695962c128a0756df38"
+                "m_Id": "7d7b28c6254443a093a265bf2b3f56a4"
             }
         ]
     },
@@ -2570,7 +2570,7 @@
     "m_ObjectId": "4402ec80f4b44f9eabcab21a1b6fc9ba",
     "m_Title": "Screen 비율에 맞게 1 픽셀 UV Offset 구하기(Outline Thickness으로 두께 조절)",
     "m_Position": {
-        "x": -3566.39990234375,
+        "x": -3566.400146484375,
         "y": -266.4000244140625
     }
 }
@@ -4031,6 +4031,40 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
+    "m_ObjectId": "7d7b28c6254443a093a265bf2b3f56a4",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "SurfaceDescription.FullscreenEyeDepth",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.0,
+            "height": 0.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "ef895323cea84115ab10e5c186702b80"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_SerializedDescriptor": "SurfaceDescription.FullscreenEyeDepth"
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "7e6c06de578c47debce1e53177554574",
     "m_Id": 3,
@@ -4340,40 +4374,6 @@
 
 {
     "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.BlockNode",
-    "m_ObjectId": "8ed52e60fea24695962c128a0756df38",
-    "m_Group": {
-        "m_Id": ""
-    },
-    "m_Name": "SurfaceDescription.FullscreenEyeDepth",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 0.0,
-            "height": 0.0
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "93e8d26fbf97417f9ca63793fa90cfa2"
-        }
-    ],
-    "synonyms": [],
-    "m_Precision": 0,
-    "m_PreviewExpanded": true,
-    "m_DismissedVersion": 0,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    },
-    "m_SerializedDescriptor": "SurfaceDescription.FullscreenEyeDepth"
-}
-
-{
-    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "8fb418a9a33545818ce178c8b8d191f6",
     "m_Id": 0,
@@ -4441,21 +4441,6 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     }
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
-    "m_ObjectId": "93e8d26fbf97417f9ca63793fa90cfa2",
-    "m_Id": 0,
-    "m_DisplayName": "Eye Depth",
-    "m_SlotType": 0,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "FullscreenEyeDepth",
-    "m_StageCapability": 2,
-    "m_Value": 0.0,
-    "m_DefaultValue": 0.0,
-    "m_Labels": []
 }
 
 {
@@ -5538,7 +5523,7 @@
     "m_ObjectId": "af14dd93674f45c9bd8a882958d65127",
     "m_Title": "현재 Screen UV 위치(Screen Position)을 기준으로 처음에 구한 Offset을 더하거나 빼서 좌우상하의 위치 구하기",
     "m_Position": {
-        "x": -2650.39990234375,
+        "x": -2650.400146484375,
         "y": -412.7999267578125
     }
 }
@@ -5659,7 +5644,7 @@
     "m_ObjectId": "b5505240eeef46b7b43244175b3fb854",
     "m_Title": "깊이 차이값 구하기(차이가 클수록 경계)",
     "m_Position": {
-        "x": -1376.800048828125,
+        "x": -1376.8001708984375,
         "y": -252.0
     }
 }
@@ -5762,7 +5747,7 @@
     "m_ObjectId": "b9df0dfec18c4b21b01b6cfc38b65b5c",
     "m_Title": "좌우상하 총 깊이 차이값이 Depth Threshold보다 크면 1 아니면 0",
     "m_Position": {
-        "x": -645.5999755859375,
+        "x": -645.599853515625,
         "y": -78.4000244140625
     }
 }
@@ -6692,6 +6677,21 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "ef895323cea84115ab10e5c186702b80",
+    "m_Id": 0,
+    "m_DisplayName": "Eye Depth",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "FullscreenEyeDepth",
+    "m_StageCapability": 2,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
 }
 
 {

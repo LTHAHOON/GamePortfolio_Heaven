@@ -304,10 +304,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaddbd28d6812784a8e1671ed1af2a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _renderers:
+  - {fileID: 2423413018133883120}
+  - {fileID: 2425126180875756582}
+  - {fileID: 2423007258751033216}
+  - {fileID: 2424732029842931026}
+  - {fileID: 2423313384289839964}
   _clickCollider: {fileID: 2814546694088305313}
   _health: {fileID: 594275955916077804}
   _unitInfo: {fileID: 4717833681194256607}
   _unitMpDataComponent: {fileID: 5553665726084970932}
+  _weaponStatData:
+    _weaponController: {fileID: 0}
+  _fsmStatData:
+    _traceDistance: 10
+    _attackDistance: 10
   _boardingStatData:
     _maxCount: 7
     driveButton: {fileID: 0}
@@ -327,7 +338,6 @@ MonoBehaviour:
     _dieDelayTime: 4
   gravity: -9.81
   _isGravity: 0
-  colliderSizeData: {x: 0, y: 0, z: 0}
   _createLoad: {fileID: 8906482232642782873}
 --- !u!114 &5553665726084970932
 MonoBehaviour:
@@ -355,10 +365,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45684bb1d0ec5ff419813a586a894792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fraction: 0
+  _faction: 0
   _maxHealth: 200
   _fixedHP: 100
   _autoInitHealth: 0
+  OnLowHealth:
+    m_PersistentCalls:
+      m_Calls: []
   _collider: {fileID: 5062450271918663794}
   _isModifyingHealth: 0
 --- !u!114 &8906482232642782873

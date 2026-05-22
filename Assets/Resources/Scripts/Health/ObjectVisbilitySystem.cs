@@ -33,7 +33,7 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
         if (_cullingUIList.Contains(cullingUI) == false)
         {
             _cullingUIList.Add(cullingUI);
-            _dicTargetObj.Add(cullingUI, cullingUI.CollidekarForCulling);
+            _dicTargetObj.Add(cullingUI, cullingUI.ColliderForCulling);
         }
     }
     public void RemoveToList(ICullingUI loadingText, bool doDestroy = true)

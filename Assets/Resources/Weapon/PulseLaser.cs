@@ -2,24 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PulseLaser : Weapon
+public class PulseLaser : Weapon<BulletData>
 {
     [SerializeField]
     private TrailRenderer _trailRenderer;
     [Header("추적할 수 있는 최대 지름")]
     [SerializeField]
-    private float _rayRadius = 5f;
-    [Header("추적할 수 있는 최대 거리")]
-    [SerializeField]
-    private float _rayDistance = 200f;
-    [Header("딜레이")]
-    [SerializeField]
-    private float _dealyTime = 0.1f;
-    [Header("속도")]
-    [SerializeField]
-    private float _pulseSpeed = 100f;
-    [SerializeField]
-    private float _fixedDamage = 1.5f;
     private PoolComponent<PulseLaser> _raserPoolComponent;
     private float _maxTime = 1f;
     private float _curTime = 0f;
@@ -40,7 +28,7 @@ public class PulseLaser : Weapon
             Fire();
             if(IsWeakRaser())
             {
-                float damage = _owner.Status.ATK * _fixedDamage;
+                float damage = _owner.Status.ATK * _weaponData.FixedDamage;
                 _targetHealth.ModifyHealth(-damage);
                 Init();
                 _raserPoolComponent?.ReturnPoolObject(this);
@@ -66,7 +54,7 @@ public class PulseLaser : Weapon
     public void Fire()
     {
         _curTime += Time.deltaTime;
-        float movePos = _curTime * _pulseSpeed;
+        float movePos = _curTime * _weaponData.PulseSpeed;
         transform.position = _startPoint + (_fireDirection * movePos);
         SetActiveTrail(true);
     }
@@ -95,11 +83,10 @@ public class PulseLaser : Weapon
         //실제 거리 계산
         float distance = _fireDirection.magnitude;
         _fireDirection.Normalize();
-        _maxTime = distance / _pulseSpeed;
+        _maxTime = distance / _weaponData.PulseSpeed;
     }
     public bool IsWeakRaser() => _curTime >= _maxTime;
-    public float RayRadius => _rayRadius;
-    public float RayDistance => _rayDistance;
-    public float DelayTime => _dealyTime;
-    public float PulseSpeed => _pulseSpeed;
+    public float RayRadius => _weaponData.RayRadius;
+    public float RayDistance => _weaponData.RayDistance;
+    public float DelayTime => _weaponData.DealyTime;
 }

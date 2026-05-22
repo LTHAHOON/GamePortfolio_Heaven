@@ -7,6 +7,8 @@ using UnityEngine.Serialization;
 public abstract class Unit : MonoBehaviour
 {
     [SerializeField]
+    private Renderer[] _renderers;
+    [SerializeField]
     protected Collider _clickCollider;
     [SerializeField]
     protected Health _health;
@@ -18,7 +20,6 @@ public abstract class Unit : MonoBehaviour
     private ModeType _curModeType = ModeType.DefenseMode;
     private DragSelectable _dragSelectable;
     private Selectable _selectable;
-
     protected virtual void Awake()
     {
         #region Selectable 컴포넌트 할당(없으면 NULL)
@@ -40,6 +41,8 @@ public abstract class Unit : MonoBehaviour
     {
         _curModeType = modeType;
     }
+
+    public Renderer[] GetRenderers() => _renderers;
     public ModeType CurrentModeType => _curModeType;
     public ModeType OppositeModeType => _curModeType == ModeType.AttackMode ? ModeType.DefenseMode : ModeType.AttackMode;
     public MPData UnitMPInitData => _unitMpDataComponent.UnitMPData;

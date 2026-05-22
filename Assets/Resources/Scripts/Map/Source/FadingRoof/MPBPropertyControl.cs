@@ -5,7 +5,7 @@ using UnityEngine;
 public class MPBPropertyControl 
 {
     private static MaterialPropertyBlock _mpb;
-
+    
     public static void ChangeMaterialProperty<T>(Renderer renderer, int propertyNameID, T value)
     {
         if(_mpb == null)

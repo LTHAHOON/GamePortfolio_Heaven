@@ -57,9 +57,9 @@ public class HomeController : Unit
 
     private void Initialize()
     {
+        MasterMaterialMng.Instance.SetQpaqueOrTranslucent(this, SurfaceType.Opaque);
         SetUpUnit();
         _health.SetActiveHealthBar(true);
-        TransparentMaterialControl.SetQpaqueOrTransparentControl(gameObject, UnitType, TransparentMaterialControl.SurfaceType.Opaque, new Color32(255, 255, 255, 255));
     }
 
     private void HomeFunction()

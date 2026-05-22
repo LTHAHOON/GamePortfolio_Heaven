@@ -6,7 +6,7 @@ public class WeaponController :MonoBehaviour
 {
     public virtual Unit Owner { get; }
     [SerializeField]
-    protected Weapon _weaponPrefab;
+    protected WeaponBase _weaponPrefab;
 
     public virtual void Init() { }
     public virtual void Attack() { }

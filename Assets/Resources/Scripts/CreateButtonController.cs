@@ -23,7 +23,6 @@ public class CreateButtonController : ModeButtonController
 
     private bool _isCreatableByPointerPos = true; // 마우스 포인터 위치에 의한 생성 가능 여부
     private Unit _curSpawnedUnit;
-    private TransparentMaterialControl.SurfaceType _transparentType = TransparentMaterialControl.SurfaceType.Transparent;
     private Color changedColor = new Color32(255, 255, 255, 60);
     public override void OnEnter()
     {
@@ -31,7 +30,7 @@ public class CreateButtonController : ModeButtonController
         _planetButtonController.SetToggleIsOn(0, true);
         _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_selectedUnitPrefab);
         InitCreateCount(_curSpawnedUnit.UnitMPInitData); //MPData로 생성 카운트 세팅(MPData 필요)
-        TransparentMaterialControl.SetQpaqueOrTransparentControl(_curSpawnedUnit.gameObject, _curSpawnedUnit.UnitType, _transparentType, changedColor);
+        MasterMaterialMng.Instance.SetQpaqueOrTranslucent(_curSpawnedUnit, SurfaceType.Translucent);
         //TODO: GridBuildingContainer 열기
         ButtonSystem.buttonInvoker.PressButton(ButtonIdentifier.Open, _gridBuildingContainer);
     }
@@ -85,7 +84,7 @@ public class CreateButtonController : ModeButtonController
         //TODO: 현재 생성할 갯수 하나 소모하기
         _createCountController.ConsumeCurCreateCount(1);
         _curSpawnedUnit = UnitSpawnManager.Instance.Spawn(_selectedUnitPrefab);
-        TransparentMaterialControl.SetQpaqueOrTransparentControl(_curSpawnedUnit.gameObject, _curSpawnedUnit.UnitType, _transparentType, changedColor);
+        MasterMaterialMng.Instance.SetQpaqueOrTranslucent(_curSpawnedUnit, SurfaceType.Translucent);
         if (_createCountController.GetCurCreateCount() <= 0)
         {
             OnExit();

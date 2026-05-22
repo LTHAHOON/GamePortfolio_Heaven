@@ -43,6 +43,8 @@ public class GameLayerManager : Singleton<GameLayerManager>
         public LayerMask _roofLayer;
         [Header("벽 레이어")]
         public LayerMask _wallLayer;
+        [Header("아웃라인 없는 레이어")]
+        public LayerMask _removedOutlineLayer;
     }
     #endregion
 
@@ -78,6 +80,7 @@ public static class GameLayer
     private static int _outPlanetLayerCache = -1;
     private static int _creatureLayerCache = -1;
     private static int _spacecraftLayerCache = -1;
+    private static int _removedOutlineLayerCache = -1;
     private static int _roofLayerCache = -1;
     private static int _wallLayerCache = -1;
     public static int RoofLayer => _roofLayerCache.GetLayer(GameLayerManager.Instance.LayerData._roofLayer);
@@ -86,6 +89,7 @@ public static class GameLayer
     public static int OutPlanetEnemyLayer => _outPlanetEnemyLayerCache.GetLayer(GameLayerManager.Instance.LayerData._outPlanetEnemyLayer);
     public static int CreatureLayer => _creatureLayerCache.GetLayer(GameLayerManager.Instance.LayerData._creatureLayer);
     public static int SpacecraftLayer => _spacecraftLayerCache.GetLayer(GameLayerManager.Instance.LayerData._spacecraftLayer);
+    public static int RemovedOutlineLayer => _removedOutlineLayerCache.GetLayer(GameLayerManager.Instance.LayerData._removedOutlineLayer);
     public static int GetLayer(this ref int layerCache, LayerMask layerMask)
     {
         if(layerCache < 0)

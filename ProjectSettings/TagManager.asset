@@ -50,7 +50,7 @@ TagManager:
   - Stairs
   - Nexus
   - Nexus_Enemy
-  - Notice
+  - RemovedOutline
   - FollwingCursor
   - DamagableCollider
   m_SortingLayers:

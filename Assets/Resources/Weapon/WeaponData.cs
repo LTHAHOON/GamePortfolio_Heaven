@@ -4,12 +4,8 @@ using UnityEngine;
 
 public class WeaponData : ScriptableObject
 {
-    
+    [SerializeField]
+    private float _fixedDamage = 1.5f;
+    public float FixedDamage => _fixedDamage;
 }
 
-
-[CreateAssetMenu(fileName = "BulletData", menuName = "WeaponData/BulletData")]
-public class BulletData : WeaponData
-{
-
-}
