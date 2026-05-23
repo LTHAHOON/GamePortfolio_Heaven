@@ -6,6 +6,8 @@ using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 public interface IStateData { }
 
@@ -176,6 +178,7 @@ public class CreatureAnimatorStatData : IStateData<CreatureAnimatorStatData>
         return this;
     }
 }
+
 public enum CreatureAnimParameter
 {
     IsWalk,
@@ -203,8 +206,50 @@ public class LayerTargetStatData : IStateData<LayerTargetStatData>
 [Serializable]
 public class DieStatData : IStateData<DieStatData>
 {
+    [Header("Die Particles (Random)")]
+    [SerializeField]
+    private ParticleSystem[] _dieParticleSystems;
     [Header("사망 후 오브젝트 제거 딜레이 시간")]
     public float _dieDelayTime = 4f;
+    private string _alphaProperty = "_Alpha";
+    private string _lavaDissolveProperty = "_LavaDissolve";
+    private int _lavaDissolvePropertyID = -1;
+    private int _alphaPropertyID = -1;
+    public int AlphaPropertyID
+    {
+        get
+        {
+            if (_alphaPropertyID < 0)
+            {
+                _alphaPropertyID = Shader.PropertyToID(_alphaProperty);
+            }
+            return _alphaPropertyID;
+        }
+    }
+    public int LavaDissolvePropertyID
+    {
+        get
+        {
+            if (_lavaDissolvePropertyID < 0)
+            {
+                _lavaDissolvePropertyID = Shader.PropertyToID(_lavaDissolveProperty);
+            }
+            return _lavaDissolvePropertyID;
+        }
+    }
+    public void PlayDieParticle(out float totalTime)
+    {
+        if(_dieParticleSystems.Length > 0)
+        {
+            int randomeIndex = Random.Range(0, _dieParticleSystems.Length);
+            totalTime = _dieParticleSystems[randomeIndex].main.duration;
+            _dieParticleSystems[randomeIndex].Play();
+            return;
+        }
+
+        totalTime = 0f;
+    }
+    
     public DieStatData GetData()
     {
         return this;

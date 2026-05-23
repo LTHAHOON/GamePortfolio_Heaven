@@ -23,7 +23,11 @@ public class CreatureDeSelectionState : State<CreatureState, CreatureController>
         CreatureController creature = stateMachine.GetOwner();
         NavMeshAgentStatData navMeshAgentStatData = _navMeshStatData._navmeshAgentData;
         NavMeshAgent navMeshAgent = navMeshAgentStatData._navMeshAgent;
-
+        if (!navMeshAgent.enabled)
+        {
+            stateMachine.ChangeState(CreatureState.Idle);
+            return;
+        }
         creature.MoveToDestination(out float currenntWalkSpeed, navMeshAgent, _animatorStatData._animator);
         if (currenntWalkSpeed < 0.3f || navMeshAgentStatData.IsNavPathInValid)
         {

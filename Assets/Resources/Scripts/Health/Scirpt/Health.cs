@@ -20,6 +20,10 @@ public class Health : MonoBehaviour
     [SerializeField]
     private UnityEvent OnLowHealth;
 
+    [Header("체력이 다 떨어졌을 경우의 이벤트")]
+    [SerializeField]
+    private UnityEvent OnDieHealth;
+    
     public static event Action<Health, Faction> OnHealthAdded;
     public static event Action<Health> OnHealthRemoved;
     public static event Func<Health, HealthBar> OnHealthFinder;
@@ -104,9 +108,16 @@ public class Health : MonoBehaviour
         if (amount < 0)
         {
             OnDamageHit?.Invoke();
-            if ((_currentHealth) <= 0)
+            if (IsLowHealth())
+            {
+                OnLowHealth?.Invoke();
+                OnLowHealth = null;
+            }
+            if (IsDead())
             {
                 StopAllCoroutines();
+                OnDieHealth?.Invoke();
+                OnDieHealth = null;
                 OnDie?.Invoke();
                 enabled = false;
             }
@@ -138,6 +149,15 @@ public class Health : MonoBehaviour
         OnHealthRemoved?.Invoke(this);
     }
 
+    public bool IsLowHealth()
+    {
+        return (_currentHealth / _maxHealth) <= 0.5f;
+    }
+    public bool IsDead()
+    {
+        return (_currentHealth <= 0);
+    }
+    
     public Faction Faction => _faction;
     public HealthBar HealthBar => _healthBar;
     public float MaxHealth => _maxHealth;

@@ -48,6 +48,8 @@ public abstract class Selection<T> : Singleton<Selection<T>>, ISelection where T
         {
             if (selectedTarget is T selectedCretureFSM)
             {
+                if (!_selectedList.Contains(selectedCretureFSM))
+                    return;
                 _selectedList.Add(selectedCretureFSM);
             }
         }
@@ -94,10 +96,9 @@ public class SelectionManager : Singleton<SelectionManager>
         ISelection selection = InputManager.Instance.TrySelection(out bool bOnClick, Camera.main,
                                             _clickColliderLayer, true);
         bool bSelected = selection != null && bOnClick;
-        if (bSelected)
+        if (selection != null)
         {
             selection.OnSelectOrClearSelection(bSelected);
-            return;
         }
         else if (bOnClick)
         {
@@ -106,7 +107,7 @@ public class SelectionManager : Singleton<SelectionManager>
         
         List<ISelection> selectionList = InputManager.Instance.TryDragSelectionByUnitType(out bool bOnDrag, Camera.main, UnitType.Creature);
         bSelected = selectionList != null && bOnDrag;
-        if (bSelected)
+        if (selectionList != null)
         {
             for (int i = 0; i < selectionList.Count; i++)
             {

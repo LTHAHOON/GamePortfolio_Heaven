@@ -48,30 +48,30 @@ public class UnitStorageManager : Singleton<UnitStorageManager>
         };
     }
 
-    public void AddUnitToStorageList(Faction faction, UnitType unitType, Unit unitprefab)
+    public void AddUnitToStorageList(Faction faction, UnitType unitType, Unit unit)
     {
         bool bGetChild = TryGetUnitList(out List<Unit> unitList, faction, unitType);
         if(bGetChild)
         {
-            unitList.Add(unitprefab);
+            unitList.Add(unit);
         }
     }
-    public void RemoveUnitToStorageList(Faction faction, UnitType unitType, Unit unitprefab, float dieDelayTime = 0f, CreatureAnimatorStatData animatorStatData = null)
+    public void RemoveUnitToStorageList(Faction faction, UnitType unitType, Unit unit, float dieDelayTime = 0f, Animator animator = null, int animParaID = -1)
     {
-        if (ContainsUnitPrefab(faction, unitprefab,  unitType))
+        if (ContainsUnit(faction, unit,  unitType))
         {
             var storage = GetDictionaryStorage(faction);
-            storage[unitType]._unitList.Remove(unitprefab);
-            unitprefab.GetClickCollider().enabled = false;
-            animatorStatData?._animator.SetTrigger(animatorStatData._dicAnimParameterHash[CreatureAnimParameter.Die]);
-            StartCoroutine(IEDestroyUnit(unitprefab, dieDelayTime));
+            storage[unitType]._unitList.Remove(unit);
+            unit.GetClickCollider().enabled = false;
+            animator?.SetTrigger(animParaID);
+            StartCoroutine(IEDestroyUnit(unit, dieDelayTime));
         }
 
     }
-    public IEnumerator IEDestroyUnit(Unit unitPrefab, float dieDelayTime)
+    public IEnumerator IEDestroyUnit(Unit unit, float dieDelayTime)
     {
         yield return new WaitForSeconds(dieDelayTime);
-        Destroy(unitPrefab.gameObject);
+        Destroy(unit.gameObject);
     }
 
     public bool TryGetUnitList(out List<Unit> unitList, Faction faction, UnitType unitType)
@@ -86,10 +86,10 @@ public class UnitStorageManager : Singleton<UnitStorageManager>
         return false;
     }
 
-    public bool ContainsUnitPrefab(Faction faction, Unit unitPrefab, UnitType unitType)
+    public bool ContainsUnit(Faction faction, Unit unit, UnitType unitType)
     {
         var storage = GetDictionaryStorage(faction);
-        return storage[unitType]._unitList.Contains(unitPrefab);
+        return storage[unitType]._unitList.Contains(unit);
     }
     public bool ContainsUnitType(Faction faction, UnitType unitType)
     {

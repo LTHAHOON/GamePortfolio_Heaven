@@ -18,7 +18,6 @@ public class CreatureSelectionState : State<CreatureState, CreatureController>
     public override void EnterState(StateMachine<CreatureState, CreatureController> stateMachine)
     {
         CreatureController creature = stateMachine.GetOwner();
-
         creature.SetEnableNavMeshAgent(_navMeshStatData);
         _navMeshStatData._navmeshAgentData._navMeshAgent.stoppingDistance = 0.5f;
     }

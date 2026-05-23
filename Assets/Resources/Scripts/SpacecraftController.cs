@@ -16,13 +16,13 @@ public enum SpacecraftState
     Attack,
     Landing,
     GetOff,
+    Die,
 }
 
 [RequireComponent(typeof(Rigidbody))]
 public class SpacecraftController : PassengerController, ISelectableOwner
 {
     #region State 데이터
-    private BezierCurveStatData _curveStatData = new();
     [Header("무기 데이터")]
     [SerializeField]
     private WeaponStatData _weaponStatData;
@@ -41,6 +41,8 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     [Header("Die 데이터")]
     [SerializeField]
     private DieStatData _dieStatData;
+    private BezierCurveStatData _curveStatData = new();
+    
     private StateMachine<SpacecraftState, SpacecraftController> _stateMachine;
     public StateMachine<SpacecraftState, SpacecraftController> StateMachine => _stateMachine;
     #endregion
@@ -82,12 +84,14 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         _stateMachine.AddState(new SpacecraftDriveState());
         _stateMachine.AddState(new SpacecraftLandingState());
         _stateMachine.AddState(new SpacecraftGetOffState());
-
+        _stateMachine.AddState(new SpacecraftDieState());
+        _stateMachine.ChangeState(SpacecraftState.Idle);
         #endregion
         _clickCollider.enabled = false;
         _rigidbody = GetComponent<Rigidbody>();
         _collider = GetComponent<Collider>();
         _collider.isTrigger = true;
+        _health.OnDie += Die;
     }
     
     private void Update()
@@ -108,7 +112,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     }
     #endregion
 
-    public void Initialize()
+    private void Initialize()
     {
         MasterMaterialMng.Instance.SetQpaqueOrTranslucent(this, SurfaceType.Opaque);
         SetUpUnit();
@@ -139,7 +143,17 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         _layerTargetStatData._layerTargetList.SetLayerList(gameObject, true, GameLayer.OutPlanetLayer);
         _stateMachine.ChangeState(SpacecraftState.Drive);
     }
+    
+    #region 죽을 때 호출되는 함수
 
+    private void Die()
+    {
+        _health.HealthBar.StopAllCoroutines();
+        _stateMachine.ChangeState(SpacecraftState.Die);
+    }
+
+    #endregion
+    
     #region Set DestMark
     public void SetDestMark(GameObject destMark, Action<GameObject> returnDestMark)
     {
@@ -151,7 +165,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
         creature.SetDestMark(_attackMark, OnReturnDestMark);
     }
     #endregion
-
+    
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(GameTags.Ground) && _isGravity)
@@ -164,7 +178,7 @@ public class SpacecraftController : PassengerController, ISelectableOwner
                     _stateMachine.ChangeState(SpacecraftState.Idle);
                 });
             }
-             _collider.isTrigger = false;
+            _collider.isTrigger = false;
             _rigidbody.isKinematic = true;
             _isGravity = false;
         }

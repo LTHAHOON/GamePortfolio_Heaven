@@ -38,7 +38,7 @@ public class CreatureIdleState : State<CreatureState, CreatureController>
         origin.y += 30f;
         if (creature.IsCustomTarget)
         {
-
+            
         }
 
         else if ((SurroundPosManager.IsContainTargetPos(creature.gameObject, _surroundPosData._surroundPosGroup) && creature.IsDestMarkExist))

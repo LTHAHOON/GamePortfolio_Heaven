@@ -18,7 +18,10 @@ public class SpacecraftAttackState : State<SpacecraftState, SpacecraftController
         if (_baseFsmStatData == null || _weaponStatData == null)
             return;
         if (!_baseFsmStatData.TargetCollider || !_weaponStatData.WeaponController)
+        {
+            stateMachine.ChangeState(SpacecraftState.Trace);
             return;
+        }
         
         SpacecraftController owner = stateMachine.GetOwner();
         Vector3 raycastStart = owner.transform.position;
@@ -39,7 +42,6 @@ public class SpacecraftAttackState : State<SpacecraftState, SpacecraftController
 
         var weaponController = _weaponStatData.WeaponController;
         weaponController.Attack();
-        Debug.Log("Attack");
     }
 
     public override void ExitState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)

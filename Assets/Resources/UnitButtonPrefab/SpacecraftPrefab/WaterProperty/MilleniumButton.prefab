@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7fbc192880846c45a3b2302961080a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spawnHeightOffset: 1.5
+  _spawnHeightOffset: 2
 --- !u!114 &3041386104886428027
 MonoBehaviour:
   m_ObjectHideFlags: 0
