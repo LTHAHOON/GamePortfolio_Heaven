@@ -20,6 +20,12 @@ public class CreatureSelectionState : State<CreatureState, CreatureController>
         CreatureController creature = stateMachine.GetOwner();
         creature.SetEnableNavMeshAgent(_navMeshStatData);
         _navMeshStatData._navmeshAgentData._navMeshAgent.stoppingDistance = 0.5f;
+        if (creature.IsDestMarkExist)
+        {
+            creature.ReleaseDestMark();
+            SurroundPosManager.ReleaseTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
+            SurroundPosManager.ReleaseSurroundPosGroup(_surroundPosData._surroundPosGroup);
+        }
     }
 
     public override void UpdateState(StateMachine<CreatureState, CreatureController> stateMachine)
@@ -38,8 +44,9 @@ public class CreatureSelectionState : State<CreatureState, CreatureController>
             attackDistance = creature.GetNexusAttackDistance(_navMeshStatData._navmeshAgentData);
             Vector3 enemyNexusPos = NexusManager.Instance.GetNexusPosByFraction(Faction.Enemy);
             distanceToTarget = creature.GetDistanceTo(enemyNexusPos);
-        } 
-        if(distanceToTarget > (attackDistance * attackDistance))
+        }
+
+        if (distanceToTarget > (attackDistance * attackDistance))
         {
             SurroundPosManager.ReleaseTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
         }

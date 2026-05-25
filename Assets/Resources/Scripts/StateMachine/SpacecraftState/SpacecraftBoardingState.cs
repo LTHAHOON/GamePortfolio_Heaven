@@ -56,7 +56,7 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
         if (isPathValid)
         {
 
-            DriveButtonController.Instance.AddDriveButton(owner, owner.CurrentModeType, _boardingStatData._finalMaxCount);
+            DriveButtonController.Instance.AddDriveButton(owner, _boardingStatData._finalMaxCount);
             _boardingStatData.driveButton = DriveButtonController.Instance.GetDriveButton(owner);
         }
         else
@@ -90,6 +90,11 @@ public class SpacecraftBoardingState : State<SpacecraftState, SpacecraftControll
             {
                 _boardingStatData.driveButton.SetDriveCount(_boardingStatData._curCount, --_boardingStatData._finalMaxCount);
                 boardingPassengerList.RemoveAt(i);
+                if ( _boardingStatData._finalMaxCount == 0)
+                {
+                    DriveButtonController.Instance.RemoveDriveButton(owner);
+                }
+                
                 return;
             }
         }

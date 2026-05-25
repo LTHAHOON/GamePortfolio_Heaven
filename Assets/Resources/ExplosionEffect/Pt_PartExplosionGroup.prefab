@@ -4847,6 +4847,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pt_PartExplosion_01
       objectReference: {fileID: 0}
+    - target: {fileID: 1136577313994382172, guid: 6dd3d42ace2f41748bfd419e2525c917,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9171615559183005099, guid: 6dd3d42ace2f41748bfd419e2525c917,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4920,6 +4925,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pt_PartExplosion_04
+      objectReference: {fileID: 0}
+    - target: {fileID: 2123783889858385148, guid: 561129310ec123049969394669c34772,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6580900145314572272, guid: 561129310ec123049969394669c34772,
         type: 3}
@@ -4995,6 +5005,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pt_PartExplosion_02
       objectReference: {fileID: 0}
+    - target: {fileID: 3748482782789893824, guid: c534d3e326a6a1a4babb4d458f6eb746,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8876055476614068538, guid: c534d3e326a6a1a4babb4d458f6eb746,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5068,6 +5083,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Pt_PartExplosion_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 3510701115904806897, guid: 269b565f1b6cd9041b19b3a55f7abc2e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5444066666762566855, guid: 269b565f1b6cd9041b19b3a55f7abc2e,
         type: 3}

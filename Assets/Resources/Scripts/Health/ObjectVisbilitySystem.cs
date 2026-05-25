@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,13 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
     private float _curCheckTime = 0;
     private readonly List<ICullingUI> _cullingUIList = new();
     private readonly Dictionary<ICullingUI, Collider> _dicTargetObj = new();
-    
+    private Camera _camera;
+
+    private void Awake()
+    {
+        _camera = Camera.main;
+    }
+
     private void Update()
     {
         _curCheckTime += Time.deltaTime;
@@ -33,26 +40,28 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
         if (_cullingUIList.Contains(cullingUI) == false)
         {
             _cullingUIList.Add(cullingUI);
-            _dicTargetObj.Add(cullingUI, cullingUI.ColliderForCulling);
+            _dicTargetObj.TryAdd(cullingUI, cullingUI.ColliderForCulling);
         }
     }
-    public void RemoveToList(ICullingUI loadingText, bool doDestroy = true)
+    public void RemoveToList(ICullingUI cullingUI, bool doDestroy = true)
     {
-        if (_cullingUIList.Contains(loadingText))
+        if (_cullingUIList.Contains(cullingUI))
         {
-            _cullingUIList.Remove(loadingText);
-            if (doDestroy)
+            _cullingUIList.Remove(cullingUI);
+        }
+        if (_dicTargetObj.Remove(cullingUI, out Collider collider))
+        {
+            if (collider && doDestroy)
             {
-                Destroy(loadingText.ThisGameObject);
+                Destroy(cullingUI.ThisGameObject);
             }
-            _dicTargetObj.Remove(loadingText);
+                   
         }
     }
 
     private void ObjectVisibleProcess()
     {
         bool isSubCameraActive = UIManager.Instance.IsSubCameraActive;
-        Camera camera = Camera.main;
 
         _ScreenUICanvas.sortingOrder = isSubCameraActive ? 2 : 0;
         for (int i = 0; i < _cullingUIList.Count; i++)
@@ -62,18 +71,20 @@ public class ObjectVisbilitySystem : Singleton<ObjectVisbilitySystem>
             {
                 continue;
             }
-            
+
+            if (collider == null)
+                continue;
             bool shouldActive;
 
             if (isSubCameraActive)
             {
-                shouldActive = CheckFrustrum(collider, camera);
+                shouldActive = CheckFrustrum(collider, _camera);
             }
             else
             {
                 shouldActive = (collider.gameObject.layer == GameLayer.OutPlanetLayer || collider.gameObject.layer == GameLayer.OutPlanetEnemyLayer)
-                               && CheckFrustrum(collider, camera)
-                               && CheckObjectVisible(camera, collider);
+                               && CheckFrustrum(collider, _camera)
+                               && CheckObjectVisible(_camera, collider);
             }
             if(cullingUI.ThisGameObject)
             {

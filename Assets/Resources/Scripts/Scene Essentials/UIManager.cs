@@ -82,6 +82,10 @@ public class UIManager : Singleton<UIManager>
     private CanvasScaler _hudCanvasScaler;
     [SerializeField]
     private RectMask2D _spaceHUDMask;
+
+    [SerializeField] 
+    private GameObject _createCountUI;
+    
     void Awake()
     {
         LoadButtonColor();
@@ -236,7 +240,8 @@ public class UIManager : Singleton<UIManager>
             buttonTransform.localScale = Vector3.Lerp(buttonTransform.localScale, baseScale, Time.deltaTime * _buttonScaleUPSpeed);
         }
     }
-
+    
+    public bool IsCreateCountUIActive => _createCountUI.gameObject.activeSelf;
     public bool IsSubCameraActive => _spaceHUDMask.enabled;
     public CanvasScaler HUDCanvasScaler => _hudCanvasScaler;
 }

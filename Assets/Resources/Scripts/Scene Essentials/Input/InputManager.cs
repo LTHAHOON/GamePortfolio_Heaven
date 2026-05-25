@@ -78,8 +78,7 @@ public class InputManager : Singleton<InputManager>
                     ISelection selection = SelectionManager.Instance.GetSelection(selectable);
                     if (selection != null)
                     {
-                        selectable.OnSelected();
-                        selection.AddToSelectedList(selectable.Owner);
+                        selection.AddToSelectedList(selectable);
                         //OnDebugSelection(1);
                         return selection;
                     }
@@ -163,7 +162,7 @@ public class InputManager : Singleton<InputManager>
                         {
                             ++unitCount;
                             dragSelectable.OnDragSelected();
-                            dragSelection.AddToSelectedList(dragSelectable.Owner);
+                            dragSelection.AddToSelectedList(dragSelectable);
                             _selectionList.Add(dragSelection);
                         }
                     }

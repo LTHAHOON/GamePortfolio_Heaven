@@ -20,7 +20,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private Camera _camera;
     [SerializeField]
-    private CinemachineVirtualCamera _virtualCamera;
+    private CinemachineVirtualCamera _vCam;
     private CinemachineFramingTransposer _vcFramingTransposer;
     [SerializeField]
     private float _cameraMoveSpeed = 20f;
@@ -36,11 +36,11 @@ public class CameraController : MonoBehaviour
     private float yRotate;
     private float _startYRotation = -48f;
     private float _mouseSpeed = 700f;
-    private Vector3 pos;
+    private Vector3 _pos;
     private void Awake()
     {
         _mouseCursorController.ShowCursor(true);
-        _vcFramingTransposer = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+        _vcFramingTransposer = _vCam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
     void Start()
@@ -68,12 +68,20 @@ public class CameraController : MonoBehaviour
 
     private void LateUpdate()
     {
-        BlockMoveByClamp();
         if (UIManager.Instance.IsSubCameraActive)
         {
             return;
         }
         ScrollMoveUpdate();
+        BlockMoveByClamp();
+    }
+
+    private void Update()
+    {
+        if (UIManager.Instance.IsSubCameraActive != _vCam.enabled)
+            return;
+        
+        _vCam.enabled = !UIManager.Instance.IsSubCameraActive;
     }
 
     private void ScrollMoveUpdate()
@@ -89,11 +97,11 @@ public class CameraController : MonoBehaviour
 
     private void BlockMoveByClamp()
     {
-        pos = transform.position;
-        pos.x = Mathf.Clamp(transform.position.x, _cameraTransformData.min_x, _cameraTransformData.max_x);
-        pos.y = Mathf.Clamp(transform.position.y, _cameraTransformData.min_y, _cameraTransformData.max_y);
-        pos.z = Mathf.Clamp(transform.position.z, _cameraTransformData.min_z, _cameraTransformData.max_z);
-        transform.position = pos;
+        _pos = transform.position;
+        _pos.x = Mathf.Clamp(transform.position.x, _cameraTransformData.min_x, _cameraTransformData.max_x);
+        _pos.y = Mathf.Clamp(transform.position.y, _cameraTransformData.min_y, _cameraTransformData.max_y);
+        _pos.z = Mathf.Clamp(transform.position.z, _cameraTransformData.min_z, _cameraTransformData.max_z);
+        transform.position = _pos;
     }
 
     private void CameraMove()

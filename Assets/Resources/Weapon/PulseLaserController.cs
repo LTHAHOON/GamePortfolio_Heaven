@@ -138,6 +138,6 @@ public class PulseLaserController : WeaponController
     }
     private void OnDestroy()
     {
-        PoolManager.Instance.RemovePool(_weaponPrefab);
+        PoolManager.Instance.RemovePoolUsingID(GetInstanceID());
     }
 }

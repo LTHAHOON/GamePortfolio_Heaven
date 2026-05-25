@@ -31,9 +31,9 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                 for (int j = 0; j < unSpawnedList[i].PassengerCount; j++)
                 {
                     Vector3 searchPos = owner.transform.position;
-                    if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
+                    //if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
                     {
-                        CreatureController creature = UnitSpawnManager.Instance.Spawn(creaturePrefab, hit.position);
+                        CreatureController creature = UnitSpawnManager.Instance.Spawn(creaturePrefab,searchPos);
                         if (i == 0 && j == 0)
                         {
                             creature.SetSurroundPosGroup(SurroundPosManager.AssignCenterTargetPosition(creature.gameObject, owner.GoalData._passengerGoalPos,
@@ -65,7 +65,7 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                 if (spawnedList[i] is not CreatureController creature)
                     continue;
                 Vector3 searchPos = owner.transform.position;
-               // if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(searchPos, out NavMeshHit hit, 25f, NavMesh.AllAreas))
                 {
                     if (i == 0)
                     {
@@ -80,7 +80,7 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
                     }
                     
                     SurroundPosManager.TryGetAssignedTargetPositionAround(creature.gameObject,initalGroup, out Vector3 assigendPos);
-                    creature.transform.position = searchPos;
+                    creature.transform.position = hit.position;
                     creature.gameObject.SetActive(true);
                     creature.SetModeType(owner.CurrentModeType);
                     creature.OnUnboard(assigendPos);
@@ -90,6 +90,7 @@ public class SpacecraftGetOffState : State<SpacecraftState, SpacecraftController
         }
         #endregion
         owner.ClearPassengerDatas();
+        stateMachine.ChangeState(SpacecraftState.Idle);
     }
 
     public override void UpdateState(StateMachine<SpacecraftState, SpacecraftController> stateMachine)

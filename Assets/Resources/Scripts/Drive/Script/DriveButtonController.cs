@@ -10,20 +10,24 @@ public class DriveButtonController : BaseDriveButtonController
     [SerializeField] 
     private Transform _driveButtonParent;
     private readonly Dictionary<PassengerController, DriveButton> _dicDriveButton = new();
-    private PoolComponent<GameObject> _pcDriveButton;
-    protected virtual void Awake()
+    private PoolComponent<DriveButton> _pcDriveButton;
+    protected override void Awake()
     {
+        base.Awake();
         Instance = this;
+        if (!ThisButton.gameObject.TryGetComponent(out DriveButton driveButton))
+            return;
         ModeButtonManager.Instance.AddModeButtonControl(this);
-        PoolManager.Instance.AddPool(ThisButton.gameObject, 10, 20, _driveButtonParent);
-        PoolManager.Instance.TryGetPool(ThisButton.gameObject, out _pcDriveButton);
+        PoolManager.Instance.AddPool(driveButton, 10, 20, _driveButtonParent);
+        PoolManager.Instance.TryGetPool(driveButton, out _pcDriveButton);
     }
 
-    public void AddDriveButton(PassengerController owner, ModeType modeType, int maxCount)
+    public void AddDriveButton(PassengerController owner, int maxCount)
     {
-        GameObject driveButtonObj = _pcDriveButton.PopPoolObject();
-        if (!driveButtonObj.TryGetComponent(out DriveButton driveButton))
+        DriveButton driveButton = _pcDriveButton.PopPoolObject();
+        if (!driveButton)
             return;
+
         driveButton.SetOwner(owner);
         driveButton.SetOnClickDriveEvent(OnClickDrive);
         driveButton.SetDriveCount(0, maxCount);
@@ -33,13 +37,16 @@ public class DriveButtonController : BaseDriveButtonController
     }
     public void RemoveDriveButton(PassengerController owner)
     {
-        ObjectVisbilitySystem.Instance.RemoveToList(_dicDriveButton[owner], false);
-        ModeButtonManager.Instance.RemoveListenerModeButton(this, _dicDriveButton[owner].ThisButton);
-        _pcDriveButton.ReturnPoolObject(_dicDriveButton[owner].gameObject);
         if (_dicDriveButton.ContainsKey(owner))
         {
+            _pcDriveButton.ReturnPoolObject(_dicDriveButton[owner]);
+            ModeButtonManager.Instance.RemoveListenerModeButton(this, _dicDriveButton[owner].ThisButton);
+            ObjectVisbilitySystem.Instance.RemoveToList(_dicDriveButton[owner], false);
             _dicDriveButton.Remove(owner);
         }
+
+        
+        
     }
     public DriveButton GetDriveButton(PassengerController owner)
     {
@@ -47,7 +54,6 @@ public class DriveButtonController : BaseDriveButtonController
     }
     private void OnClickDrive(PassengerController owner)
     {
-        DriveButton driveButton = GetDriveButton(owner);
         SetVehicleUnit(owner);
         SetModeButtonType(_vehicleUnit.OppositeModeType);
     }

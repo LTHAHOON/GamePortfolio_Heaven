@@ -19,9 +19,9 @@ GameObject:
   - component: {fileID: 5508778958628241092}
   - component: {fileID: 5890873039175000992}
   - component: {fileID: 3893955883631265625}
-  m_Layer: 22
+  m_Layer: 14
   m_Name: "\uC544\uB974\uD0C0\uC2A4"
-  m_TagString: Enemy
+  m_TagString: Ally
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -238,10 +238,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45684bb1d0ec5ff419813a586a894792, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _faction: 1
+  _faction: 0
   _maxHealth: 200
   _fixedHP: 100
-  _autoInitHealth: 1
+  _autoInitHealth: 0
   OnLowHealth:
     m_PersistentCalls:
       m_Calls:
@@ -339,8 +339,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 465402948456868259, guid: 2b5bd474d17dff14e9e8670a13243971,
         type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 465402948456868259, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
       propertyPath: startDelay.scalar
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1478897906827375740, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2698384834256724798, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2698384834256724798, guid: 2b5bd474d17dff14e9e8670a13243971,
         type: 3}
@@ -399,8 +414,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4767734348365640048, guid: 2b5bd474d17dff14e9e8670a13243971,
         type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4767734348365640048, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
       propertyPath: startDelay.scalar
       value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5103306679414719123, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5439606310986676221, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5926772076601883604, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6866888796762731194, guid: 2b5bd474d17dff14e9e8670a13243971,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -659,7 +699,7 @@ PrefabInstance:
     - target: {fileID: 6178540071903926695, guid: 0b81ca0595527944fbe5be50c854827b,
         type: 3}
       propertyPath: m_Layer
-      value: 22
+      value: 19
       objectReference: {fileID: 0}
     - target: {fileID: 6178540071903926695, guid: 0b81ca0595527944fbe5be50c854827b,
         type: 3}
@@ -955,7 +995,7 @@ PrefabInstance:
     - target: {fileID: 1639161082053152851, guid: 130a3daaf6f4cf148a85b50d68664b5e,
         type: 3}
       propertyPath: m_Layer
-      value: 22
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 1639161082053152851, guid: 130a3daaf6f4cf148a85b50d68664b5e,
         type: 3}

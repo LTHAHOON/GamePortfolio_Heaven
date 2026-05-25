@@ -98,6 +98,7 @@ public class CreatureTraceState : State<CreatureState, CreatureController>
             {
                 creature.ReleaseDestMark();
                 SurroundPosManager.ReleaseTargetPosition(creature.gameObject, _surroundPosData._surroundPosGroup);
+                SurroundPosManager.ReleaseSurroundPosGroup(creature.gameObject);
                 stateMachine.ChangeState(CreatureState.Idle);
             }
         }

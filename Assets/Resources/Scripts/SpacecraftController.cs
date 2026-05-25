@@ -166,6 +166,14 @@ public class SpacecraftController : PassengerController, ISelectableOwner
     }
     #endregion
     
+    public void OnSelected()
+    {
+        Debug.Log("우주선 선택");
+    }
+    public void OnDeSelected()
+    {
+        Debug.Log("우주선 선택 취소");
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(GameTags.Ground) && _isGravity)

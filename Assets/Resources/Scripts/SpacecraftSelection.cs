@@ -22,12 +22,33 @@ public class SpacecraftSelection : Selection<SpacecraftController>
         {
             ProcessOnSelected();
         }
+        else if(_isSelected && !_creatureSelection.IsSelected)
+        {
+            ClearSelectedList();
+        }
     }
-    public override void AddToSelectedList(ISelectableOwner selectedTarget)
+    public override void AddToSelectedList(Selectable selectable)
     {
+        //欷戨车 靹犿儩 氚╈
         ClearSelectedList();
-        base.AddToSelectedList(selectedTarget);
+        base.AddToSelectedList(selectable);
     }
+    public override void ClearSelectedList()
+    {
+        for (int i = 0; i < _selectedList.Count; i++)
+        {
+            _selectedList[i].OnDeSelected();
+        }
+        _isSelected = false;
+        _selectedList.Clear();
+        if (_boadingCoroutine != null)
+        {
+            StopCoroutine(_boadingCoroutine);
+        }
+        _target = null;
+        _isSelected = false;
+    }
+    
     private Coroutine _boadingCoroutine;
     public void ProcessOnSelected()
     {
@@ -49,10 +70,7 @@ public class SpacecraftSelection : Selection<SpacecraftController>
             }
             if (Input.GetKeyUp(KeyCode.F))
             {
-                StopCoroutine(_boadingCoroutine);
-                _target = null;
-                _isSelected = false;
-                Debug.Log("快林急 鸥百 秒家");
+                ClearSelectedList();
             }
         }
     }

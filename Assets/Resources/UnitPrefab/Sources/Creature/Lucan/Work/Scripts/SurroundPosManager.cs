@@ -199,7 +199,26 @@ public class SurroundPosManager : MonoBehaviour
             Debug.Log($"등록해제: {target.name} | Index: {data._positionIndex}");
         }
     }
-
+    public static void ReleaseSurroundPosGroup(GameObject key)
+    {
+        if (_dicSurroundPosGroups.ContainsKey(key))
+        {
+            _dicSurroundPosGroups.Remove(key);
+        }
+    }
+    
+    public static void ReleaseSurroundPosGroup(SurroundPosGroup value)
+    {
+        foreach (var pair in _dicSurroundPosGroups)
+        {
+            if(pair.Value == value)
+            {
+                _dicSurroundPosGroups.Remove(pair.Key);
+                return;
+            }
+        }
+    }
+    
     public static bool TryGetAssignedTargetPositionAround(GameObject target, SurroundPosGroup group ,out Vector3 assigendPos)
     {
         if (group != null)

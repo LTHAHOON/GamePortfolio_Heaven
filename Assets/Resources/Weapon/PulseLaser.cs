@@ -29,9 +29,12 @@ public class PulseLaser : Weapon<BulletData>
             if(IsWeakRaser())
             {
                 float damage = _owner.Status.ATK * _weaponData.FixedDamage;
-                _targetHealth.ModifyHealth(-damage);
-                Init();
+                if (_targetHealth != null)
+                {
+                    _targetHealth.ModifyHealth(-damage);
+                }
                 _raserPoolComponent?.ReturnPoolObject(this);
+                Init();
             }
         }
     }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class NexusManager : Singleton<NexusManager>
 {
     [SerializeField]
-    private List<NexusController> _nexusList = new List<NexusController>();
+    private List<NexusController> _nexusList = new();
     private readonly Dictionary<int, NexusController> _nexusDictionary = new();
     
     private void Awake()
@@ -22,10 +22,6 @@ public class NexusManager : Singleton<NexusManager>
         return _nexusDictionary[(int)faction].NexusSurroundPosGroup;
     }
     
-    public NexusController GetNexusByFraction(Faction faction)
-    {
-        return _nexusDictionary[(int)faction];
-    }
     public Vector3 GetNexusPosByFraction(Faction faction)
     {
         return _nexusDictionary[(int)faction].NexusTransform.position;

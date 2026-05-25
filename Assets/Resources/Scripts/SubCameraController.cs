@@ -1,3 +1,4 @@
+using System;
 using Cinemachine;
 using UnityEngine;
 
@@ -13,11 +14,6 @@ public class SubCameraController : MonoBehaviour
     private float _cameraZoomSpeed;
 
     [SerializeField]
-    private float _MaxY = -400f;
-    [SerializeField]
-    private float _MinY = -450f;
-
-    [SerializeField]
     private MiniMapController _miniMapController;
     [Header("My Map SubCamera Position")]
     [SerializeField]
@@ -27,8 +23,15 @@ public class SubCameraController : MonoBehaviour
     private Vector3 _opponentMapSubCameraPosition;
     [SerializeField]
     private Vector3 _subCameraPositionDelta;
+    [SerializeField]
+    private CameraTransformData _allyTransformData;
+    [SerializeField]
+    private CameraTransformData _enemyTransformData;
+    
+    private Vector3 _pos;
     private Vector3 _curSubCameraPosition;
     private Vector3 _beforeSubCameraPosition;
+    private Faction _curMapFaction = Faction.Ally;
     private void Awake()
     {
          _curSubCameraPosition = _MyMapSubCameraPosition + _subCameraPositionDelta;
@@ -41,22 +44,48 @@ public class SubCameraController : MonoBehaviour
         {
             return;
         }
+        
+        if (_curMapFaction == Faction.Ally)
+        {
+            BlockMoveByClamp(_allyTransformData);
+        }
+        else
+        {
+            BlockMoveByClamp(_enemyTransformData);
+        }
         _curSubCameraPosition = transform.position;
         CameraMove();
         CameraScroll();
     }
 
+    private void Update()
+    {
+        if (UIManager.Instance.IsSubCameraActive == _subVcam.enabled)
+            return;
+        
+        _subVcam.enabled = UIManager.Instance.IsSubCameraActive;
+    }
+
     public void CameraMoveToOtherPlanet()
     {
+        if (_curMapFaction == Faction.Ally)
+        {
+            _curMapFaction = Faction.Enemy;
+        }
+        else
+        {
+            _curMapFaction = Faction.Ally;
+        }
         Vector3 oldPos = transform.position;
-
         transform.position = _beforeSubCameraPosition;
-
+        _subVcam.PreviousStateIsValid = false;
         Vector3 delta = transform.position - oldPos;
-
+        
         _subVcam.OnTargetObjectWarped(transform, delta);
+
         _miniMapController.ChangeMiniMapCameraRectTransform(_MyMapSubCameraPosition, _opponentMapSubCameraPosition);
         _beforeSubCameraPosition = _curSubCameraPosition;
+
     }
 
 
@@ -82,14 +111,23 @@ public class SubCameraController : MonoBehaviour
             _curCameraZoomSpeed = 0f;
         }
 
-        float localPosY = Mathf.Clamp(transform.position.y + _curCameraZoomSpeed, _MinY, _MaxY);
+        float localPosY = transform.position.y + _curCameraZoomSpeed;
         transform.position = new Vector3(
                 transform.transform.position.x,
                 localPosY,
                 transform.transform.position.z);
 
     }
-
+    
+    private void BlockMoveByClamp(CameraTransformData cameraTransformData)
+    {
+        _pos = transform.position;
+        _pos.x = Mathf.Clamp(transform.position.x, cameraTransformData.min_x, cameraTransformData.max_x);
+        _pos.y = Mathf.Clamp(transform.position.y, cameraTransformData.min_y, cameraTransformData.max_y);
+        _pos.z = Mathf.Clamp(transform.position.z, cameraTransformData.min_z, cameraTransformData.max_z);
+        transform.position = _pos;
+    }
+    
     //Plane Raycast이용
     public static Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
     public bool GetCameraScreenPointOnGround(Vector3 screenPoint, out Vector3 hitPoint)

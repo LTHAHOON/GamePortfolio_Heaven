@@ -48,7 +48,7 @@ public class BoardingStatData : IStateData<BoardingStatData>
 [Serializable]
 public class BezierCurveStatData : IStateData<BezierCurveStatData>
 {
-    public float _curTime = 0;
+    public float _curTime = -1f;
     public bool _move = false;
     public Vector3 _startPoint;
     public Vector3 _middlePoint;

@@ -328,6 +328,7 @@ public class CreatureController : Unit, ISelectableOwner, IPassenger
     }
     public void OnUnboard(Vector3 targetPosition)
     {
+        _successBoard = false;
         SetDestination(targetPosition);
     }
     

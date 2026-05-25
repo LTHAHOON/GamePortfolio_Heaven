@@ -20,9 +20,12 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
     }
     public override void EnterState(StateMachine<SpacecraftState, SpacecraftController> stateMachine) 
     {
-        SpacecraftController owner = stateMachine.GetOwner();
-        if(owner.CurrentModeType == ModeType.DefenseMode)
+        if (_bezierCurveStatData._curTime < 0f)
         {
+            _bezierCurveStatData._curTime = 0f;
+            SpacecraftController owner = stateMachine.GetOwner();
+            Vector3 dir = _bezierCurveStatData._endPoint - owner.transform.position;
+            owner.transform.rotation = Quaternion.LookRotation(dir.normalized);    
             owner.SetModeType(owner.OppositeModeType);
         }
     }
@@ -38,7 +41,15 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
         {
             Vector3 p = ((1 - _bezierCurveStatData._curTime / maxTime) * startPoint)
                 + (_bezierCurveStatData._curTime / maxTime * endPoint);
-            _bezierCurveStatData._curTime += Time.deltaTime;
+            if (owner.Status != null)
+            {
+                _bezierCurveStatData._curTime += Time.deltaTime * Mathf.Abs(_curSpeed) * (owner.Status.DEX / 3f);
+            }
+            else
+            {
+                _bezierCurveStatData._curTime += Time.deltaTime;
+            }
+            
             owner.transform.position = p;
         }
         else
@@ -68,7 +79,7 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
         }
 
         //앞에 무언가(우주선) 있으면 Trace로 전환
-        if(InputManager.Instance.TryGetByRaycast(out RaycastHit enemy, owner.transform.position, owner.transform.forward, 
+        if(InputManager.Instance.TryGetByRaycast(out _, owner.transform.position, owner.transform.forward, 
                     _baseFsmStatData._traceDistance , GameLayerMask.AllOutPlanetMask))
         {
             _curSpeed = Mathf.SmoothDamp(_curSpeed, -1f, ref _velocity, _smoothTime);
@@ -81,7 +92,7 @@ public class SpacecraftDriveState : State<SpacecraftState, SpacecraftController>
         }
         else if (_bezierCurveStatData._curTime >= maxTime)
         {
-            _bezierCurveStatData._curTime = 0;
+            _bezierCurveStatData._curTime = -1f;
             //행성에 도착하면 착륙상태로 전환하게 된다.
             stateMachine.ChangeState(SpacecraftState.Landing);
         }

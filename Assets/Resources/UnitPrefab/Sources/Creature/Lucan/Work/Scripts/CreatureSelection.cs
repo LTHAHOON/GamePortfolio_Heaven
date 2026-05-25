@@ -11,10 +11,6 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CreatureSelection : Selection<CreatureController>
 {
-    private void OnDestroy()
-    {
-        _selectedList.Clear();
-    }
 
     public override List<TComp> GetSelectionComponents<TComp>()
     {

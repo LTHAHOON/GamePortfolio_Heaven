@@ -8,7 +8,7 @@ public interface ISelection
 {
     void OnSelectOrClearSelection(bool isSelected);
     void ClearSelectedList();
-    void AddToSelectedList(ISelectableOwner selectedTarget);
+    void AddToSelectedList(Selectable selectable);
     bool CanSelect(Selectable selectable);
 }
 public abstract class Selection<T> : Singleton<Selection<T>>, ISelection where T : ISelectableOwner
@@ -22,7 +22,7 @@ public abstract class Selection<T> : Singleton<Selection<T>>, ISelection where T
         SelectionManager.Instance.AddSelection(this);
     }
 
-    public void ClearSelectedList()
+    public virtual void ClearSelectedList()
     {
         for (int i = 0; i < _selectedList.Count; i++)
         {
@@ -42,15 +42,17 @@ public abstract class Selection<T> : Singleton<Selection<T>>, ISelection where T
             }
         }
     }
-    public virtual void AddToSelectedList(ISelectableOwner selectedTarget)
+    public virtual void AddToSelectedList(Selectable selectable)
     {
-        if (selectedTarget.Owner.CompareTag(GameTags.Ally))
+        ISelectableOwner selectableOwner = selectable.Owner;
+        if (selectableOwner.Owner.CompareTag(GameTags.Ally))
         {
-            if (selectedTarget is T selectedCretureFSM)
+            if (selectableOwner is T owner)
             {
-                if (!_selectedList.Contains(selectedCretureFSM))
+                if (_selectedList.Contains(owner))
                     return;
-                _selectedList.Add(selectedCretureFSM);
+                _selectedList.Add(owner);
+                selectable.OnSelected();
             }
         }
     }
@@ -79,7 +81,7 @@ public class SelectionManager : Singleton<SelectionManager>
     private readonly List<ISelection> _selectionList = new();
     private void Update()
     {
-        if(UIManager.Instance.IsSubCameraActive)
+        if(UIManager.Instance.IsSubCameraActive || !UIManager.Instance.IsCreateCountUIActive)
         {
             if (!MiniMapController.IsPointerOverMiniMap && !ModeButtonManager.Instance.IsUpdateMode)
             {

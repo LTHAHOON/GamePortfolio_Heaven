@@ -11,18 +11,15 @@ public class AttackDriveButtonController : BaseDriveButtonController
     [SerializeField]
     private PassengerController _spacecraftPrefab;
 
-    protected void Awake()
+    protected override void Awake()
     {
         SetVehicleUnit(_spacecraftPrefab);
-        PoolManager.Instance.AddPool(_destMark, 3, 5, _mapMarkParent);
-        PoolManager.Instance.TryGetPool(_destMark, out _pcDestMark);
     }
 
     public override void OnEnter()
     {
         PlanetInternalPopController.OnClickOpenModeButton();
         _selectedUnitPrefab = UnitButtonController.GetSelectedUnitPrefab();
-        
         base.OnEnter();
     }
 

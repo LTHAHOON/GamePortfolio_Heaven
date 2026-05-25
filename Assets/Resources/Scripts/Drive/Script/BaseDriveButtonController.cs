@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,9 +35,15 @@ public class BaseDriveButtonController : ModeButtonController
 
     protected bool _bSetGoalProcess = false;
     protected Goal _goalData;
-    protected PoolComponent<GameObject> _pcDestMark;
+    protected static PoolComponent<GameObject> _pcDestMark;
     protected PassengerController _vehicleUnit;
     protected MPData _totalMPData = new();
+
+    protected virtual void Awake()
+    {
+        PoolManager.Instance.AddPool(_destMark, 3, 5, _mapMarkParent);
+        PoolManager.Instance.TryGetPool(_destMark, out _pcDestMark);
+    }
 
     protected void SetVehicleUnit(PassengerController vehicleUnit)
     {
@@ -135,8 +142,12 @@ public class BaseDriveButtonController : ModeButtonController
     public override void OnExit()
     {
         base.OnExit();
-        LandingPointDatasController landingPointDatasContrl = _goalData._vehicleGoalPosData.Owner;
-        landingPointDatasContrl.ReturnLandingPosition(_goalData._vehicleGoalPosData);
+        if (_goalData._vehicleGoalPosData != null)
+        {
+            LandingPointDatasController landingPointDatasContrl = _goalData._vehicleGoalPosData.Owner;
+            landingPointDatasContrl.ReturnLandingPosition(_goalData._vehicleGoalPosData);
+        }
+        LandingPointButtonsManager.Instance.SetActiveLandingPointButtons(false, ModeButtonType);
         _bSetGoalProcess = false;
         if (ModeButtonType == ModeType.AttackMode)
         {
@@ -146,7 +157,6 @@ public class BaseDriveButtonController : ModeButtonController
         {
             _planetButtonController.SetToggleIsOn(0, false);
         }
-        LandingPointButtonsManager.Instance.SetActiveLandingPointButtons(false, ModeButtonType);
         _cursorData = null;
     }
 

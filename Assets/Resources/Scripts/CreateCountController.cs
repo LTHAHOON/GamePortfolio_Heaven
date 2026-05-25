@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class CreateCountController : MonoBehaviour
 {
+    [SerializeField] 
+    private GameObject _creaeCountUI;
     [SerializeField]
     private  TextMeshProUGUI _guideText;
     [SerializeField]
@@ -15,22 +17,23 @@ public class CreateCountController : MonoBehaviour
     private int _curCreateCount = 1;
     private int _maxCreateCount = 1;
     private readonly float delayBetweenInputs = 0.2f;
-    private float time = 0;
+    private readonly int _initialCount = 1;
+    private float _curTime = 0f;
     private void LateUpdate()
     {
         if(_curCreateCount != 0)
         {
-            if (Input.GetKey(KeyCode.A) && time <= 0)
+            if (Input.GetKey(KeyCode.A) && _curTime <= 0)
             {
                 SetCreateCount(0, _maxCreateCount);
-                time = delayBetweenInputs;
+                _curTime = delayBetweenInputs;
             }
-            if (Input.GetKey(KeyCode.D) && time <= 0)
+            if (Input.GetKey(KeyCode.D) && _curTime <= 0)
             {
                 SetCreateCount(1, _maxCreateCount);
-                time = delayBetweenInputs;
+                _curTime = delayBetweenInputs;
             }
-            time -= Time.deltaTime;
+            _curTime -= Time.deltaTime;
         }
     }
     public void RefreshCreateCount(MPData mpData, MPData subMpData = null)
@@ -101,18 +104,14 @@ public class CreateCountController : MonoBehaviour
     }
     public void ChangeCreateCountText()
     {
-
         _createCountText.text = $"{_curCreateCount} / {_maxCreateCount}";
     }
     public void SetActiveCount(bool active)
     {
-        _createCountText.gameObject.SetActive(active);
-        _createCountImage_L.gameObject.SetActive(active);
-        _createCountImage_R.gameObject.SetActive(active);
+        _creaeCountUI.gameObject.SetActive(active);
     }
 
 
-    private const int _initialValue = 1;
     public void SetCreateCount(int button, int maxCreateCount)
     {
         
@@ -125,7 +124,7 @@ public class CreateCountController : MonoBehaviour
                 ChangeCreateCountText();
                 return;
             }
-            _curCreateCount -= _initialValue;
+            _curCreateCount -= _initialCount;
             _maxCreateCount = maxCreateCount;
 
             ChangeCreateCountText ();
@@ -135,12 +134,12 @@ public class CreateCountController : MonoBehaviour
         {
             if(_curCreateCount >= maxCreateCount)
             {
-                _curCreateCount = _initialValue;
+                _curCreateCount = _initialCount;
                 _maxCreateCount = maxCreateCount;
                 ChangeCreateCountText();
                 return;
             }
-            _curCreateCount += _initialValue;
+            _curCreateCount += _initialCount;
             _maxCreateCount = maxCreateCount;
             ChangeCreateCountText();
             return;    

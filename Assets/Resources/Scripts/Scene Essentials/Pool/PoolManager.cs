@@ -28,7 +28,7 @@ public class PoolManager : Singleton<PoolManager>
             _dicPool.Remove(poolObject);
         }
     }
-    public void RemovePoolUsingID<T>(int id) where T : UnityEngine.Object
+    public void RemovePoolUsingID(int id)
     {
         if (_dicPool_ID.ContainsKey(id))
         {
